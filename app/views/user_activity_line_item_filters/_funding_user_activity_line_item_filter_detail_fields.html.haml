@@ -1,0 +1,2 @@
+= format_field("Bucket", FundingBucket.find_by(id: @user_activity_line_item_filter.funding_bucket_id))
+= format_field("Not Fully Funded", format_as_boolean(@user_activity_line_item_filter.not_fully_funded))
