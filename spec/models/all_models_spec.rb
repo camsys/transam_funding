@@ -6,7 +6,7 @@ RSpec.describe do
   # a user input of false would be overridden by `self.active ||= true`. test prevents such a code snippet
   # TODO: extend test to check defaults on all boolean fields
 
-  Dir[TransamFunding::Engine.root.join("app/models/*.rb")].map{|m| m.chomp('.rb').camelize.split("::").last}.each do |model|
+  Dir[TransamAccounting::Engine.root.join("app/models/*.rb")].map{|m| m.chomp('.rb').camelize.split("::").last}.each do |model|
     if ActiveRecord::Base.connection.table_exists? model.tableize
       if model.constantize.new.respond_to? :active
         it "inactive instance #{model} doesnt initialize as active" do
