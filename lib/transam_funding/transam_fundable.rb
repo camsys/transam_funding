@@ -52,7 +52,7 @@ module TransamFundable
 
   # Returns the total amount of funding planned for this ali
   def total_funds
-    funding_requests.sum(:amount)
+    0
   end
 
   def funds_required
