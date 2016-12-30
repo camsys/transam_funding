@@ -1,4 +1,6 @@
 TransamCore::Engine.load_seed
+TransamTransit::Engine.load_seed
+TransamAccounting::Engine.load_seed
 
 puts "  Processing system_config"
 SystemConfig.find_or_create_by(:customer_id => 1,
@@ -30,5 +32,3 @@ User.find_or_create_by(
   :email => "admin@email.com",
   :num_table_rows => 10,
   )
-
-ActiveRecord::Base.connection.execute("ALTER TABLE `transam_funding_testing`.`assets` ADD COLUMN `geometry` GEOMETRY NULL AFTER `vendor_id`;")
