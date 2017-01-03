@@ -14,7 +14,37 @@ is_sqlite =  (ActiveRecord::Base.configurations[Rails.env]['adapter'] == 'sqlite
 
 puts "======= Processing TransAM Funding Lookup Tables  ======="
 
-lookup_tables = %w{  }
+funding_source_types = [
+    {:active => 1, :name => 'Federal',  :description => 'Federal Funding Source'},
+    {:active => 1, :name => 'State',    :description => 'State Funding Source'},
+    {:active => 1, :name => 'Local',    :description => 'Local Funding Source'},
+    {:active => 1, :name => 'Agency',    :description => 'Agency Funding Source'},
+    {:active => 1, :name => 'Other',    :description => 'Other Funding Source'}
+]
+
+
+general_ledger_account_types = [
+    {:active => 1, :name => 'Asset Account',      :description => 'Accounts representing different types of resources owned or controlled by the business.'},
+    {:active => 1, :name => 'Liability Account',  :description => 'Accounts representing different types of obligations for the business.'},
+    {:active => 1, :name => 'Equity Account',     :description => 'Accounts representing the residual equity the business.'},
+    {:active => 1, :name => 'Revenue Account',    :description => 'Accounts representing the businesses gross earnings.'},
+    {:active => 1, :name => 'Expense Account',    :description => 'Accounts representing the expenditures for the business.'},
+    {:active => 1, :name => 'Contra Account',     :description => 'Accounts representing negative balances due to accu,ulated depreciation etc.'}
+]
+
+funding_template_types = [
+    {:active => 1, :name => 'Capital', :description => 'Capital Funding Template'},
+    {:active => 1, :name => 'Operating', :description => 'Operating Funding Template'},
+    {:active => 1, :name => 'Debt Service', :description => 'Debt Service Funding Template'},
+    {:active => 1, :name => 'Other', :description => 'Other Funding Template'},
+]
+
+funding_bucket_types = [
+    {:active => 1, :name => 'Existing Grant', :description => 'Existing Grant'},
+    {:active => 1, :name => 'Formula', :description => 'Formula Bucket'},
+    {:active => 1, :name => 'Grant Application', :description => 'Grant Application Bucket'},
+]
+lookup_tables = %w{ funding_source_types general_ledger_account_types funding_template_types funding_bucket_types}
 
 lookup_tables.each do |table_name|
   puts "  Loading #{table_name}"
@@ -31,41 +61,4 @@ lookup_tables.each do |table_name|
     x = klass.new(row)
     x.save!
   end
-end
-
-#------------------------------------------------------------------------------
-#
-# Merge Tables
-#
-# These are merged tables TransAM Funding
-#
-#------------------------------------------------------------------------------
-
-puts "======= Processing TransAM Funding Merge Tables  ======="
-
-merge_tables = %w{ }
-
-merge_tables.each do |table_name|
-  puts "  Merging #{table_name}"
-  data = eval(table_name)
-  klass = table_name.classify.constantize
-  data.each do |row|
-    x = klass.new(row)
-    x.save!
-  end
-end
-
-puts "======= Processing TransAM Funding Reports  ======="
-
-reports = [
-]
-
-table_name = 'reports'
-puts "  Merging #{table_name}"
-data = eval(table_name)
-data.each do |row|
-  puts "Creating Report #{row[:name]}"
-  x = Report.new(row.except(:belongs_to, :type))
-  x.report_type = ReportType.find_by(:name => row[:type])
-  x.save!
 end
