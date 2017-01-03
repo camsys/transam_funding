@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161228172708) do
+ActiveRecord::Schema.define(version: 20161230144654) do
 
   create_table "activities", force: true do |t|
     t.string   "object_key",           limit: 12
@@ -779,6 +779,7 @@ ActiveRecord::Schema.define(version: 20161228172708) do
     t.integer  "updated_by_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "local_funding_line_item_id"
   end
 
   add_index "funding_requests", ["activity_line_item_id", "federal_funding_line_item_id"], name: "available_funds_idx2", using: :btree
