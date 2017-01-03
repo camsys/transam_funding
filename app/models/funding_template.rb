@@ -3,6 +3,9 @@ class FundingTemplate < ActiveRecord::Base
   # Include the object key mixin
   include TransamObjectKey
 
+  #Include the Funding source mixin
+  require 'funding_source'
+
   #------------------------------------------------------------------------------
   # Callbacks
   #------------------------------------------------------------------------------

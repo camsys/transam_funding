@@ -23,7 +23,7 @@ class FundingPlan < ActiveRecord::Base
   include TransamObjectKey
 
   #Include the Funding source mixin
-  include FundingSource
+  require 'funding_source'
 
   #------------------------------------------------------------------------------
   # Callbacks

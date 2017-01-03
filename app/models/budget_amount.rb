@@ -17,7 +17,7 @@ class BudgetAmount < ActiveRecord::Base
   include FiscalYear
 
   #Include the Funding source mixin
-  include FundingSource
+  require 'funding_source'
 
   #------------------------------------------------------------------------------
   # Callbacks

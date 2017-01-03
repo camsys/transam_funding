@@ -3,7 +3,8 @@ class FundingBucket< ActiveRecord::Base
   # Include the object key mixin
   include TransamObjectKey
   #Include the Funding source mixin
-  include FundingSource
+  require 'funding_source'
+
   #------------------------------------------------------------------------------
   # Callbacks
   #------------------------------------------------------------------------------
