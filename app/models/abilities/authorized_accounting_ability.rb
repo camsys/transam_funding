@@ -14,17 +14,6 @@ module Abilities
       end
       can :my_funds, FundingBucket
 
-      can :manage, Grant, :organization_id => user.organization_ids
-
-      can :manage, GeneralLedgerAccount, :organization_id => user.organization_ids
-
-      #-------------------------------------------------------------------------
-      # Expenditures
-      #-------------------------------------------------------------------------
-      # User can manage expenditures if the expense is owned by their organization
-      can :manage, Expenditure do |e|
-        e.organization_id == user.organization_id
-      end
 
     end
   end

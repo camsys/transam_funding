@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161228172708) do
+ActiveRecord::Schema.define(version: 20161230144654) do
 
   create_table "activities", force: true do |t|
     t.string   "object_key",           limit: 12
@@ -374,20 +374,6 @@ ActiveRecord::Schema.define(version: 20161228172708) do
   end
 
   add_index "assets_vehicle_usage_codes", ["asset_id", "vehicle_usage_code_id"], name: "assets_vehicle_usage_codes_idx1", using: :btree
-
-  create_table "budget_amounts", force: true do |t|
-    t.string   "object_key",        limit: 12, null: false
-    t.integer  "organization_id",              null: false
-    t.integer  "funding_source_id",            null: false
-    t.integer  "fy_year",                      null: false
-    t.integer  "amount",                       null: false
-    t.boolean  "estimated"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "budget_amounts", ["object_key"], name: "budget_amounts_idx1", using: :btree
-  add_index "budget_amounts", ["organization_id", "funding_source_id", "fy_year"], name: "budget_amounts_idx2", using: :btree
 
   create_table "chart_of_accounts", force: true do |t|
     t.string   "object_key",      limit: 12
