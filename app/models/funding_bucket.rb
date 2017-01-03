@@ -125,8 +125,7 @@ class FundingBucket< ActiveRecord::Base
   #------------------------------------------------------------------------------
 
   def to_s
-    "FY #{self.fiscal_year-2000}-#{self.fiscal_year-1999} #{self.owner.short_name}"
-
+    name
   end
 
   def budget_remaining
