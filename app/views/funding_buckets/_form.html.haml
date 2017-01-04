@@ -169,7 +169,11 @@
 
         var program = $('#funding_bucket_proxy_program_id option:selected').text();
         var template = $('#funding_bucket_proxy_template_id option:selected').text();
-        var bucket_name =program+'-'+template+'-'+name+'-FYXX/ZZ';
+
+        var index_of_dash = name.indexOf('-');
+        var owner = name.substr(0, index_of_dash);
+
+        var bucket_name =program+'-'+template+'-'+owner+'-FYXX/ZZ';
 
         var new_input =
           '<div class="row_agencies"><div class="col-sm-12">' +
@@ -258,6 +262,8 @@
     var program = $('#funding_bucket_proxy_program_id option:selected').text();
     var template = $('#funding_bucket_proxy_template_id option:selected').text();
     var owner = $('#funding_bucket_proxy_owner_id option:selected').text();
+    var index_of_dash = owner.indexOf('-');
+    owner = owner.substr(0, index_of_dash);
     var fy = 'FYXX/ZZ';
 
     var start_year = $('#funding_bucket_proxy_fiscal_year_range_start option:selected').text();
@@ -276,8 +282,11 @@
   function update_bucket_name(){
     bucket_name = build_bucket_name();
 
+    if(multiple_buckets_for_agency_year){
+      $('#funding_bucket_proxy_name').text(bucket_name+'-');
+    }
     $('#default_funding_bucket_name').text(bucket_name);
-    $('#funding_bucket_proxy_name').text(bucket_name+'-');
+
   }
 
   function set_bucket_configuration_from_template(template_id){
