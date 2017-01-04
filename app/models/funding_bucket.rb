@@ -42,6 +42,10 @@ class FundingBucket< ActiveRecord::Base
 
   # Allow selection of active instances
   scope :active, -> { where(:active => true) }
+  scope :federal, -> { joins(funding_template: :funding_source).where('funding_sources.funding_source_type_id = ?', FundingSourceType.find_by(name: 'Federal')) }
+  scope :state, -> { joins(funding_template: :funding_source).where('funding_sources.funding_source_type_id = ?', FundingSourceType.find_by(name: 'State')) }
+  scope :local, -> { joins(funding_template: :funding_source).where('funding_sources.funding_source_type_id = ?', FundingSourceType.find_by(name: 'Local')) }
+
 
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
