@@ -21,7 +21,6 @@ require 'rspec/rails'
 require 'factory_girl_rails'
 require 'database_cleaner'
 require 'shoulda-matchers'
-require 'devise'
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
@@ -30,17 +29,15 @@ require 'devise'
 # run twice. It is recommended that you do not name files matching this glob to
 # end with _spec.rb. You can configure this pattern with the --pattern
 # option on the command line or in ~/.rspec, .rspec or `.rspec-local`.
-Dir[TransamCore::Engine.root.join("spec/support/**/*.rb")].each { |f| require f }
+Dir[TransamAccounting::Engine.root.join("spec/support/**/*.rb")].each { |f| require f }
 
 ActiveRecord::Migration.maintain_test_schema!
 
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
   config.include Devise::TestHelpers, :type => :controller
-
-  config.color = true                  # Use color in STDOUT
-  config.tty = true                    # Use color not only in STDOUT but also in pagers and files
-  config.formatter = :documentation    # Use the specified formatter
+  config.infer_spec_type_from_file_location!
+  config.use_transactional_fixtures = true
 end
 
 Shoulda::Matchers.configure do |config|
@@ -49,14 +46,5 @@ Shoulda::Matchers.configure do |config|
     with.test_framework :rspec
 
     with.library :rails
-  end
-end
-
-module TransamMapMarkers; end
-
-# declare concrete Organization class for tests
-class TestOrg < Organization
-  def get_policy
-    return Policy.where("`organization_id` = ?",self.id).order('created_at').last
   end
 end

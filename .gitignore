@@ -3,7 +3,6 @@
 *.rbc
 *.sassc
 .project
-.rspec
 .rvmrc
 .sass-cache
 /.bundle

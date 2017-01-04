@@ -16,6 +16,9 @@ class FundingLineItem < ActiveRecord::Base
         
   # Include the fiscal year mixin
   include FiscalYear
+
+  #Include the Funding source mixin
+  require 'funding_source'
   
   #------------------------------------------------------------------------------
   # Callbacks
