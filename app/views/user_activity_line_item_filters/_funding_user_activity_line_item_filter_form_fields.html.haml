@@ -1,2 +1,33 @@
-= f.input :funding_bucket_id, :collection => FundingBucket.active, :label => 'Funding'
+.row
+  .col-sm-6
+    .form-group
+      %label.control-label
+        Owner
+      %div
+        = select_tag(:owner_id, options_for_select(Organization.where(id: @organization_list).map{|o| [o.coded_name, o.id]}), {include_blank: true, class: 'form-control'})
+
+  .col-sm-6
+    = f.input :funding_bucket_id, :collection => FundingBucket.active.map{ |f| [f.to_s, f.id, {:style => 'display:none;', :data => {owner_id: f.owner_id} } ] }, :label => 'Funding'
 = f.input :not_fully_funded
+
+:javascript
+
+  $('#owner_id').on('change', function(event) {
+
+    owner_id = parseInt($(this).val());
+
+    if (owner_id > 0) {
+      $('#user_activity_line_item_filter_funding_bucket_id option').each(function() {
+        var val = parseInt($(this).data('owner-id'));
+        if (val == owner_id) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+    } else {
+      $('#user_activity_line_item_filter_funding_bucket_id option').hide();
+      $('#user_activity_line_item_filter_funding_bucket_id option[value=""]').show();
+      $('#user_activity_line_item_filter_funding_bucket_id option[value=""]').attr('selected','selected');
+    }
+  });

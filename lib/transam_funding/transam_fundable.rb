@@ -52,7 +52,7 @@ module TransamFundable
 
   # Returns the total amount of funding planned for this ali
   def total_funds
-    0
+    federal_funds + state_funds + local_funds
   end
 
   def funds_required
@@ -61,26 +61,17 @@ module TransamFundable
 
   # Returns the total value of federal funds requested
   def federal_funds
-    0
-
-    # TODO: re-enable following line when funding_source is enabled
-    #funding_plans.joins(:funding_source).sum("amount * (funding_sources.federal_match_required / 100.0)")
+    funding_requests.sum(:federal_amount)
   end
 
   # Returns the total value of state funds requested
   def state_funds
-    0
-
-    # TODO: re-enable following line when funding_source is enabled
-    #funding_plans.joins(:funding_source).sum("amount * (funding_sources.state_match_required / 100.0)")
+    funding_requests.sum(:state_amount)
   end
 
   # Returns the total value of local funds requested
   def local_funds
-    0
-
-    # TODO: re-enable following line when funding_source is enabled
-    #funding_plans.joins(:funding_source).sum("amount * (funding_sources.local_match_required / 100.0)")
+    funding_requests.sum(:local_amount)
   end
 
   def federal_percentage

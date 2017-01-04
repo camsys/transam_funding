@@ -1,0 +1,64 @@
+- if @activity_line_item.funding_requests.empty?
+  %p There are no funding requests for this ALI.
+-else
+  %table.table.table-hover
+    %thead
+      %tr
+        %th.center{:colspan => 3} Federal
+        %th.center{:colspan => 3} State
+        %th.center{:colspan => 3} Local
+        %th.center
+
+      %tr
+        %th.right Amount
+        %th.right Rqd %
+        %th.right Act %
+
+        %th.right Amount
+        %th.right Rqd %
+        %th.right Act %
+
+        %th.right Amount
+        %th.right Rqd %
+        %th.right Act %
+
+        %th.right Total
+
+        %th
+
+    %tbody
+      - @activity_line_item.funding_requests.each do |f|
+        %tr
+          %td.right= format_as_currency(f.federal_amount)
+          %td.right= format_as_percentage(f.federal_funding_line_item.funding_template.match_required, 3)
+          %td.right= format_as_percentage(f.federal_percentage, 3)
+
+          %td.right= format_as_currency(f.state_amount)
+          %td.right= format_as_percentage(f.state_funding_line_item.funding_template.match_required, 3)
+          %td.right= format_as_percentage(f.state_percentage, 3)
+
+          %td.right= format_as_currency(f.local_amount)
+          %td.right= format_as_percentage(f.local_funding_line_item.funding_template.match_required, 3)
+          %td.right= format_as_percentage(f.local_percentage, 3)
+
+          %td.right= format_as_currency(f.total_amount)
+
+          %td.center
+            = link_to capital_project_activity_line_item_funding_plan_path(@project, ali, fp), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone!"}  do
+              %i.fa.fa-times-circle.action-icon.text-danger
+
+    %tfoot
+      %tr
+        %td.right= format_as_currency(@activity_line_item.federal_funds)
+        %td.left
+        %td.right= format_as_percentage(@activity_line_item.federal_percentage, 3)
+
+        %td.right= format_as_currency(@activity_line_item.state_funds)
+        %td.left
+        %td.right= format_as_percentage(@activity_line_item.state_percentage, 3)
+
+        %td.right= format_as_currency(@activity_line_item.local_funds)
+        %td.left
+        %td.right= format_as_percentage(@activity_line_item.local_percentage, 3)
+
+        %td.right= format_as_currency(@activity_line_item.total_funds)

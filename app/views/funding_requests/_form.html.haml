@@ -1,0 +1,58 @@
+.row
+  .col-md-12
+    = render 'funding_requests/funding_messages'
+
+  - if @activity_line_item.funds_required > 0
+    .col-md-8
+      = simple_form_for([@project, @activity_line_item, @funding_request],
+              :wrapper => :horizontal_form,
+              :wrapper_mappings => {:check_boxes => :horizontal_radio_and_checkboxes, :radio_buttons => :horizontal_radio_and_checkboxes, :file => :horizontal_file_input, :boolean => :horizontal_boolean}) do |f|
+        .row
+          .col-xs-9
+            = f.input :federal_funding_line_item_id, :collection => FundingBucket.federal.where(owner_id: @organization_list, fiscal_year: @activity_line_item.fy_year), :label => 'Federal Funds'
+
+          .col-xs-3
+            = f.input :amount, :wrapper=> :horizontal_prepend, :label => false do
+              %span.input-group-addon
+                %i.fa.fa-usd
+              = f.input_field :federal_amount, :class => "form-control", :digits => true, :min => 0, :max => 10000000
+
+        .row
+          .col-xs-9
+            = f.input :state_funding_line_item_id, :collection => FundingBucket.state.where(owner_id: @organization_list, fiscal_year: @activity_line_item.fy_year), :label => 'State Funds'
+
+          .col-xs-3
+            = f.input :amount, :wrapper=> :horizontal_prepend, :label => false do
+              %span.input-group-addon
+                %i.fa.fa-usd
+              = f.input_field :state_amount, :class => "form-control", :digits => true, :min => 0, :max => 10000000
+
+        .row
+          .col-xs-9
+            = f.input :local_funding_line_item_id, :collection => FundingBucket.local.where(owner_id: @organization_list, fiscal_year: @activity_line_item.fy_year), :label => 'Local Funds'
+
+          .col-xs-3
+            = f.input :amount, :wrapper=> :horizontal_prepend, :label => false do
+              %span.input-group-addon
+                %i.fa.fa-usd
+              = f.input_field :local_amount, :class => "form-control", :number => true, :min => 0
+        .row
+          .col-xs-3
+            .col-xs-offset-3.col-xs-3
+              = f.submit "Add", :class => 'btn btn-primary', :id => 'submit_button'
+
+    .col-md-4#federal_fund_details
+
+:javascript
+
+  $(document).ready(function() {
+      // Disable the submit button
+      //$('#submit_button').attr("disabled", "disabled");
+      // Add an event listener on the selector
+      $('#funding_request_federal_funding_line_item_id').change(function() {
+        var val = $('#funding_request_federal_funding_line_item_id').val();
+        var url = '/funding_sources/details/?funding_line_item_id=' + val;
+        transam.ajax_render_action(url, 'get');
+        $('#federal_fund_details').html("");
+      });
+  });

@@ -36,25 +36,19 @@ module TransamFundableCapitalProject
   module ClassMethods
 
     def self.total_funds
-      self.joins(activity_line_items: :funding_plans).sum("funding_plans.amount")
+      self.total_federal_funds + self.total_state_funds + self.total_local_funds
     end
 
     def self.total_federal_funds
-      0
-
-      #TODO: revisit when funding_source is enabled, refer to instance method .federal_funds
+      self.joins(activity_line_items: :funding_requests).sum("funding_requests.federal_amount")
     end
 
     def self.total_state_funds
-      0
-
-      #TODO: revisit when funding_source is enabled, refer to instance method .state_funds
+      self.joins(activity_line_items: :funding_requests).sum("funding_requests.state_amount")
     end
 
     def self.total_local_funds
-      0
-
-      #TODO: revisit when funding_source is enabled, refer to instance method .local_funds
+      self.joins(activity_line_items: :funding_requests).sum("funding_requests.local_amount")
     end
 
   end
@@ -88,29 +82,20 @@ module TransamFundableCapitalProject
     }
   end
 
-  def state_funds
-    0
-
-    # TODO: re-enable following line when funding_source is enabled
-    #activity_line_items.joins(funding_plans: :funding_source).sum("funding_plans.amount * (funding_sources.state_match_required / 100.0)")
+  def federal_funds
+    activity_line_items.joins(:funding_requests).sum("funding_requests.federal_amount")
   end
 
-  def federal_funds
-    0
-
-    # TODO: re-enable following line when funding_source is enabled
-    #activity_line_items.joins(funding_plans: :funding_source).sum("funding_plans.amount * (funding_sources.federal_match_required / 100.0)")
+  def state_funds
+    activity_line_items.joins(:funding_requests).sum("funding_requests.state_amount")
   end
 
   def local_funds
-    0
-
-    # TODO: re-enable following line when funding_source is enabled
-    #activity_line_items.joins(funding_plans: :funding_source).sum("funding_plans.amount * (funding_sources.local_match_required / 100.0)")
+    activity_line_items.joins(:funding_requests).sum("funding_requests.local_amount")
   end
 
   def total_funds
-    0
+    federal_funds + state_funds + local_funds
   end
 
   # Returns the amount that is not yet funded
