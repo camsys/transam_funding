@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "planning/_edit_asset_modal_form.html.haml", :type => :view do
+describe "scheduler/_edit_asset_modal_form.html.haml", :type => :view do
   it 'fields' do
     allow(controller).to receive(:current_ability).and_return(Ability.new(create(:admin)))
     assign(:proxy, SchedulerActionProxy.new)
