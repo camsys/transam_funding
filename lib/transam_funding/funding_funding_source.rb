@@ -2,6 +2,10 @@ module FundingFundingSource
   extend ActiveSupport::Concern
 
   included do
+    # ----------------------------------------------------
+    # Associations
+    # ----------------------------------------------------
+
     has_many    :funding_templates, :dependent => :destroy
     has_many    :funding_buckets, :through => :funding_templates
   end

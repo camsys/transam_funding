@@ -20,14 +20,15 @@
     = select_tag(:query, options_for_select(QueryParam.active.where(class_name: f.object.class.name).map{|x| [x.to_s,x.id]}, :selected => QueryParam.find_by(class_name: f.object.class.name, query_string: f.object.query_string).try(:id)), :class => "form-control", :prompt => "Choose Organizations")
 
   #org_select.input-large
-
+  .row
+    May create buckets ...
   .row
     .col-sm-4
-      = f.input :recurring, :label => 'Create multiple years'
+      = f.input :recurring, :label => 'multiple years'
     .col-sm-4
-      = f.input :create_multiple_agencies
+      = f.input :create_multiple_agencies, :label => 'multiple agencies'
     .col-sm-4
-      = f.input :create_multiple_buckets_for_agency_year
+      = f.input :create_multiple_buckets_for_agency_year, :label => 'multiple times for the same agency/year'
 
 
 
