@@ -44,7 +44,7 @@
           %td.right= format_as_currency(f.total_amount)
 
           %td.center
-            = link_to capital_project_activity_line_item_funding_plan_path(@project, ali, fp), :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone!"}  do
+            = link_to '#', :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone!"}  do
               %i.fa.fa-times-circle.action-icon.text-danger
 
     %tfoot

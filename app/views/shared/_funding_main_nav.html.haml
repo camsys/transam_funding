@@ -33,9 +33,21 @@
           %i.fa.fa-fw.fa-legal
           = ' Buckets'
 
-    - if can? :my_funds, FundingBucket
-      %li.divider
-      %li.text-left
-        = link_to my_funds_funding_buckets_path do
-          %i.fa.fa-fw.fa-usd
-          = 'My Funds'
+    %li.divider
+    %li.text-left
+      = link_to my_funds_funding_buckets_path do
+        %i.fa.fa-fw.fa-usd
+        = 'My Funds'
+
+    %li.divider
+    %li.text-left.dropdown-submenu
+      = link_to '#' do
+        %i.fa.fa-calendar.fa-fw
+        Scheduler
+
+      %ul.dropdown-menu{style: "overflow-y:scroll; max-height:400px;"}
+        - Organization.where(id: @organization_list).each do |org|
+          %li.text-left
+            = link_to scheduler_index_path(org_id: org.id) do
+              %i.fa.fa-fw.fa-calendar
+              = org.short_name

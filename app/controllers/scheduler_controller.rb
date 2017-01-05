@@ -21,9 +21,6 @@ class SchedulerController < OrganizationAwareController
   ALI_ADD_FUND_ACTION     = '4'
   ALI_REMOVE_FUND_ACTION  = '5'
 
-  # Controller actions that can be invoked from the view to manuipulate swimlanes
-  SWIMLANE_SET_ACTIVE_ACTION  = '1'
-
   ACTIONS = [
     ["Replace", REPLACE_ACTION],
     ["Rehabilitate", REHABILITATE_ACTION],
@@ -91,7 +88,7 @@ class SchedulerController < OrganizationAwareController
 
   #-----------------------------------------------------------------------------
   # Render the partial for the asset edit modal.
-  # from planning controller - TODO review with above method
+  # from planning control
   #-----------------------------------------------------------------------------
   # def edit_asset
   #
@@ -234,19 +231,14 @@ class SchedulerController < OrganizationAwareController
   # General purpose action for mamipulating ALIs in the plan. This action
   # must be called as JS
   def scheduler_swimlane_action
+    ali = params[:ali]
 
-    year = params[:year]
-    action = params[:invoke]
-
-    case action
-    when SWIMLANE_SET_ACTIVE_ACTION
-      @active_year = year.to_i
-    end
+    @activity_line_item = ActivityLineItem.find_by(object_key: ali)
+    @project = @activity_line_item.capital_project if @activity_line_item
+    @funding_request = FundingRequest.new
 
     # Get the ALIs for each year
     @year_1_alis = get_alis(@year_1)
-    @year_2_alis = get_alis(@year_2)
-    @year_3_alis = get_alis(@year_3)
 
   end
 
@@ -303,10 +295,7 @@ class SchedulerController < OrganizationAwareController
   end
 
   def get_alis(year)
-
-    # check to see if there is a filter on the organization
-    org = @org_id.blank? ? @organization.id : @org_id
-    capital_project_ids = CapitalProject.where(:organization_id => org)
+    capital_project_ids = CapitalProject.where(:organization_id =>  @org_id)
 
     ActivityLineItem.where(:capital_project_id => capital_project_ids, :fy_year => year)
   end

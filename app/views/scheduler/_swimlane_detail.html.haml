@@ -12,7 +12,7 @@
           %ul.dropdown-menu{:role => "menu"}
             - if year == @active_year
               %li
-                = link_to '#', :data => {:toggle => 'modal', :target => '#ali-add-funding-plan-modal', :capital_project => ali.capital_project.object_key, :ali => ali.object_key, :active_year => @active_year}  do
+                = link_to scheduler_swimlane_action_scheduler_index_path(ali: ali.object_key, action: 1) do
                   %i.fa.fa-dollar
                   Assign Funds
             %li.divider
@@ -31,27 +31,40 @@
     - if ali.assets.empty?
       %p There are no assets associated with this ALI
     - else
+      - funds_left = ali.total_funds
       - ali.assets.each do |asset|
-        = render :partial => 'asset_detail', :locals => {:year => year, :asset => asset}
+        - cost = get_swimlane_activity_cost(asset, year)
+        - funds_left -= cost
+        = render :partial => 'asset_detail', :locals => {:year => year, :asset => asset, :cost => cost, :color => funds_left > 0 ? '#4CBB17' : '#4e95f4'}
 
   .panel-footer
     %table.table.table-condensed
       %tbody
-        - [].each do |fp|
+        - ali.funding_requests.each do |f|
           %tr
-            %td.left= fp.funding_source
-            %td.right= format_as_currency(fp.amount)
+            %td.left= f.federal_funding_line_item
+            %td.right= format_as_currency(f.federal_amount)
             %td.right
-              = link_to scheduler_ali_action_scheduler_index_path(:active_year => @active_year, :ali => ali.object_key, :funding_plan => fp.object_key, :invoke => SchedulerController::ALI_REMOVE_FUND_ACTION),
+              = link_to '#', {:class => 'btn btn-xs btn-info', :style => 'margin-left: 1px; margin-right: 1px;'} do
+                %i.fa.fa-edit
+              = link_to scheduler_ali_action_scheduler_index_path(:active_year => @active_year, :ali => ali.object_key, :funding_plan => f.object_key, :invoke => SchedulerController::ALI_REMOVE_FUND_ACTION),
                 :remote => :true, :title => 'Remove this funding item', :data => {:confirm => "Are you sure you want to remove this fund? The action can't be undone."},
-                :class => 'btn btn-xs btn-warning'  do
+                :class => 'btn btn-xs btn-warning', :style => 'margin-left: 1px; margin-right: 1px;'  do
                 %i.fa.fa-trash-o
+
+          %tr
+            %td.left= f.state_funding_line_item
+            %td.right= format_as_currency(f.state_amount)
+
+          %tr
+            %td.left= f.local_funding_line_item
+            %td.right= format_as_currency(f.local_amount)
+            %td.right= format_as_currency(f.total_amount)
+
       %tfoot
         %tr
-          %td.left Total Funding
+          %td.left{colspan: 2} Total Funding
           %td.right= format_as_currency(ali.total_funds)
-          %td
         %tr
-          %td.left Required
+          %td.left{colspan: 2} Required
           %td.right= format_as_currency(ali.funds_required)
-          %td

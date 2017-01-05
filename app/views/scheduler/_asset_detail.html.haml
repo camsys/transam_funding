@@ -1,7 +1,7 @@
 :ruby
   ast = Asset.get_typed_asset(asset)
 
-.well.well-sm.swimlane-draggable{data: {:object_type => 'asset', :object_key => ast.object_key, :fy => year}}
+.well.well-sm.swimlane-draggable{data: {:object_type => 'asset', :object_key => ast.object_key, :fy => year}, style: "background-color: #{color}!important;"}
   .row
     .col-md-3
       %h3{:style => 'margin-top: -2.5px;'}
@@ -18,7 +18,7 @@
   .row
     .col-md-3
       %h4.bg-default.text-left
-        = get_swimlane_activity_cost(ast, year)
+        = format_as_currency(cost || get_swimlane_activity_cost(ast, year))
 
     .col-md-8
       %p.text-primary{:style => 'margin-bottom: 0px;'}
