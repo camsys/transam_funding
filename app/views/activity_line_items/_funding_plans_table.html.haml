@@ -43,9 +43,14 @@
 
           %td.right= format_as_currency(f.total_amount)
 
-          %td.center
-            = link_to '#', :method => :delete, :data => {:confirm => "Are you sure? The action cannot be undone!"}  do
-              %i.fa.fa-times-circle.action-icon.text-danger
+          %td.right
+            = link_to scheduler_ali_action_scheduler_index_path(:active_year => @active_year, :ali => ali.object_key, :funding_request => f.object_key, :invoke => SchedulerController::ALI_EDIT_FUND_ACTION),
+                :remote => :true, :title => 'Edit this funding item', :class => 'btn btn-xs btn-info', :style => 'margin-left: 1px; margin-right: 1px;' do
+              %i.fa.fa-edit
+            = link_to scheduler_ali_action_scheduler_index_path(:active_year => @active_year, :ali => ali.object_key, :funding_request => f.object_key, :invoke => SchedulerController::ALI_REMOVE_FUND_ACTION),
+                :remote => :true, :title => 'Remove this funding item', :data => {:confirm => "Are you sure you want to remove this fund? The action can't be undone."},
+                :class => 'btn btn-xs btn-warning', :style => 'margin-left: 1px; margin-right: 1px;'  do
+              %i.fa.fa-trash-o
 
     %tfoot
       %tr
@@ -62,3 +67,5 @@
         %td.right= format_as_percentage(@activity_line_item.local_percentage, 3)
 
         %td.right= format_as_currency(@activity_line_item.total_funds)
+
+        %td

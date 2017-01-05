@@ -1,3 +1,5 @@
+- action ||= 1
+
 .panel.swimlane{:class => year == @active_year ? 'panel-info' : 'panel-default'}
   .panel-heading.swimlane-heading{year == @active_year ? {:data => {:fy => year, :action_path => scheduler_swimlane_action_scheduler_index_path(org_id: @org_id)}} : {} }
     %span.badge.pull-right{id: "year_#{year}_swimlane_badge"}= alis.count
@@ -7,4 +9,4 @@
 
   .panel-body.swimlane-container{:id => "year_#{year}_swimlane"}
     - alis.each do |a|
-      = render :partial => 'swimlane_detail', :locals => {:ali => a, :year => year}
+      = render :partial => 'swimlane_detail', :locals => {:ali => a, :year => year, :action => action}

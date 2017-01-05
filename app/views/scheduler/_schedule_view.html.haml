@@ -2,20 +2,26 @@
   .col-md-12
     = render :partial => 'capital_projects/capital_plan_summary', :locals => {:highlight_years => [@active_year]}
 
-.row
-  .col-md-12
-    #swimlanes
-      = render 'swimlanes'
+  .row
+    .col-md-12
+      #swimlanes
+        .row
+          .col-md-4
+            = render :partial => 'swimlane', :locals => {:year => @year_1, :alis => @year_1_alis}
 
-.modal.fade#form-modal{:tabindex => -1, :role => 'dialog', :aria => {:hidden => true}}
+          - if @activity_line_item
+            .col-md-8
+              = render :partial => 'activity_line_items/funding_plans'
 
-#ali-add-funding-plan-modal.modal.fade
-  = render partial: 'shared/modal_loading_placeholder', locals: {title: 'Add Funds...'}
+  .modal.fade#form-modal{:tabindex => -1, :role => 'dialog', :aria => {:hidden => true}}
 
-#processing-modal.modal.fade
-  .modal-dialog
-    .modal-content
-      .modal-header
-        %h4.modal-title Processing...
-      .modal-body
-        = render partial: 'shared/running_process', locals: {message: "Updating SOGR projects. This process might take a while.", style: ''}
+  #ali-add-funding-plan-modal.modal.fade
+    = render partial: 'shared/modal_loading_placeholder', locals: {title: 'Add Funds...'}
+
+  #processing-modal.modal.fade
+    .modal-dialog
+      .modal-content
+        .modal-header
+          %h4.modal-title Processing...
+        .modal-body
+          = render partial: 'shared/running_process', locals: {message: "Updating SOGR projects. This process might take a while.", style: ''}

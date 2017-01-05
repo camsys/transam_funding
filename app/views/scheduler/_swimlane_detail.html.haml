@@ -1,10 +1,12 @@
+- action ||= 1
+
 .panel.panel-primary.swimlane-draggable{id: "#{ali.object_key}_ali_panel",
   data: {object_type: 'ali', object_key: ali.object_key, fy: year}}
   .panel-heading.ali-heading
     %span.pull-right.ali_cost
       = format_as_currency(ali.cost)
       %span.badge= ali.assets.count
-      - if can? :update, ali
+      - if (can? :update, ali) && action == 1
         .btn-group{:style => 'margin-left: 5px;'}
           %button.btn.btn-default.btn-xs.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
             %i.fa.fa-edit
@@ -12,7 +14,7 @@
           %ul.dropdown-menu{:role => "menu"}
             - if year == @active_year
               %li
-                = link_to scheduler_swimlane_action_scheduler_index_path(ali: ali.object_key, action: 1) do
+                = link_to scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, ali: ali.object_key) do
                   %i.fa.fa-dollar
                   Assign Funds
             %li.divider
@@ -44,13 +46,6 @@
           %tr
             %td.left= f.federal_funding_line_item
             %td.right= format_as_currency(f.federal_amount)
-            %td.right
-              = link_to '#', {:class => 'btn btn-xs btn-info', :style => 'margin-left: 1px; margin-right: 1px;'} do
-                %i.fa.fa-edit
-              = link_to scheduler_ali_action_scheduler_index_path(:active_year => @active_year, :ali => ali.object_key, :funding_plan => f.object_key, :invoke => SchedulerController::ALI_REMOVE_FUND_ACTION),
-                :remote => :true, :title => 'Remove this funding item', :data => {:confirm => "Are you sure you want to remove this fund? The action can't be undone."},
-                :class => 'btn btn-xs btn-warning', :style => 'margin-left: 1px; margin-right: 1px;'  do
-                %i.fa.fa-trash-o
 
           %tr
             %td.left= f.state_funding_line_item

@@ -1,0 +1,7 @@
+- if @org_id
+  $('#plan-summary').html("#{escape_javascript(render :partial => 'capital_projects/capital_plan_summary', :locals => {:highlight_years => [@active_year]})}");
+  $('#swimlanes').html("#{escape_javascript(render 'swimlanes')}");
+- else
+  $('#funding_requests').html("#{escape_javascript(render 'activity_line_items/funding_plans')}");
+
+

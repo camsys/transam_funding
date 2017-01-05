@@ -19,7 +19,8 @@ class SchedulerController < OrganizationAwareController
   ALI_UPDATE_COST_ACTION  = '2'
   ALI_REMOVE_ACTION       = '3'
   ALI_ADD_FUND_ACTION     = '4'
-  ALI_REMOVE_FUND_ACTION  = '5'
+  ALI_EDIT_FUND_ACTION    = '5'
+  ALI_REMOVE_FUND_ACTION  = '6'
 
   ACTIONS = [
     ["Replace", REPLACE_ACTION],
@@ -185,6 +186,7 @@ class SchedulerController < OrganizationAwareController
   def scheduler_ali_action
 
     @activity_line_item = ActivityLineItem.find_by_object_key(params[:ali])
+    @project = @activity_line_item.capital_project
     action = params[:invoke]
 
     case action
@@ -203,29 +205,25 @@ class SchedulerController < OrganizationAwareController
       end
 
     when ALI_REMOVE_ACTION
-      @project = @activity_line_item.capital_project
       @activity_line_item.destroy
       @msg = "The ALI was successfully removed from project #{@project.project_number}."
 
     when ALI_ADD_FUND_ACTION
-      funding_source = FundingSource.find(params[:source])
-      amount = params[:amount].to_i
 
       # Add a funding plan to this ALI
-      @activity_line_item.funding_plans.create({:funding_source => funding_source, :amount => amount})
+      @funding_request = FundingRequest.new
+
       @msg = "The ALI was successfully updated."
 
-    when ALI_REMOVE_FUND_ACTION
-      fp = FundingPlan.find_by_object_key(params[:funding_plan])
-      @activity_line_item.funding_plans.delete fp
+
+    when ALI_EDIT_FUND_ACTION
+      @funding_request = FundingRequest.find_by(object_key: params[:funding_request])
+      when ALI_REMOVE_FUND_ACTION
       @msg = "The ALI was successfully updated."
     end
 
     # Get the ALIs for each year
-    @year_1_alis = get_alis(@year_1)
-    @year_2_alis = get_alis(@year_2)
-    @year_3_alis = get_alis(@year_3)
-
+    @year_1_alis = get_alis(@year_1) if @year_1
   end
 
   # General purpose action for mamipulating ALIs in the plan. This action
@@ -235,10 +233,9 @@ class SchedulerController < OrganizationAwareController
 
     @activity_line_item = ActivityLineItem.find_by(object_key: ali)
     @project = @activity_line_item.capital_project if @activity_line_item
-    @funding_request = FundingRequest.new
 
     # Get the ALIs for each year
-    @year_1_alis = get_alis(@year_1)
+    @year_1_alis = get_alis(@year_1) if @year_1
 
   end
 
@@ -247,7 +244,11 @@ class SchedulerController < OrganizationAwareController
   # Sets the view variables that control the filters. called before each action is invoked
   def set_view_vars
 
-    @org_id = params[:org_id].blank? ? nil : params[:org_id].to_i
+    if params[:org_id].blank?
+      return
+    else
+      @org_id = params[:org_id].to_i
+    end
 
     unless params[:active_year].blank?
       @active_year = params[:active_year].to_i
