@@ -1,0 +1,7 @@
+= render 'schedule_update'
+
+$('.transam-tooltip').tooltip();
+$('#spinner').hide();
+$(".modal-backdrop").remove();
+- if @message.present?
+  transam.show_flash_message("#{@message}", "#{@alert_class}");

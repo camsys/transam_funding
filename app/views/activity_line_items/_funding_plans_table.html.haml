@@ -44,10 +44,10 @@
           %td.right= format_as_currency(f.total_amount)
 
           %td.right
-            = link_to scheduler_ali_action_scheduler_index_path(:active_year => @active_year, :ali => ali.object_key, :funding_request => f.object_key, :invoke => SchedulerController::ALI_EDIT_FUND_ACTION),
+            = link_to scheduler_ali_action_scheduler_index_path(:org_id => @org_id, :active_year => @active_year, :ali => ali.object_key, :funding_request => f.object_key, :invoke => SchedulerController::ALI_EDIT_FUND_ACTION),
                 :remote => :true, :title => 'Edit this funding item', :class => 'btn btn-xs btn-info', :style => 'margin-left: 1px; margin-right: 1px;' do
               %i.fa.fa-edit
-            = link_to scheduler_ali_action_scheduler_index_path(:active_year => @active_year, :ali => ali.object_key, :funding_request => f.object_key, :invoke => SchedulerController::ALI_REMOVE_FUND_ACTION),
+            = link_to scheduler_ali_action_scheduler_index_path(:org_id => @org_id, :active_year => @active_year, :ali => ali.object_key, :funding_request => f.object_key, :invoke => SchedulerController::ALI_REMOVE_FUND_ACTION),
                 :remote => :true, :title => 'Remove this funding item', :data => {:confirm => "Are you sure you want to remove this fund? The action can't be undone."},
                 :class => 'btn btn-xs btn-warning', :style => 'margin-left: 1px; margin-right: 1px;'  do
               %i.fa.fa-trash-o

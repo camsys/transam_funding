@@ -187,14 +187,52 @@ class SchedulerController < OrganizationAwareController
 
     @activity_line_item = ActivityLineItem.find_by_object_key(params[:ali])
     @project = @activity_line_item.capital_project
-    action = params[:invoke]
+    @action = params[:invoke]
 
-    case action
+    case @action
     when ALI_MOVE_YEAR_ACTION, 'move_ali_to_fiscal_year'
-      p = params[:scheduler_action_proxy]
-      new_fy_year = p[:fy_year]
-      CapitalProjectBuilder.new.move_ali_to_planning_year(@activity_line_item, new_fy_year)
-      @msg = "The ALI was successfully moved to #{new_fy_year}."
+
+      @fy_year = params[:year].to_i
+      if @activity_line_item.present? and @fy_year > 0
+        assets = @activity_line_item.assets.where(object_key: params[:targets].split(','))
+
+        if assets.count > 25
+          Delayed::Job.enqueue MoveAssetYearJob.new(@activity_line_item, @fy_year, params[:targets], current_user, params[:early_replacement_reason]), :priority => 0
+
+          notify_user :notice, "Assets are being moved. You will be notified when the process is complete."
+        else
+
+          service = CapitalProjectBuilder.new
+          assets_count = assets.count
+          Rails.logger.debug "Found #{assets_count} assets to process"
+          assets.each do |a|
+            # Replace or Rehab?
+            if @activity_line_item.rehabilitation_ali?
+              a.scheduled_rehabilitation_year = @fy_year
+            else
+              a.scheduled_replacement_year = @fy_year
+              a.update_early_replacement_reason(params[:early_replacement_reason])
+            end
+
+            a.save(:validate => false)
+            a.reload
+            service.update_asset_schedule(a)
+            a.reload
+          end
+
+          # update the original ALI's estimated cost for its assets
+          updated_ali = ActivityLineItem.find_by(id: @activity_line_item.id)
+          if updated_ali.present?
+            updated_ali.update_estimated_cost
+            Rails.logger.debug("NEW COST::: #{updated_ali.estimated_cost}")
+          end
+
+          notify_user :notice, "Moved #{assets_count} assets to #{fiscal_year(@fy_year)}"
+        end
+
+      else
+        notify_user :alert,  "Missing ALI or fy_year. Can't perform update."
+      end
 
     when ALI_UPDATE_COST_ACTION
       @activity_line_item.anticipated_cost = params[:activity_line_item][:anticipated_cost]

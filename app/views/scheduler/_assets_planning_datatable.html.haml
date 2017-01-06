@@ -1,0 +1,330 @@
+:ruby
+  table_dom_id = SecureRandom.hex
+  popup ||= '0'
+  move_assets_action ||= '0'
+
+:css
+  .modal-lg {
+    width: 80%;
+  }
+  #form-modal .tooltip .tooltip-arrow {
+    display: none !important;
+  }
+
+.table-responsive
+  %table.table.table-condensed.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
+    :url => assets_capital_project_activity_line_item_path(ali.capital_project, ali, {format: :json}),
+    :card_view => "false",
+    :pagination => 'true',
+    :side_pagination => 'server',
+    :show_pagination_switch => 'true',
+    :page_number => '1',
+    :page_list => "[10, 20, 50, 100, 200]",
+    :page_size => current_user.num_table_rows,
+    :search => 'false',
+    :single_select => 'false',
+    :show_columns => 'false',
+    :toolbar => "#asset-actions",
+    :row_style => 'row_style',
+    :click_to_select => 'false',
+    :show_export => 'false',
+    :id_field => 'object_key',
+    :state_save => 'true',
+    :state_save_id_table => "assets_id",
+    :state_save_expire => "1y",
+    :classes => 'table-no-bordered'}}
+    %thead
+      %tr
+        - if move_assets_action == '1'
+          %th.bs-checkbox{:data => {:checkbox => 'true', :field => 'state'}}
+        %th.center{:data => {:field => 'object_key', :visible => 'false'}} Object
+        %th.left{data: {field: 'asset_tag', :sortable => 'true'}} Tag
+        %th.left{data: {field: 'asset_subtype_id', :sortable => 'true'}} Asset Subtype
+        %th.center{data: {field: 'fuel_type', :sortable => 'true'}} Fuel
+        %th.left{data: {field: 'description', :sortable => 'true'}} Description
+
+
+        %th.center{data: {field: 'age', :sortable => 'true'}} Age
+        %th.center{data: {field: 'in_backlog', :sortable => 'true', formatter: 'boolean_formatter'}} Bcklg
+        %th.right{data: {field: 'reported_mileage', :sortable => 'true', formatter: 'integer_formatter'}} Mileage
+        %th.center{data: {field: 'reported_condition_rating', :sortable => 'true'}} Cond.
+
+        %th.center{data: {field: 'policy_replacement_fiscal_year', :sortable => 'true', :sort_name => 'policy_replacement_year'}} Policy FY
+        %th.right{data: {field: 'purchase_cost', :sortable => 'true', formatter: 'currency_formatter'}} Orig. Cost
+        %th.right{data: {field: 'book_value', :sortable => 'true', formatter: 'currency_formatter'}} Book Val.
+        %th.right{data: {field: 'scheduled_cost', :sortable => 'true', :sort_name => 'scheduled_replacement_cost', formatter: 'currency_formatter'}} Sch. Cost
+        - if popup == '1'
+          %th.center{data: {formatter: 'popup_formatter'}}
+        - if ali.has_early_replacement_assets?
+          %th.center{data: {field: 'is_early_replacement', formatter: 'early_replacement_flag_formatter'}}
+        %th.center{data: {field: 'replace_with_subtype', formatter: 'replace_with_subtype_formatter'}}
+        %th.center{data: {field: 'replace_with_fuel_type', formatter: 'replace_with_fuel_type_formatter'}}
+
+      %tfoot
+        %tr
+          - if move_assets_action == '1'
+            %td{:colspan => 10}= "Totals for #{ali.assets.count} assets"
+          - else
+            %td{:colspan => 9}= "Totals for #{ali.assets.count} assets"
+          %td.right= format_as_currency(ali.assets.sum(:purchase_cost))
+          %td.right= format_as_currency(ali.assets.sum(:book_value))
+          %td.right= format_as_currency(ali.rehabilitation_ali? ? ali.assets.sum(:scheduled_rehabilitation_cost) : ali.assets.sum(:scheduled_replacement_cost))
+          - if popup == '1'
+            %td
+          - if ali.has_early_replacement_assets?
+            %td
+          %td
+          %td
+
+:javascript
+
+  var selected_assets = [];
+  var path = '#{inventory_path("x")}';
+
+  function row_style(row, index) {
+    return {
+      classes: 'action-path'
+    };
+  };
+
+  $(document).ready(function() {
+
+    // Disable the package actions
+    enable_disable_asset_actions();
+
+    $("##{table_dom_id}").bootstrapTable();
+
+    $('#' + '#{table_dom_id}').on('load-success.bs.table', function () {
+
+    });
+
+    $('#' + '#{table_dom_id}').on('post-body.bs.table', function () {
+      $('.transam-popover').popover({
+        trigger: 'hover',
+        container: 'body',
+        placement: 'left',
+        content: function(){
+          var div_id =  $(this).attr('id');
+          return details_in_popup($(this).attr('href'), div_id);
+        }
+      });
+      $('.transam-tooltip').tooltip();
+
+      var funds_left = parseInt('#{ali.total_funds}');
+      $.each( $('#' + '#{table_dom_id}').bootstrapTable('getData') , function( i, row ) {
+        cost = parseInt(row['scheduled_cost']);
+        funds_left = funds_left - cost;
+
+        if (funds_left > 0) {
+          $("tr[data-index='" + i + "']").css({"background-color": "#ccffcc"});
+        }
+      });
+    });
+
+    function details_in_popup(link, div_id){
+      $.ajax({
+        url: "#{get_asset_summary_capital_project_activity_line_item_path(ali.capital_project, ali)}",
+        type: 'GET',
+        dataType: 'json',
+        data: { asset_object_key : div_id },
+        complete: function(response, status) {
+            $('#popup-'+div_id).html(response.responseText);
+        }
+      });
+      return '<div id="popup-'+ div_id +'">Loading...</div>';
+    }
+
+
+    // get the policy years of selected assets
+    function get_asset_policy_years() {
+      var years = [];
+
+      var selected = $("##{table_dom_id}").bootstrapTable('getSelections');
+      //console.log(selected);
+      for (i = 0; i < selected.length; i++) {
+        var year = selected[i].policy_replacement_year;
+        if($.isNumeric(year) && years.indexOf(year) < 0) {
+          years.push(year);
+        }
+      }
+      //console.log(years);
+      return years;
+    }
+
+    // check if has early_replacement asset by comparing move_year to asset policy replacement year
+    function is_early_replacement(move_year) {
+      var is_early = false;
+      if($.isNumeric(move_year)) {
+        var years = get_asset_policy_years();
+        for(var i=0, year_count=years.length; i<year_count; i++) {
+          var policy_year = years[i];
+          if(policy_year > move_year) {
+            is_early = true;
+            break;
+          }
+        }
+      }
+      return is_early;
+    }
+
+    // Add a handler for the move action which appends the selected assets to
+    // the href
+
+    var fiscal_years = #{@fiscal_years.to_h.invert.to_json} || {};
+    function getFiscalYear(year) {
+      return fiscal_years[year] || year;
+    }
+
+    $(".move-assets-action").on('click', function(e) {
+      var href = $(this).attr('href');
+      href += ('&targets=' + selected_assets.join(','));
+      
+      
+      var move_year = $(this).data('year');
+
+      $(this).attr('href', href);
+      //console.log($(this).attr('href'));
+      //$('#form-modal').modal('hide');
+      //$('<div class="modal-backdrop"></div>').appendTo(document.body).hide().fadeIn();
+      $("#spinner").show();
+      return true;
+    });
+  });
+  
+  $('#deselect-all-assets-button').on('click', function(){
+    selected_assets = [];
+    enable_disable_asset_actions();
+  });
+
+  $("##{table_dom_id}").on('click-row.bs.table', function (e, row, $element) {
+    var url = path.replace("x", row['object_key']);
+    document.location.href = url;
+  }).on('check.bs.table', function(e, row) {
+    update_selected();
+  }).on('uncheck.bs.table', function(e, row) {
+    update_selected();
+  }).on('check-all.bs.table', function(e, row) {
+    update_selected();
+  }).on('uncheck-all.bs.table', function(e, row) {
+    update_selected();
+  }).on('post-body.bs.table', function(e, row) {
+    var i, checkbox, $table = $("##{table_dom_id}");
+    //update the checkbox selections after the table body is rendered
+    for(i=0; i<selected_assets.length; i++){
+      checkbox = $table.find('input[type=checkbox][value=' +selected_assets[i]+ ']');
+      checkbox.length && checkbox.prop('checked', true) && checkbox.parents('tr').addClass('selected');
+    }
+    
+  });
+
+  // Enables or disables the package actions depending on how many are selected
+  function enable_disable_asset_actions() {
+    var $checkbox;
+    if (selected_assets.length > 0) {
+      $('.move-assets-button').removeClass('disabled');
+      if (selected_assets.length == 1) {
+        $('#button-text').html("Move 1 asset to fiscal year");
+      } else {
+        $('#button-text').html("Move " + selected_assets.length + " assets to fiscal year");
+      }
+    } else {
+      $('.move-assets-button').addClass('disabled');
+      $('#button-text').html("Move selected to fiscal year");
+      $checkbox = $('#' + '#{table_dom_id} input[type=checkbox]')
+      $checkbox.prop('checked', false) && $checkbox.parents('tr').removeClass('selected');
+    }
+  };
+
+  // Updates the selected rows in the table
+  function update_selected() {
+    var $table, selected, notSelected, removeKey, i;
+    $table = $("##{table_dom_id}");
+    selected = $table.bootstrapTable('getSelections');
+    notSelected = $table.find('input:unchecked').map(function(a,b){ return b.value; })
+    //console.log(selected);
+    // remove unselected from the selected_assets
+    for(i = 0; i < notSelected.length; i++){
+      removeKey = selected_assets.indexOf( notSelected[i] );
+      if(removeKey > -1){
+        selected_assets.splice(removeKey, 1);
+      }
+    }
+    // add selected to selected_assets (if not already there)
+    for (i = 0; i < selected.length; i++) {
+      var selected_key = selected[i].object_key;
+      if(selected_assets.indexOf(selected_key) < 0) {
+        selected_assets.push(selected_key);
+      }
+    }
+    //console.log(selected_assets);
+    enable_disable_asset_actions();
+  };
+
+  // Removes an order identified by its object key from the set of orders selected
+  function remove_from_selected(object_key) {
+    var asset_index = selected_assets.indexOf(object_key);
+    if(asset_index >= 0) {
+      selected_assets.splice(asset_index, 1);
+    }
+    enable_disable_asset_actions();
+  };
+
+
+  var formatMoney = function(n, c, d, t) {
+    var c = isNaN(c = Math.abs(c)) ? 0 : c,
+    d = d == undefined ? "." : d,
+    t = t == undefined ? "," : t,
+    s = n < 0 ? "-" : "",
+    i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
+    j = (j = i.length) > 3 ? j % 3 : 0;
+    return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+  }
+
+  function boolean_formatter(value) {
+    if (value) {
+      // add hidden div for exporting
+      return '<i class="fa fa-check"></i><div style = "visibility: hidden;">Yes</div>';
+    } else {
+      return '<div style = "visibility: hidden;">No</div>';
+    }
+  }
+
+  function integer_formatter(value) {
+    if (value) {
+      return format("###,##0.", value);
+    } else {
+      return value;
+    }
+  };
+
+  function currency_formatter(value) {
+    return "$" + formatMoney(value);
+  }
+
+  function popup_formatter(value, data) {
+    return '<a class="transam-popover" id="' + data.object_key + '" data-container="body" data-content="" data-html="true" data-placement="left" data-title="' + data.name + '" data-toggle="popover" tabindex="0"><i class="fa fa-info-circle fa-1-25x text-info"></i></a>';
+  }
+
+  function early_replacement_flag_formatter(value, data) {
+    if((value) && (data)) {
+      return '<a class="transam-popover" data-placement="left" data-toggle="popover" tabindex="0" data-html="true" data-container="body" title="Early Replacement" data-content="<p>' + data.formatted_early_replacement_reason + '</p>"><i class="fa fa-exclamation-triangle" style="color: red !important;"></i></a>';
+    } else {
+      return "";
+    }
+  }
+
+  function replace_with_subtype_formatter(value, data) {
+    if((value) && (value != data.asset_subtype_id) && (data)) {
+      return '<a class="transam-tooltip" data-placement="top" data-title="Replaced Asset Subtype" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-retweet" style="color: green !important;"></i></a>';
+    } else {
+      return "";
+    }
+  }
+
+  function replace_with_fuel_type_formatter(value, data) {
+    if((value) && (value != data.fuel_type) && (data)) {
+      return '<a class="transam-tooltip" data-placement="top" data-title="Replaced Fuel Type" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-car" style="color: orange !important;"></i></a>';
+    } else {
+      return "";
+    }
+  }

@@ -1,0 +1,9 @@
+.row
+  .col-md-4
+    = render :partial => 'swimlane', :locals => {:year => @year_1, :alis => @year_1_alis}
+
+  - if @activity_line_item
+    .col-md-8
+      = render :partial => 'activity_line_items/funding_plans'
+
+      = render :partial => 'assets_modal'

@@ -1,4 +1,4 @@
-- action ||= 1
+- action ||= 0
 
 .panel.panel-primary.swimlane-draggable{id: "#{ali.object_key}_ali_panel",
   data: {object_type: 'ali', object_key: ali.object_key, fy: year}}
@@ -6,7 +6,7 @@
     %span.pull-right.ali_cost
       = format_as_currency(ali.cost)
       %span.badge= ali.assets.count
-      - if (can? :update, ali) && action == 1
+      - if can? :update, ali
         .btn-group{:style => 'margin-left: 5px;'}
           %button.btn.btn-default.btn-xs.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
             %i.fa.fa-edit
