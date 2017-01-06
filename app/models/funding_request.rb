@@ -48,6 +48,14 @@ class FundingRequest < ActiveRecord::Base
   validates :created_by_id,                     :presence => :true
   validates :updated_by_id,                     :presence => :true
 
+  #-----------------------------------------------------------------------------
+  # Attributes
+  #-----------------------------------------------------------------------------
+
+  attr_accessor   :federal_percent
+  attr_accessor   :state_percent
+  attr_accessor   :local_percent
+
   #------------------------------------------------------------------------------
   # Scopes
   #------------------------------------------------------------------------------
@@ -60,7 +68,11 @@ class FundingRequest < ActiveRecord::Base
     :activity_line_item_id,
     :federal_amount,
     :state_amount,
-    :local_amount
+    :local_amount,
+    :funding_request_amount,
+    :federal_percent,
+    :state_percent,
+    :local_percent
   ]
 
   #------------------------------------------------------------------------------
@@ -84,22 +96,22 @@ class FundingRequest < ActiveRecord::Base
   end
 
   def federal_percentage
-    if total_amount > 0
-      pcnt = federal_amount / total_amount.to_f * 100.0
+    if funding_request_amount > 0
+      pcnt = federal_amount / funding_request_amount.to_f * 100.0
     else
       pcnt = 0.0
     end
   end
   def state_percentage
-    if total_amount > 0
-      pcnt = state_amount / total_amount.to_f * 100.0
+    if funding_request_amount > 0
+      pcnt = state_amount / funding_request_amount.to_f * 100.0
     else
       pcnt = 0.0
     end
   end
   def local_percentage
-    if total_amount > 0
-      pcnt = local_amount / total_amount.to_f * 100.0
+    if funding_request_amount > 0
+      pcnt = local_amount / funding_request_amount.to_f * 100.0
     else
       pcnt = 0.0
     end
@@ -118,9 +130,13 @@ class FundingRequest < ActiveRecord::Base
 
   # Set resonable defaults for a new capital project
   def set_defaults
-    self.federal_amount ||= 0
-    self.state_amount ||= 0
-    self.local_amount ||= 0
+    self.funding_request_amount ||= 0
+    self.federal_amount         ||= 0
+    self.state_amount           ||= 0
+    self.local_amount           ||= 0
+    self.federal_percent        = federal_percentage
+    self.state_percent          = state_percentage
+    self.local_percent          = local_percentage
   end
 
 end

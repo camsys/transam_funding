@@ -8,8 +8,26 @@
               :wrapper => :horizontal_form,
               :wrapper_mappings => {:check_boxes => :horizontal_radio_and_checkboxes, :radio_buttons => :horizontal_radio_and_checkboxes, :file => :horizontal_file_input, :boolean => :horizontal_boolean}) do |f|
         .row
-          .col-xs-9
+          .col-xs-5
+            = f.input :amount, :wrapper=> :horizontal_prepend, :label => 'Line Amount' do
+              %span.input-group-addon
+                %i.fa.fa-usd
+              = f.input_field :funding_request_amount, :class => "form-control", :digits => true, :min => 0, :max => 10000000
+
+          .col-xs-2
+          .col-xs-2
+            %i.fa.fa-unlock-alt.fa-2x
+            -#%i.fa.fa-lock.fa-2x
+          .col-xs-3
+        .row
+          .col-xs-7
             = f.input :federal_funding_line_item_id, :collection => FundingBucket.federal.where(owner_id: @organization_list, fiscal_year: @activity_line_item.fy_year), :label => 'Federal Funds'
+
+          .col-xs-2
+            = f.input :amount, :wrapper=> :horizontal_prepend, :label => false do
+              %span.input-group-addon
+                %i.fa.fa-percent
+              = f.input_field :federal_percent, :class => "form-control", :digits => true, :min => 0, :max => 100
 
           .col-xs-3
             = f.input :amount, :wrapper=> :horizontal_prepend, :label => false do
@@ -18,8 +36,14 @@
               = f.input_field :federal_amount, :class => "form-control", :digits => true, :min => 0, :max => 10000000
 
         .row
-          .col-xs-9
+          .col-xs-7
             = f.input :state_funding_line_item_id, :collection => FundingBucket.state.where(owner_id: @organization_list, fiscal_year: @activity_line_item.fy_year), :label => 'State Funds'
+
+          .col-xs-2
+            = f.input :amount, :wrapper=> :horizontal_prepend, :label => false do
+              %span.input-group-addon
+                %i.fa.fa-percent
+              = f.input_field :state_percent, :class => "form-control", :digits => true, :min => 0, :max => 100
 
           .col-xs-3
             = f.input :amount, :wrapper=> :horizontal_prepend, :label => false do
@@ -28,14 +52,27 @@
               = f.input_field :state_amount, :class => "form-control", :digits => true, :min => 0, :max => 10000000
 
         .row
-          .col-xs-9
+          .col-xs-7
             = f.input :local_funding_line_item_id, :collection => FundingBucket.local.where(owner_id: @organization_list, fiscal_year: @activity_line_item.fy_year), :label => 'Local Funds'
+
+          .col-xs-2
+            = f.input :amount, :wrapper=> :horizontal_prepend, :label => false do
+              %span.input-group-addon
+                %i.fa.fa-percent
+              = f.input_field :local_percent, :class => "form-control", :digits => true, :min => 0, :max => 100
 
           .col-xs-3
             = f.input :amount, :wrapper=> :horizontal_prepend, :label => false do
               %span.input-group-addon
                 %i.fa.fa-usd
               = f.input_field :local_amount, :class => "form-control", :number => true, :min => 0
+        .row
+          .col-xs-8
+
+          .col-xs-1{:id => "total_amount_label"}
+            Total:
+          .col-xs-3{:id => "total_amount"}
+            $0
         .row
           .col-xs-3
             .col-xs-offset-3.col-xs-3
@@ -44,6 +81,87 @@
     .col-md-4#federal_fund_details
 
 :javascript
+  var line_item_total = parseFloat($('#funding_request_funding_request_amount').val());
+
+
+  function get_percent_from_cash_entered(cash_value)
+  {
+    var percent = (cash_value / line_item_total) * 100;
+    return percent;
+  }
+  function get_value_from_percent_funding(percent_funding){
+    var cash_value = line_item_total * (percent_funding/100)
+    return cash_value.toFixed(2);
+  }
+
+  function update_federal_percent_from_federal_cash(){
+    var federal_percent = get_percent_from_cash_entered(parseFloat($('#funding_request_federal_amount').val()));
+    $('#funding_request_federal_percent').val(federal_percent);
+  }
+  function update_state_percent_from_state_cash(){
+    var state_percent = get_percent_from_cash_entered(parseFloat($('#funding_request_state_amount').val()));
+    $('#funding_request_state_percent').val(state_percent);
+  }
+  function update_local_percent_from_local_cash(){
+    var local_percent = get_percent_from_cash_entered(parseFloat($('#funding_request_local_amount').val()));
+    $('#funding_request_local_percent').val(local_percent);
+  }
+  function update_federal_cash_from_federal_percent(){
+    var federal_cash = get_value_from_percent_funding(parseFloat($('#funding_request_federal_percent').val()));
+    $('#funding_request_federal_amount').val(federal_cash);
+  }
+  function update_state_cash_from_state_percent(){
+    var state_cash = get_value_from_percent_funding(parseFloat($('#funding_request_state_percent').val()));
+    $('#funding_request_state_amount').val(state_cash);
+  }
+  function update_local_cash_from_local_percent(){
+    var local_cash = get_value_from_percent_funding(parseFloat($('#funding_request_local_percent').val()));
+    $('#funding_request_local_amount').val(local_cash);
+  }
+
+
+  $('#funding_request_funding_request_amount').change(function(){
+    var old_lit = line_item_total;
+    line_item_total = parseFloat($('#funding_request_funding_request_amount').val());
+
+    //if the values have changed we need to update the percent based on what has been filled in for provided cash from buckets
+    if(old_lit != line_item_total)
+    {
+      update_federal_percent_from_federal_cash();
+      update_state_percent_from_state_cash();
+      update_local_percent_from_local_cash();
+    }
+  });
+
+  $('#funding_request_federal_amount').change(function(){
+    update_federal_percent_from_federal_cash();
+  });
+  $('#funding_request_state_amount').change(function(){
+    update_state_percent_from_state_cash();
+  });
+  $('#funding_request_local_amount').change(function(){
+    update_local_percent_from_local_cash();
+  });
+  $('#funding_request_federal_percent').change(function(){
+    update_federal_cash_from_federal_percent();
+  });
+  $('#funding_request_state_percent').change(function(){
+    update_state_cash_from_state_percent();
+  });
+  $('#funding_request_local_percent').change(function(){
+    update_local_cash_from_local_percent();
+  });
+
+  $('#funding_request_federal_funding_line_item_id').change(function(){
+    var federal_request_amount = parseFloat($('#funding_request_federal_amount').val());
+    if(federal_request_amount == 0)
+    {
+      get_bucket_percent($('#funding_request_federal_funding_line_item_id option:selected').text());
+    }else{
+      var percent_complete = get_percent_from_cash_entered(federal_request_amount);
+      $('#funding_request_federal_percent').val(percent_complete);
+    }
+  });
 
   $(document).ready(function() {
       // Disable the submit button
@@ -56,3 +174,26 @@
         $('#federal_fund_details').html("");
       });
   });
+
+
+  function get_bucket_percent(bucket_name)
+  {
+    var percent = 0;
+    var url = '#{find_expected_match_percent_funding_buckets_path}';
+    console.log('The url is __'+url+'__');
+    $.ajax({
+      url: url,
+      data: {bucket_name: bucket_name},
+      success: function(result){
+        console.log('The reulst is __'+result+'__');
+        console.log(result);
+        var cash_value = get_value_from_percent_funding(result);
+        $('#funding_request_federal_percent').val(result);
+        $('#funding_request_federal_amount').val(cash_value);
+
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        alert("We are sorry but something went wrong. " + xhr.status + " " + thrownError);
+      }
+    });
+  }
