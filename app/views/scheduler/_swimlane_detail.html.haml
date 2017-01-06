@@ -14,7 +14,7 @@
           %ul.dropdown-menu{:role => "menu"}
             - if year == @active_year
               %li
-                = link_to scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, ali: ali.object_key) do
+                = link_to scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, start_year: year, ali: ali.object_key) do
                   %i.fa.fa-dollar
                   Assign Funds
             %li.divider
@@ -37,7 +37,7 @@
       - ali.assets.each do |asset|
         - cost = get_swimlane_activity_cost(asset, year)
         - funds_left -= cost
-        = render :partial => 'asset_detail', :locals => {:year => year, :asset => asset, :cost => cost, :color => funds_left > 0 ? '#4CBB17' : '#4e95f4'}
+        = render :partial => 'asset_detail', :locals => {:year => year, :asset => asset, :cost => cost, :color => funds_left > 0 ? '#ccffcc' : '#4e95f4'}
 
   .panel-footer
     %table.table.table-condensed

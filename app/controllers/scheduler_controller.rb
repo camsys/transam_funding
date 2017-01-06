@@ -1,6 +1,6 @@
 class SchedulerController < OrganizationAwareController
 
-  before_filter :set_view_vars,  :only =>    [:index, :loader, :scheduler_action, :scheduler_ali_action, :scheduler_swimlane_action, :edit_asset_in_modal]
+  before_filter :set_view_vars,  :only =>    [:index, :loader, :scheduler_ali_action, :scheduler_swimlane_action]
 
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Scheduler", :scheduler_index_path
@@ -41,6 +41,18 @@ class SchedulerController < OrganizationAwareController
   # Returns the list of assets that are scheduled for replacement/rehabilitation in the given
   # fiscal years.
   def index
+
+    current_index = @years.index(@start_year)
+    if current_index == 0
+      @prev_record_path = "#"
+    else
+      @prev_record_path = scheduler_index_path(:active_year => @active_year, :start_year => @start_year - 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
+    end
+    if current_index == (@total_rows - 1)
+      @next_record_path = "#"
+    else
+      @next_record_path = scheduler_index_path(:active_year => @active_year, :start_year => @start_year + 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
+    end
 
     # Get the ALIs for each year
     @year_1_alis = get_alis(@year_1)
@@ -113,72 +125,6 @@ class SchedulerController < OrganizationAwareController
     @active_year = @ali.capital_project.fy_year
 
     render :partial => 'update_cost_modal'
-  end
-
-  # Render the partial for adding a funding plan to the ALI
-  def add_funding_plan_modal
-
-    @ali = ActivityLineItem.find_by_object_key(params[:ali])
-    service = EligibilityService.new
-    @funding_sources = service.evaluate_organization_funding_sources @organization
-    @active_year = @ali.capital_project.fy_year
-
-    render :partial => 'add_funding_plan_modal_form'
-  end
-
-  # Process a scheduler action. This must be called using a JS action
-  def scheduler_action
-
-    proxy = SchedulerActionProxy.new(params[:scheduler_action_proxy])
-
-    asset = Asset.find_by_object_key(proxy.object_key)
-
-    case proxy.action_id
-    when REPLACE_ACTION
-      Rails.logger.debug "Updating asset #{asset.object_key}. New scheduled replacement year = #{proxy.fy_year.to_i}"
-      asset.scheduled_replacement_year = proxy.fy_year.to_i if proxy.fy_year
-      asset.replacement_reason_type_id = proxy.reason_id.to_i if proxy.reason_id
-      asset.scheduled_replacement_cost = proxy.replace_cost.to_i if proxy.replace_cost
-      asset.scheduled_replace_with_new = proxy.replace_with_new.to_i if proxy.replace_with_new
-      asset.save
-      #notify_user :notice, "#{asset.asset_subtype}: #{asset.asset_tag} #{asset.description} is scheduled for replacement in #{fiscal_year(proxy.year.to_i)}"
-
-    when REHABILITATE_ACTION
-      asset.scheduled_rehabilitation_year = proxy.fy_year.to_i
-      asset.scheduled_replacement_year = asset.scheduled_rehabilitation_year + proxy.extend_eul_years.to_i
-      asset.scheduled_rehabilitation_cost = proxy.rehab_cost.to_i
-      asset.save
-      #notify_user :notice, "#{asset.asset_subtype}: #{asset.asset_tag} #{asset.description} is now scheduled for replacement in #{fiscal_year(proxy.replace_fy_year.to_i)}"
-
-    when REMOVE_FROM_SERVICE_ACTION
-      asset.scheduled_rehabilitation_year = nil
-      asset.scheduled_replacement_year = nil
-      asset.scheduled_replacement_cost = nil
-      asset.scheduled_replace_with_new = nil
-      asset.scheduled_rehabilitation_cost = nil
-      asset.scheduled_disposition_year = proxy.fy_year.to_i
-      asset.save
-
-    when RESET_ACTION
-      asset.scheduled_rehabilitation_year = nil
-      asset.scheduled_replacement_year = asset.policy_replacement_year
-      asset.scheduled_disposition_year = nil
-      asset.scheduled_replacement_cost = nil
-      asset.scheduled_replace_with_new = nil
-      asset.scheduled_rehabilitation_cost = nil
-      asset.save
-
-    end
-
-    # Update the capital projects with this new data
-    builder = CapitalProjectBuilder.new
-    builder.update_asset_schedule(asset)
-
-    # Get the ALIs for each year
-    @year_1_alis = get_alis(@year_1)
-    @year_2_alis = get_alis(@year_2)
-    @year_3_alis = get_alis(@year_3)
-
   end
 
   # General purpose action for mamipulating ALIs in the plan. This action
@@ -267,13 +213,23 @@ class SchedulerController < OrganizationAwareController
   # General purpose action for mamipulating ALIs in the plan. This action
   # must be called as JS
   def scheduler_swimlane_action
-    ali = params[:ali]
-
-    @activity_line_item = ActivityLineItem.find_by(object_key: ali)
-    @project = @activity_line_item.capital_project if @activity_line_item
+    current_index = @years.index(@start_year)
+    if current_index == 0
+      @prev_record_path = "#"
+    else
+      @prev_record_path = scheduler_swimlane_action_scheduler_index_path(:active_year => @active_year, :start_year => @start_year - 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
+    end
+    if current_index == (@total_rows - 1)
+      @next_record_path = "#"
+    else
+      @next_record_path = scheduler_swimlane_action_scheduler_index_path(:active_year => @active_year, :start_year => @start_year + 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
+    end
 
     # Get the ALIs for each year
     @year_1_alis = get_alis(@year_1) if @year_1
+
+    @activity_line_item = ActivityLineItem.find_by(object_key: params[:ali])
+    @project = @activity_line_item.capital_project if @activity_line_item
 
   end
 
@@ -319,16 +275,6 @@ class SchedulerController < OrganizationAwareController
     # get the index of the start year in the array
     current_index = @years.index(@start_year)
     @row_number = current_index + 1
-    if current_index == 0
-      @prev_record_path = "#"
-    else
-      @prev_record_path = scheduler_index_path(:active_year => @active_year, :start_year => @start_year - 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
-    end
-    if current_index == (@total_rows - 1)
-      @next_record_path = "#"
-    else
-      @next_record_path = scheduler_index_path(:active_year => @active_year, :start_year => @start_year + 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
-    end
     @row_pager_remote = true
 
   end
