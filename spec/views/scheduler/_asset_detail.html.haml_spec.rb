@@ -7,7 +7,7 @@ describe "scheduler/_asset_detail.html.haml", :type => :view do
       AssetSubtype.first
     end
     test_asset = create(:buslike_asset, :asset_tag => 'TAG123')
-    render 'scheduler/asset_detail', :asset => test_asset, :year => Date.today.year, :color => 'blue'
+    render 'scheduler/asset_detail', :asset => test_asset, :year => Date.today.year, :color => 'blue', :cost => 100
 
     expect(rendered).to have_content('TAG123')
     expect(rendered).to have_content(test_asset.asset_subtype.to_s.upcase)
