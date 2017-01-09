@@ -1,5 +1,9 @@
 - if @action == SchedulerController::ALI_EDIT_FUND_ACTION
-  $('#funding_requests').html("#{escape_javascript(render 'activity_line_items/funding_plans')}");
+  $('#funding_requests').html("#{raw escape_javascript(render 'activity_line_items/funding_plans')}");
+  update_federal_percent_from_federal_cash();
+  update_state_percent_from_state_cash();
+  update_local_percent_from_local_cash();
+  update_total_funds();
 - else
   $('#schedule_view').html("#{escape_javascript(render 'schedule_view')}");
 

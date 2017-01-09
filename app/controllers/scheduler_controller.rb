@@ -204,8 +204,18 @@ class SchedulerController < OrganizationAwareController
 
     when ALI_EDIT_FUND_ACTION
       @funding_request = FundingRequest.find_by(object_key: params[:funding_request])
-      when ALI_REMOVE_FUND_ACTION
       @msg = "The ALI was successfully updated."
+
+
+    when ALI_REMOVE_FUND_ACTION
+      @funding_request = FundingRequest.find_by(object_key: params[:funding_request])
+      if @funding_request.destroy
+        @msg = "The funding line was successfully deleted."
+      else
+        @msg = "There was an error deleting the funding line."
+      end
+
+      redirect_to :back
     end
 
     # Get the ALIs for each year
