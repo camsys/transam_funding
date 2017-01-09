@@ -94,13 +94,10 @@
     var cash_value = line_item_total * (percent_funding/100)
     return cash_value.toFixed(2);
   }
-  function get_value_from_percent_funding_for_state(percent_funding){
+  function update_cash_value_and_percent_funding_for_state_from_match_percent(percent_funding){
     var federal_cash = parseFloat($('#funding_request_federal_amount').val());
     var cash_value = (line_item_total - federal_cash) * (percent_funding/100)
-  }
-  function get_value_from_percent_funding_for_state(percent_funding){
-    var federal_cash = parseFloat($('#funding_request_federal_amount').val());
-    var cash_value = (line_item_total - federal_cash) * (percent_funding/100)
+    update_state_percent_from_state_cash();
   }
 
 
@@ -163,14 +160,17 @@
   function update_federal_percent_from_federal_cash(){
     var federal_percent = get_percent_from_cash_entered(parseFloat($('#funding_request_federal_amount').val()));
     $('#funding_request_federal_percent').val(federal_percent);
+    update_total_percents();
   }
   function update_state_percent_from_state_cash(){
     var state_percent = get_percent_from_cash_entered(parseFloat($('#funding_request_state_amount').val()));
     $('#funding_request_state_percent').val(state_percent);
+    update_total_percents();
   }
   function update_local_percent_from_local_cash(){
     var local_percent = get_percent_from_cash_entered(parseFloat($('#funding_request_local_amount').val()));
     $('#funding_request_local_percent').val(local_percent);
+    update_total_percents();
   }
   function update_federal_cash_from_federal_percent(){
     var federal_cash = get_value_from_percent_funding(parseFloat($('#funding_request_federal_percent').val()));
@@ -282,17 +282,19 @@
         var cash_value = 0;
         if(source == 'federal')
         {
-          get_value_from_percent_funding(result);
+          cash_value = get_value_from_percent_funding(result);
+          $('#funding_request_federal_percent').val(result);
+          $('#funding_request_federal_amount').val(cash_value);
         }else if(source == 'state')
         {
-          get_value_from_percent_funding_for_state(result);
+          update_cash_value_and_percent_funding_for_state_from_match_percent(result);
         }else if(source == 'local')
         {
           result = 100 - (parseFloat($('#funding_request_federal_percent').val()) + parseFloat($('#funding_request_state_percent').val()));
-          get_value_from_percent_funding(result);
+          cash_value = get_value_from_percent_funding(result);
+          $('#funding_request_local_percent').val(result);
+          $('#funding_request_local_amount').val(cash_value);
         }
-        $('#funding_request_federal_percent').val(result);
-        $('#funding_request_federal_amount').val(cash_value);
         update_totals();
       },
       error: function (xhr, ajaxOptions, thrownError) {
