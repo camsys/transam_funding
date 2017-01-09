@@ -137,8 +137,10 @@ class FundingRequestsController < OrganizationAwareController
     add_breadcrumb "New Funding Request"
 
     @funding_request = FundingRequest.new(form_params)
-    # todo we may need to change this
+    # todo we NEED to change this
     @funding_request.federal_amount = @funding_request.federal_amount.to_i
+    @funding_request.state_amount = @funding_request.state_amount.to_i
+    @funding_request.local_amount = @funding_request.local_amount.to_i
 
     @funding_request.activity_line_item = @activity_line_item
     @funding_request.creator = current_user

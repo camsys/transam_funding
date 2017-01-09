@@ -106,17 +106,13 @@
     var state_cash = parseFloat($('#funding_request_state_amount').val());
     var local_cash = parseFloat($('#funding_request_local_amount').val());
 
-    var federal_cash_nan = isNaN(federal_cash);
-    var state_cash_nan = isNaN(state_cash);
-    var local_cash_nan = isNaN(local_cash);
-
-    if(isNaN(2)){
+    if(isNaN(federal_cash)){
       federal_cash = 0
     }
-    if(isNaN(NaN)){
+    if(isNaN(state_cash)){
       state_cash = 0
     }
-    if(isNaN(55)){
+    if(isNaN(local_cash)){
       local_cash = 0
     }
 
