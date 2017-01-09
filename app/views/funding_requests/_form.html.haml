@@ -8,7 +8,7 @@
             :wrapper_mappings => {:check_boxes => :horizontal_radio_and_checkboxes, :radio_buttons => :horizontal_radio_and_checkboxes, :file => :horizontal_file_input, :boolean => :horizontal_boolean}) do |f|
       .row
         .col-xs-5
-          = f.input :amount, :wrapper=> :horizontal_prepend, :label => 'Line Amount' do
+          = f.input :funding_request_amount, :wrapper=> :horizontal_prepend, :label => 'Line Amount' do
             %span.input-group-addon
               %i.fa.fa-usd
             = f.input_field :funding_request_amount, :class => "form-control", :digits => true, :min => 0, :max => 10000000
@@ -23,13 +23,13 @@
           = f.input :federal_funding_line_item_id, :collection => FundingBucket.federal.where(owner_id: @organization_list, fiscal_year: @activity_line_item.fy_year), :label => 'Federal Funds'
 
         .col-xs-2
-          = f.input :amount, :wrapper=> :horizontal_prepend, :label => false do
+          = f.input :federal_percent, :wrapper=> :horizontal_prepend, :label => false do
+            = f.input_field :federal_percent, :class => "form-control", :digits => true, :min => 0, :max => 100
             %span.input-group-addon
               %i.fa.fa-percent
-            = f.input_field :federal_percent, :class => "form-control", :digits => true, :min => 0, :max => 100
 
         .col-xs-3
-          = f.input :amount, :wrapper=> :horizontal_prepend, :label => false do
+          = f.input :federal_amount, :wrapper=> :horizontal_prepend, :label => false do
             %span.input-group-addon
               %i.fa.fa-usd
             = f.input_field :federal_amount, :class => "form-control", :digits => true, :min => 0, :max => 10000000
@@ -39,13 +39,13 @@
           = f.input :state_funding_line_item_id, :collection => FundingBucket.state.where(owner_id: @organization_list, fiscal_year: @activity_line_item.fy_year), :label => 'State Funds'
 
         .col-xs-2
-          = f.input :amount, :wrapper=> :horizontal_prepend, :label => false do
+          = f.input :state_percent, :wrapper=> :horizontal_prepend, :label => false do
+            = f.input_field :state_percent, :class => "form-control", :digits => true, :min => 0, :max => 100
             %span.input-group-addon
               %i.fa.fa-percent
-            = f.input_field :state_percent, :class => "form-control", :digits => true, :min => 0, :max => 100
 
         .col-xs-3
-          = f.input :amount, :wrapper=> :horizontal_prepend, :label => false do
+          = f.input :state_amount, :wrapper=> :horizontal_prepend, :label => false do
             %span.input-group-addon
               %i.fa.fa-usd
             = f.input_field :state_amount, :class => "form-control", :digits => true, :min => 0, :max => 10000000
@@ -55,13 +55,13 @@
           = f.input :local_funding_line_item_id, :collection => FundingBucket.local.where(owner_id: @organization_list, fiscal_year: @activity_line_item.fy_year), :label => 'Local Funds'
 
         .col-xs-2
-          = f.input :amount, :wrapper=> :horizontal_prepend, :label => false do
+          = f.input :local_percent, :wrapper=> :horizontal_prepend, :label => false do
+            = f.input_field :local_percent, :class => "form-control", :digits => true, :min => 0, :max => 100
             %span.input-group-addon
               %i.fa.fa-percent
-            = f.input_field :local_percent, :class => "form-control", :digits => true, :min => 0, :max => 100
 
         .col-xs-3
-          = f.input :amount, :wrapper=> :horizontal_prepend, :label => false do
+          = f.input :local_amount, :wrapper=> :horizontal_prepend, :label => false do
             %span.input-group-addon
               %i.fa.fa-usd
             = f.input_field :local_amount, :class => "form-control", :number => true, :min => 0
