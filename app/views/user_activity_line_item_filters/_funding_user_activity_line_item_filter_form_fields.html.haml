@@ -25,9 +25,17 @@
           $(this).hide();
         }
       });
+
+      $('#user_activity_line_item_filter_funding_bucket_id').rules("add", {
+        required: true
+      });
     } else {
       $('#user_activity_line_item_filter_funding_bucket_id option').hide();
       $('#user_activity_line_item_filter_funding_bucket_id option[value=""]').show();
       $('#user_activity_line_item_filter_funding_bucket_id option[value=""]').attr('selected','selected');
+
+      $('#user_activity_line_item_filter_funding_bucket_id').rules("add", {
+        required: false
+      });
     }
   });
