@@ -137,6 +137,9 @@ class FundingRequestsController < OrganizationAwareController
     add_breadcrumb "New Funding Request"
 
     @funding_request = FundingRequest.new(form_params)
+    # todo we may need to change this
+    @funding_request.federal_amount = @funding_request.federal_amount.to_i
+
     @funding_request.activity_line_item = @activity_line_item
     @funding_request.creator = current_user
     @funding_request.updator = current_user
@@ -234,7 +237,7 @@ class FundingRequestsController < OrganizationAwareController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def form_params
-    params.require(:funding_request).permit(funding_request_allowable_params)
+    params.require(:funding_request).permit(FundingRequest.allowable_params)
   end
 
   def check_for_cancel
