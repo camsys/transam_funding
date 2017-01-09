@@ -156,7 +156,14 @@ class FundingRequestsController < OrganizationAwareController
           capital_project.save
           notify_user(:notice, "Capital Project #{capital_project.name} is fully funded.")
         end
-        format.html { redirect_to capital_project_activity_line_item_url(@project, @activity_line_item) }
+        format.html {
+          # check where to redirect to
+          if URI(request.referer || '').path.include? 'scheduler'
+            redirect_to :back
+          else
+            redirect_to capital_project_activity_line_item_url(@project, @activity_line_item)
+          end
+        }
         format.json { render action: 'show', status: :created, location: @funding_request }
       else
         format.html { render action: 'new' }
@@ -180,7 +187,14 @@ class FundingRequestsController < OrganizationAwareController
     respond_to do |format|
       if @funding_request.update(form_params)
         notify_user(:notice, "The Funding Request was successfully updated")
-        format.html { redirect_to capital_project_activity_line_item_path(@project, @funding_request) }
+        format.html {
+          # check where to redirect to
+          if URI(request.referer || '').path.include? 'scheduler'
+            redirect_to :back
+          else
+            redirect_to capital_project_activity_line_item_url(@project, @activity_line_item)
+          end
+        }
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }

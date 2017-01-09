@@ -180,6 +180,8 @@ class SchedulerController < OrganizationAwareController
         notify_user :alert,  "Missing ALI or fy_year. Can't perform update."
       end
 
+      redirect_to :back
+
     when ALI_UPDATE_COST_ACTION
       @activity_line_item.anticipated_cost = params[:activity_line_item][:anticipated_cost]
       if @activity_line_item.save

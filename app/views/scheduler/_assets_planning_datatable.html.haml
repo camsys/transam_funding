@@ -40,6 +40,7 @@
         %th.center{:data => {:field => 'object_key', :visible => 'false'}} Object
         %th.left{data: {field: 'asset_tag', :sortable => 'true'}} Tag
         %th.left{data: {field: 'asset_subtype_id', :sortable => 'true'}} Subtype
+        %th.left{data: {field: 'fuel_type', :sortable => 'true'}} Fuel
         %th.left{data: {field: 'description', :sortable => 'true'}} Descrip.
 
 
@@ -49,8 +50,6 @@
         %th.center{data: {field: 'reported_condition_rating', :sortable => 'true'}} Cond.
 
         %th.center{data: {field: 'policy_replacement_fiscal_year', :sortable => 'true', :sort_name => 'policy_replacement_year'}} Policy FY
-        %th.right{data: {field: 'purchase_cost', :sortable => 'true', formatter: 'currency_formatter'}} Orig. Cost
-        %th.right{data: {field: 'book_value', :sortable => 'true', formatter: 'currency_formatter'}} Book Val.
         %th.right{data: {field: 'scheduled_cost', :sortable => 'true', :sort_name => 'scheduled_replacement_cost', formatter: 'currency_formatter'}} Sch. Cost
         - if popup == '1'
           %th.center{data: {formatter: 'popup_formatter'}}
@@ -62,11 +61,9 @@
       %tfoot
         %tr
           - if move_assets_action == '1'
-            %td{:colspan => 9}= "Totals for #{ali.assets.count} assets"
+            %td{:colspan => 10}= "Totals for #{ali.assets.count} assets"
           - else
-            %td{:colspan => 8}= "Totals for #{ali.assets.count} assets"
-          %td.right= format_as_currency(ali.assets.sum(:purchase_cost))
-          %td.right= format_as_currency(ali.assets.sum(:book_value))
+            %td{:colspan => 9}= "Totals for #{ali.assets.count} assets"
           %td.right= format_as_currency(ali.rehabilitation_ali? ? ali.assets.sum(:scheduled_rehabilitation_cost) : ali.assets.sum(:scheduled_replacement_cost))
           - if popup == '1'
             %td

@@ -8,41 +8,38 @@
         %th.center{:colspan => 3} State
         %th.center{:colspan => 3} Local
         %th.center
+        %th.center
 
       %tr
-        %th.right Amount
-        %th.right Rqd %
-        %th.right Act %
+        %th.center Fund
+        %th.center Amount
+        %th.center Pcnt
 
-        %th.right Amount
-        %th.right Rqd %
-        %th.right Act %
+        %th.center Fund
+        %th.center Amount
+        %th.center Pcnt
 
-        %th.right Amount
-        %th.right Rqd %
-        %th.right Act %
+        %th.center Fund
+        %th.center Amount
+        %th.center Pcnt
 
-        %th.right Total
+        %th.center Total
 
         %th
 
     %tbody
       - @activity_line_item.funding_requests.each do |f|
         %tr
+          %td.left= f.federal_funding_line_item
           %td.right= format_as_currency(f.federal_amount)
-          -unless f.federal_funding_line_item.nil?
-            %td.right= format_as_percentage(f.federal_funding_line_item.funding_template.match_required, 3)
           %td.right= format_as_percentage(f.federal_percentage, 3)
 
-
+          %td.left= f.state_funding_line_item
           %td.right= format_as_currency(f.state_amount)
-          -unless f.state_funding_line_item.nil?
-            %td.right= format_as_percentage(f.state_funding_line_item.funding_template.match_required, 3)
           %td.right= format_as_percentage(f.state_percentage, 3)
 
+          %td.left= f.local_funding_line_item
           %td.right= format_as_currency(f.local_amount)
-          -unless f.local_funding_line_item.nil?
-            %td.right= format_as_percentage(f.local_funding_line_item.funding_template.match_required, 3)
           %td.right= format_as_percentage(f.local_percentage, 3)
 
           %td.right= format_as_currency(f.total_amount)
