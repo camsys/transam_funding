@@ -30,15 +30,19 @@
       - @activity_line_item.funding_requests.each do |f|
         %tr
           %td.right= format_as_currency(f.federal_amount)
-          %td.right= format_as_percentage(f.federal_funding_line_item.funding_template.match_required, 3)
+          -unless f.federal_funding_line_item.nil?
+            %td.right= format_as_percentage(f.federal_funding_line_item.funding_template.match_required, 3)
           %td.right= format_as_percentage(f.federal_percentage, 3)
 
+
           %td.right= format_as_currency(f.state_amount)
-          %td.right= format_as_percentage(f.state_funding_line_item.funding_template.match_required, 3)
+          -unless f.state_funding_line_item.nil?
+            %td.right= format_as_percentage(f.state_funding_line_item.funding_template.match_required, 3)
           %td.right= format_as_percentage(f.state_percentage, 3)
 
           %td.right= format_as_currency(f.local_amount)
-          %td.right= format_as_percentage(f.local_funding_line_item.funding_template.match_required, 3)
+          -unless f.local_funding_line_item.nil?
+            %td.right= format_as_percentage(f.local_funding_line_item.funding_template.match_required, 3)
           %td.right= format_as_percentage(f.local_percentage, 3)
 
           %td.right= format_as_currency(f.total_amount)
