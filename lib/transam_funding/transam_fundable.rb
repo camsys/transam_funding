@@ -58,6 +58,9 @@ module TransamFundable
   def funds_required
     cost - total_funds
   end
+  def pcnt_funded
+    100.0 * total_funds / cost if cost.to_i > 0
+  end
 
   # Returns the total value of federal funds requested
   def federal_funds
@@ -83,5 +86,6 @@ module TransamFundable
   def local_percentage
     100.0 * (local_funds / total_funds) if total_funds.to_i > 0
   end
+
 
 end

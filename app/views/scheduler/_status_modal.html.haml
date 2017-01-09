@@ -1,0 +1,26 @@
+#funding_status
+  %ul.nav.nav-tabs
+    %li
+      %a{:href => "#comments", :data =>{:toggle => 'tab'}}
+        Comments
+        %span.badge= @activity_line_item.comments.count
+
+    %li
+      %a{:href => "#tasks", :data =>{:toggle => 'tab'}}
+        %span{:style => 'white-space: nowrap !important;'}
+          Tasks
+          %span.badge= @activity_line_item.tasks.count
+
+
+  .tab-content{:style => 'max-height:400px;overflow-y: auto;'}
+    .tab-pane.fade#comments
+      .tab-content
+        = render 'activity_line_items/comments'
+
+    .tab-pane.fade#tasks
+      .tab-content
+        = render 'activity_line_items/tasks'
+
+
+
+
