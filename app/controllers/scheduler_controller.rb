@@ -214,6 +214,8 @@ class SchedulerController < OrganizationAwareController
       else
         @msg = "There was an error deleting the funding line."
       end
+
+      redirect_to :back
     end
 
     # Get the ALIs for each year
