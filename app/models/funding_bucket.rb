@@ -46,6 +46,7 @@ class FundingBucket< ActiveRecord::Base
   scope :state, -> { joins(funding_template: :funding_source).where('funding_sources.funding_source_type_id = ?', FundingSourceType.find_by(name: 'State')) }
   scope :local, -> { joins(funding_template: :funding_source).where('funding_sources.funding_source_type_id = ?', FundingSourceType.find_by(name: 'Local')) }
 
+  scope :current, -> (year) { joins(funding_template: :funding_source).where('funding_buckets.fy_year <= ? AND (((funding_buckets.fy_year + funding_sources.life_in_years) >= ?) OR (funding_sources.life_in_years IS NULL))', year, year) }
 
   # List of hash parameters allowed by the controller
   FORM_PARAMS = [
@@ -76,10 +77,10 @@ class FundingBucket< ActiveRecord::Base
     conditions << 'funding_template_id = ?'
     values << funding_template_id
 
-    conditions << 'fy_year >= ?'
+    conditions << 'fiscal_year >= ?'
     values << start_fiscal_year
 
-    conditions << 'fy_year <= ?'
+    conditions << 'fiscal_year <= ?'
     values << end_fiscal_year
 
     unless name.nil?
@@ -153,7 +154,7 @@ class FundingBucket< ActiveRecord::Base
     owner = Organization.find_by(id: self.owner_id)
 
     if bucket_proxy.name.blank?
-      self.name = "#{funding_template.funding_source.name}-#{funding_template.name}-#{owner.short_name}-#{fiscal_year_for_name(self.fy_year)}"
+      generate_unique_name
     else
       self.name = bucket_proxy.name
     end
@@ -170,6 +171,10 @@ class FundingBucket< ActiveRecord::Base
     last = "%.2d" % next_yr
 
     "FY#{first}/#{last}"
+  end
+
+  def generate_unique_name
+    self.name = "#{funding_template.funding_source.name}-#{funding_template.name}-#{owner.short_name}-#{fiscal_year_for_name(self.fy_year)}"
   end
 
   #------------------------------------------------------------------------------
