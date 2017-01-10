@@ -15,7 +15,7 @@
     .btn-group
       = link_to url, :class => 'btn btn-default' do
         %i.fa.fa-edit.fa-fw
-        = "Manage Buckets"
+        = "Create Buckets"
   - elsif can? :new_bucket_app, FundingBucket
     .btn-group
       = link_to new_bucket_app_funding_buckets_path, :class => 'btn btn-default' do
