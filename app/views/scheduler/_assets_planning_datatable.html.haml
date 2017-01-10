@@ -17,7 +17,6 @@
     :card_view => "false",
     :pagination => 'true',
     :side_pagination => 'server',
-    :show_pagination_switch => 'true',
     :page_number => '1',
     :page_list => "[10, 20, 50, 100, 200]",
     :page_size => current_user.num_table_rows,
@@ -40,7 +39,7 @@
         %th.center{:data => {:field => 'object_key', :visible => 'false'}} Object
         %th.left{data: {field: 'asset_tag', :sortable => 'true'}} Tag
         %th.left{data: {field: 'asset_subtype_id', :sortable => 'true'}} Subtype
-        %th.left{data: {field: 'fuel_type', :sortable => 'true'}} Fuel
+        %th.left{data: {field: 'fuel_type', :sortable => 'true', :sort_name => 'fuel_type_id'}} Fuel
         %th.left{data: {field: 'description', :sortable => 'true'}} Descrip.
 
 
@@ -89,10 +88,6 @@
     enable_disable_asset_actions();
 
     $("##{table_dom_id}").bootstrapTable();
-
-    $('#' + '#{table_dom_id}').on('load-success.bs.table', function () {
-
-    });
 
     $('#' + '#{table_dom_id}').on('post-body.bs.table', function () {
       $('.transam-popover').popover({

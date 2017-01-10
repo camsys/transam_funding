@@ -3,6 +3,4 @@
     .col-md-12{:style => 'height:160px;overflow-y:auto;'}
       = render :partial => 'activity_line_items/funding_plans_table', :locals => {:ali => @activity_line_item}
 
-  .row
-    .col-md-12
-      = render :partial => 'funding_requests/form'
+  = render :partial => 'funding_requests/form'

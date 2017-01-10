@@ -1,4 +1,4 @@
-class SchedulerController < OrganizationAwareController
+class SchedulerController < AbstractCapitalProjectsController
 
   before_filter :set_view_vars,  :only =>    [:index, :loader, :scheduler_ali_action, :scheduler_swimlane_action]
 
@@ -250,12 +250,6 @@ class SchedulerController < OrganizationAwareController
   # Sets the view variables that control the filters. called before each action is invoked
   def set_view_vars
 
-    if params[:org_id].blank?
-      return
-    else
-      @org_id = params[:org_id].to_i
-    end
-
     unless params[:active_year].blank?
       @active_year = params[:active_year].to_i
     end
@@ -289,12 +283,12 @@ class SchedulerController < OrganizationAwareController
     @row_number = current_index + 1
     @row_pager_remote = true
 
+    get_projects
+
   end
 
   def get_alis(year)
-    capital_project_ids = CapitalProject.where(:organization_id =>  @org_id)
-
-    ActivityLineItem.where(:capital_project_id => capital_project_ids, :fy_year => year)
+    ActivityLineItem.where(:capital_project_id => @projects.ids, :fy_year => year)
   end
 
   private

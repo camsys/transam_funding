@@ -12,12 +12,6 @@
             %i.fa.fa-edit
             %span.caret
           %ul.dropdown-menu{:role => "menu"}
-            - if year == @active_year
-              %li
-                = link_to scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, ali: ali.object_key) do
-                  %i.fa.fa-dollar
-                  Assign Funds
-            %li.divider
             - if can? :destroy, ali
               %li
                 = link_to scheduler_ali_action_scheduler_index_path(:ali => ali.object_key, :invoke => SchedulerController::ALI_REMOVE_ACTION, :active_year => @active_year),
@@ -29,7 +23,7 @@
     = "#{ali.team_ali_code} #{ali}".upcase
 
 
-  .panel-body.collapse{:id => "#{ali.object_key}_ali_body"}
+  .panel-body.collapse{year == @active_year ? {:id => "#{ali.object_key}_ali_body", :data => {:action_path => scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, ali: ali.object_key)}} : {:id => "#{ali.object_key}_ali_body"}}
     - if ali.assets.empty?
       %p There are no assets associated with this ALI
     - else
@@ -37,9 +31,9 @@
       - ali.assets.each do |asset|
         - cost = get_swimlane_activity_cost(asset, year)
         - funds_left -= cost
-        = render :partial => 'asset_detail', :locals => {:year => year, :asset => asset, :cost => cost, :color => funds_left > 0 ? '#4CBB17' : '#4e95f4'}
+        = render :partial => 'asset_detail', :locals => {:year => year, :asset => asset, :cost => cost, :color => funds_left > 0 ? '#ccffcc' : '#4e95f4'}
 
-  .panel-footer
+  .panel-footer{year == @active_year ? {:data => {:action_path => scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, ali: ali.object_key)}} : {}}
     %table.table.table-condensed
       %tbody
         - ali.funding_requests.each do |f|
@@ -65,5 +59,5 @@
           %td.right= format_as_currency(ali.funds_required)
 
         %tr
-          -#%td.left{colspan: 2} Pcnt Funded
-          -#%td.right= format_as_percentage(ali.pcnt_funded, 3)
+          %td.left{colspan: 2} Pcnt Funded
+          %td.right= format_as_percentage(ali.pcnt_funded, 3)
