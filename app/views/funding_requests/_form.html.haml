@@ -13,9 +13,8 @@
             = f.input_field :funding_request_amount, :class => "form-control", :digits => true, :min => 0, :max => 10000000
 
         .col-xs-2
-        .col-xs-2
+        .col-xs-2{:id => "locking_option"}
           %i.fa.fa-unlock-alt.fa-2x
-          -#%i.fa.fa-lock.fa-2x
         .col-xs-3
       .row
         .col-xs-7
@@ -149,12 +148,38 @@
   }
 
   function lock_form(){
+    console.log('Testing lock_form');
+    $('#funding_request_funding_request_amount').attr('disabled', true);
+
+    $('#funding_request_federal_funding_line_item_id').attr('disabled', true);
+    $('#funding_request_federal_percent').attr('disabled', true);
+    $('#funding_request_federal_amount').attr('disabled', true);
+
+    $('#funding_request_state_funding_line_item_id').attr('disabled', true);
+    $('#funding_request_state_percent').attr('disabled', true);
+    $('#funding_request_state_amount').attr('disabled', true);
+
+    $('#funding_request_local_funding_line_item_id').attr('disabled', true);
+    $('#funding_request_local_percent').attr('disabled', true);
+    $('#funding_request_local_amount').attr('disabled', true);
 
   }
   function unlock_form(){
+    console.log('Testing unlock_form');
+    $('#funding_request_funding_request_amount').removeAttr('disabled');
 
+    $('#funding_request_federal_funding_line_item_id').removeAttr('disabled');
+    $('#funding_request_federal_percent').removeAttr('disabled');
+    $('#funding_request_federal_amount').removeAttr('disabled');
+
+    $('#funding_request_state_funding_line_item_id').removeAttr('disabled');
+    $('#funding_request_state_percent').removeAttr('disabled');
+    $('#funding_request_state_amount').removeAttr('disabled');
+
+    $('#funding_request_local_funding_line_item_id').removeAttr('disabled');
+    $('#funding_request_local_percent').removeAttr('disabled');
+    $('#funding_request_local_amount').removeAttr('disabled');
   }
-
 
   function update_federal_percent_from_federal_cash(){
     var federal_percent = get_percent_from_cash_entered(parseFloat($('#funding_request_federal_amount').val()));
@@ -184,6 +209,20 @@
     $('#funding_request_local_amount').val(local_cash);
   }
 
+  $('#locking_option').click(function(){
+    var total_percent_text = $('#total_percent').text();
+    total_percent_text = total_percent_text.slice(0, -1);
+    var total_percent = parseFloat(total_percent_text);
+
+    if (total_percent>= 100){
+      var is_disabled = $('#funding_request_funding_request_amount').is(':disabled');
+      if(is_disabled){
+        unlock_form();
+      }else{
+        lock_form();
+      }
+    }
+  });
 
   $('#funding_request_funding_request_amount').change(function(){
     var old_lit = line_item_total;
