@@ -19,7 +19,7 @@
       .row
         .col-xs-7
           -#TODO The fisal year check isn't right. It should actuall be @activity_line_item.fy_year <= bucket.fiscal_year+funding_source.life_in_years AND  @activity_line_item.fy_year >= bucket
-          = f.input :federal_funding_line_item_id, :collection => FundingBucket.federal.where(owner_id: @organization_list, fiscal_year: @activity_line_item.fy_year), :label => 'Federal Funds'
+          = f.input :federal_funding_line_item_id, :collection => FundingBucket.federal.where(owner_id: @organization_list, fy_year: @activity_line_item.fy_year), :label => 'Federal Funds'
 
         .col-xs-2
           = f.input :federal_percent, :wrapper=> :horizontal_prepend, :label => false do
@@ -35,7 +35,7 @@
 
       .row
         .col-xs-7
-          = f.input :state_funding_line_item_id, :collection => FundingBucket.state.where(owner_id: @organization_list, fiscal_year: @activity_line_item.fy_year), :label => 'State Funds'
+          = f.input :state_funding_line_item_id, :collection => FundingBucket.state.where(owner_id: @organization_list, fy_year: @activity_line_item.fy_year), :label => 'State Funds'
 
         .col-xs-2
           = f.input :state_percent, :wrapper=> :horizontal_prepend, :label => false do
@@ -51,7 +51,7 @@
 
       .row
         .col-xs-7
-          = f.input :local_funding_line_item_id, :collection => FundingBucket.local.where(owner_id: @organization_list, fiscal_year: @activity_line_item.fy_year), :label => 'Local Funds'
+          = f.input :local_funding_line_item_id, :collection => FundingBucket.local.where(owner_id: @organization_list, fy_year: @activity_line_item.fy_year), :label => 'Local Funds'
 
         .col-xs-2
           = f.input :local_percent, :wrapper=> :horizontal_prepend, :label => false do

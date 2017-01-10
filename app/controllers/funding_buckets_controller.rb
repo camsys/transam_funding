@@ -26,8 +26,8 @@ class FundingBucketsController < OrganizationAwareController
     if params[:agency_id].present?
       @searched_agency_id =  params[:agency_id]
     end
-    if params[:fiscal_year].present?
-      @searched_fiscal_year =  params[:fiscal_year]
+    if params[:fy_year].present?
+      @searched_fiscal_year =  params[:fy_year]
     end
     if params[:funds_available].present?
       @show_funds_available_only =  params[:funds_available]
@@ -46,7 +46,7 @@ class FundingBucketsController < OrganizationAwareController
 
     unless @searched_fiscal_year.blank?
       fiscal_year_filter = @searched_fiscal_year.to_i
-      conditions << 'fiscal_year = ?'
+      conditions << 'fy_year = ?'
       values << fiscal_year_filter
     end
 
@@ -92,8 +92,8 @@ class FundingBucketsController < OrganizationAwareController
     if params[:agency_id].present?
       @searched_agency_id =  params[:agency_id]
     end
-    if params[:fiscal_year].present?
-      @searched_fiscal_year =  params[:fiscal_year]
+    if params[:fy_year].present?
+      @searched_fiscal_year =  params[:fy_year]
     end
     if params[:funds_available].present?
       @show_funds_available_only =  params[:funds_available]
@@ -118,9 +118,9 @@ class FundingBucketsController < OrganizationAwareController
 
     unless @searched_fiscal_year.blank?
       fiscal_year_filter = @searched_fiscal_year.to_i
-      conditions << 'funding_buckets.fiscal_year <= ?'
+      conditions << 'funding_buckets.fy_year <= ?'
       values << fiscal_year_filter
-      conditions << '(((funding_buckets.fiscal_year + funding_sources.life_in_years) >= ?) OR (funding_sources.life_in_years IS NULL))'
+      conditions << '(((funding_buckets.fy_year + funding_sources.life_in_years) >= ?) OR (funding_sources.life_in_years IS NULL))'
       values << fiscal_year_filter
     end
 
@@ -417,13 +417,13 @@ class FundingBucketsController < OrganizationAwareController
 
   def find_number_of_missing_buckets_for_update
 
-      existing_buckets = FundingBucket.find_existing_buckets_from_proxy(params[:template_id], params[:start_year], params[:end_year], params[:owner_id], nil, params[:name]).pluck(:fiscal_year, :owner_id)
+      existing_buckets = FundingBucket.find_existing_buckets_from_proxy(params[:template_id], params[:start_year], params[:end_year], params[:owner_id], nil, params[:name]).pluck(:fy_year, :owner_id)
       expected_buckets = find_expected_buckets(params[:template_id], params[:start_year].to_i, params[:end_year].to_i, params[:owner_id].to_i, params[:specific_organizations_with_budgets])
       not_created_buckets = expected_buckets - existing_buckets
       template = FundingTemplate.find_by(id: params[:template_id])
       result = []
       not_created_buckets.each do |b|
-        result << FundingBucket.new(funding_template: template, fiscal_year: b[0], owner_id: b[1])
+        result << FundingBucket.new(funding_template: template, fy_year: b[0], owner_id: b[1])
       end
 
       msg = "#{result.length} Buckets you are updating do not yet exist. Do you want to create these Buckets, ignore these Buckets, or cancel this action?"
@@ -581,7 +581,7 @@ class FundingBucketsController < OrganizationAwareController
 
       while i <= bucket_proxy.fiscal_year_range_end.to_i
         next_year_bucket = new_bucket_from_proxy(bucket_proxy, agency_id)
-        next_year_bucket.fiscal_year = i
+        next_year_bucket.fy_year = i
         next_year_bucket.name = "#{next_year_bucket.funding_source.name}-#{next_year_bucket.funding_template.name}-#{next_year_bucket.owner.short_name}-#{next_year_bucket.fiscal_year_for_name(i)}"
 
         unless bucket_proxy.inflation_percentage.blank?
@@ -627,7 +627,7 @@ class FundingBucketsController < OrganizationAwareController
   def bucket_exists existing_buckets, bucket
     unless existing_buckets.nil?
       buckets = existing_buckets.find {|eb|
-        eb.funding_template == bucket.funding_template && eb.fiscal_year == bucket.fiscal_year && eb.owner == bucket.owner && eb.name == bucket.name
+        eb.funding_template == bucket.funding_template && eb.fy_year == bucket.fy_year && eb.owner == bucket.owner && eb.name == bucket.name
       }
       return buckets
     end

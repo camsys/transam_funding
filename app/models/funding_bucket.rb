@@ -29,7 +29,7 @@ class FundingBucket< ActiveRecord::Base
   #------------------------------------------------------------------------------
 
   validates :funding_template_id,       :presence => true
-  validates :fiscal_year,               :presence => true
+  validates :fy_year,               :presence => true
   validates :budget_amount,             :presence => true, :numericality => {:greater_than_or_equal_to => 0}
   validates :owner_id,                  :presence => true
 
@@ -76,10 +76,10 @@ class FundingBucket< ActiveRecord::Base
     conditions << 'funding_template_id = ?'
     values << funding_template_id
 
-    conditions << 'fiscal_year >= ?'
+    conditions << 'fy_year >= ?'
     values << start_fiscal_year
 
-    conditions << 'fiscal_year <= ?'
+    conditions << 'fy_year <= ?'
     values << end_fiscal_year
 
     unless name.nil?
@@ -143,7 +143,7 @@ class FundingBucket< ActiveRecord::Base
 
   def set_values_from_proxy bucket_proxy, agency_id=nil
     self.funding_template_id = bucket_proxy.template_id
-    self.fiscal_year = bucket_proxy.fiscal_year_range_start
+    self.fy_year = bucket_proxy.fiscal_year_range_start
     self.budget_amount = bucket_proxy.total_amount
     self.budget_committed = 0
     self.owner_id = agency_id.nil? ? bucket_proxy.owner_id : agency_id

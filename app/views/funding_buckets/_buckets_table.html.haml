@@ -43,7 +43,7 @@
         %tr{:id => b.object_key, :class => 'action-path'}
           - if compact_columns == 0
             %td.left= b.object_key
-          %td.left= format_as_fiscal_year(b.fiscal_year)
+          %td.left= format_as_fiscal_year(b.fy_year)
           - if @funding_template.nil?
             %td.left= "#{b.funding_template.funding_source.name} (#{b.funding_template.name})"
           %td.left= "#{b.name}"
@@ -57,7 +57,7 @@
           %td.right= b.budget_committed
           %td.right= b.budget_remaining
           -unless b.funding_template.funding_source.life_in_years.nil?
-            %td.left= format_as_fiscal_year(b.fiscal_year + b.funding_template.funding_source.life_in_years - 1)
+            %td.left= format_as_fiscal_year(b.fy_year + b.funding_template.funding_source.life_in_years - 1)
           -else
             %td.left
 
