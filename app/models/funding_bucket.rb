@@ -153,7 +153,7 @@ class FundingBucket< ActiveRecord::Base
     owner = Organization.find_by(id: self.owner_id)
 
     if bucket_proxy.name.blank?
-      self.name = "#{funding_template.funding_source.name}-#{funding_template.name}-#{owner.coded_name}-#{fiscal_year_for_name(self.fiscal_year)}"
+      self.name = "#{funding_template.funding_source.name}-#{funding_template.name}-#{owner.short_name}-#{fiscal_year_for_name(self.fy_year)}"
     else
       self.name = bucket_proxy.name
     end

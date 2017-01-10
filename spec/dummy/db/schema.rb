@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170106112835) do
+ActiveRecord::Schema.define(version: 20170110132354) do
 
   create_table "activities", force: true do |t|
     t.string   "object_key",           limit: 12
@@ -725,7 +725,7 @@ ActiveRecord::Schema.define(version: 20170106112835) do
   create_table "funding_buckets", force: true do |t|
     t.string   "object_key",          limit: 12,                          null: false
     t.integer  "funding_template_id",                                     null: false
-    t.integer  "fiscal_year",                                             null: false
+    t.integer  "fy_year",                                                 null: false
     t.string   "name",                                                    null: false
     t.decimal  "budget_amount",                  precision: 15, scale: 2, null: false
     t.decimal  "budget_committed",               precision: 15, scale: 2, null: false
