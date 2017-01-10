@@ -13,8 +13,8 @@
             = f.input_field :funding_request_amount, :class => "form-control", :digits => true, :min => 0, :max => 10000000
 
         .col-xs-2
-        .col-xs-2{:id => "locking_option"}
-          %i.fa.fa-unlock-alt.fa-2x
+        .col-xs-2
+          %i.fa.fa-unlock-alt.fa-2x{:id => "locking_option"}
         .col-xs-3
       .row
         .col-xs-7
@@ -138,7 +138,12 @@
     $('#total_percent').text(total+'%');
 
     if(total >= 100){
-    //  Allow the user to lock the form
+      //  Allow the user to lock the form set the unlock icon to greem
+      $( "#locking_option" ).removeClass( "fa fa-unlock-alt fa-2x" ).addClass( "fa fa-unlock-alt fa-2x text-success" );
+    } else {
+      // Ensure that the lock is reverted to the original state if the percent drops below 100
+      $( "#locking_option" ).removeClass( "fa fa-lock fa-2x text-danger" ).addClass( "fa fa-unlock-alt fa-2x" );
+      $( "#locking_option" ).removeClass( "fa fa-unlock-alt fa-2x text-success" ).addClass( "fa fa-unlock-alt fa-2x" );
     }
   }
 
@@ -163,6 +168,8 @@
     $('#funding_request_local_percent').attr('disabled', true);
     $('#funding_request_local_amount').attr('disabled', true);
 
+    $( "#locking_option" ).removeClass( "fa fa-unlock-alt fa-2x text-success" ).addClass( "fa fa-lock fa-2x text-danger" );
+
   }
   function unlock_form(){
     console.log('Testing unlock_form');
@@ -179,6 +186,8 @@
     $('#funding_request_local_funding_line_item_id').removeAttr('disabled');
     $('#funding_request_local_percent').removeAttr('disabled');
     $('#funding_request_local_amount').removeAttr('disabled');
+
+    $( "#locking_option" ).removeClass( "fa fa-lock fa-2x text-danger" ).addClass( "fa fa-unlock-alt fa-2x text-success" );
   }
 
   function update_federal_percent_from_federal_cash(){
@@ -221,6 +230,10 @@
       }else{
         lock_form();
       }
+    }else{
+      unlock_form();
+      $( "#locking_option" ).removeClass( "fa fa-lock fa-2x text-danger" ).addClass( "fa fa-unlock-alt fa-2x" );
+      $( "#locking_option" ).removeClass( "fa fa-unlock-alt fa-2x text-success" ).addClass( "fa fa-unlock-alt fa-2x" );
     }
   });
 
