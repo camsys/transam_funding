@@ -53,7 +53,7 @@ class FundingBucket< ActiveRecord::Base
       :object_key,
       :funding_template_id,
       :owner_id,
-      :fiscal_year,
+      :fy_year,
       :budget_amount,
       :description
   ]
@@ -77,13 +77,13 @@ class FundingBucket< ActiveRecord::Base
     conditions << 'funding_template_id = ?'
     values << funding_template_id
 
-    conditions << 'fiscal_year >= ?'
+    conditions << 'fy_year >= ?'
     values << start_fiscal_year
 
-    conditions << 'fiscal_year <= ?'
+    conditions << 'fy_year <= ?'
     values << end_fiscal_year
 
-    unless name.nil?
+    unless name.blank?
       conditions << 'name = ?'
       values << name
     end

@@ -612,7 +612,7 @@ class FundingBucketsController < OrganizationAwareController
         existing_bucket.budget_amount = bucket.budget_amount
         existing_bucket.updator = current_user
         if bucket_proxy.name.blank?
-          existing_bucket.name = "#{existing_bucket.funding_source.name}-#{existing_bucket.funding_template.name}-#{existing_bucket.owner.short_name}-#{existing_bucket.fiscal_year_for_name(existing_bucket.fiscal_year)}"
+          existing_bucket.name = "#{existing_bucket.funding_source.name}-#{existing_bucket.funding_template.name}-#{existing_bucket.owner.short_name}-#{existing_bucket.fiscal_year_for_name(existing_bucket.fy_year)}"
         else
           existing_bucket.name = bucket_proxy.name
         end
