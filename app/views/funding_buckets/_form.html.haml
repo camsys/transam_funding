@@ -412,6 +412,9 @@
         url: url,
         data: {program_id: $('#funding_bucket_proxy_program_id').val()},
         success: function(result){
+          $('#funding_bucket_proxy_fiscal_year_range_start').empty();
+          $('#funding_bucket_proxy_fiscal_year_range_end').empty();
+
           //Add a blank entry to the list.
           $("#funding_bucket_proxy_fiscal_year_range_start").append( $("<option></option>").attr("value", "").text(''));
           $("#funding_bucket_proxy_fiscal_year_range_end").append( $("<option></option>").attr("value", "").text(''));
