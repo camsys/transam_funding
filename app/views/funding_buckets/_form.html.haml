@@ -127,28 +127,9 @@
     PercentThreeDigits: true
   });
 
-  $( "#funding_bucket_proxy_name" ).rules( "add", {
-    UniqueBucketName: true,
-    required: true,
-    remote: function () {
-      var name_to_check = $('#funding_bucket_proxy_name').val();
-      var url = '#{is_bucket_name_unique_funding_buckets_path}';
-      var r = {
-        url: url,
-        type: "post",
-        dataType: "json",
-        contentType: "application/json; charset=utf-8",
-        cache: false,
-        data: {bucket_name: name_to_check},
-        dataFilter: function(response) {
-          return response; //return true or false
-        }
-      };
-    },
-    messages: {
-      remote: "This name is not unique. Please ensure the bucket name is unique."
-    }
-  });
+  //$( "#funding_bucket_proxy_name" ).rules( "add", {
+  //  UniqueBucketName: true,
+  //});
 
   $.validator.addClassRules("agency_budget", {
     require_from_group: [1, ".agency_budget"],
@@ -314,13 +295,22 @@
 
   }
 
-  $.validator.addMethod('UniqueBucketName', function(value, element) {
+  function set_bucket_name_unique(result){
+
+    console.log('Result in set bucket name unique is '+result);
+    is_name_unique = result;
+
+    console.log('is_name_unique in set bucket name unique is '+is_name_unique);
+  }
+
+  function is_bucket_name_unique(callback){
     var name_to_check = $('#funding_bucket_proxy_name').val();
     var url = '#{is_bucket_name_unique_funding_buckets_path}';
     $.ajax({
       url: url,
       data: {bucket_name: name_to_check},
       success: function(result){
+        callback(result);
         return result;
       },
       error: function (xhr, ajaxOptions, thrownError) {
@@ -352,55 +342,63 @@
       $('#return_to_bucket_index').val(return_to_bucket_index);
     }
 
+    var bucket_name_unique = is_bucket_name_unique(
+      function(result){
+        console.log('Result in set bucket name unique is '+result);
+        bucket_name_unique = result;
 
-    if ($('.bucket_form').valid())
-    {
-      var url = '#{find_existing_buckets_for_create_funding_buckets_path}';
-      var template_id = $('#funding_bucket_proxy_template_id').val();
-      var start_year = funding_bucket_proxy_fiscal_year_range_start.value;
-      var end_year = funding_bucket_proxy_fiscal_year_range_end.value;
-      var owner_id = $('#funding_bucket_proxy_owner_id').val();
-      var name = $('#funding_bucket_proxy_name').val();
-      var specific_organizations_with_budgets = [];
+        console.log('is_name_unique in set bucket name unique is '+is_name_unique);
 
-      var i = 0;
-      while(i<funding_bucket_proxy_owner_id.options.length){
-        var val = funding_bucket_proxy_owner_id.options[i].value;
-        var input_name = 'agency_budget_id_'+val
-        var input_value = $('input:text[name='+input_name+']').val();
-
-        if (input_value>0)
+        if ($('.bucket_form').valid() && bucket_name_unique)
         {
-          specific_organizations_with_budgets.push(val);
-        }
+          var url = '#{find_existing_buckets_for_create_funding_buckets_path}';
+          var template_id = $('#funding_bucket_proxy_template_id').val();
+          var start_year = funding_bucket_proxy_fiscal_year_range_start.value;
+          var end_year = funding_bucket_proxy_fiscal_year_range_end.value;
+          var owner_id = $('#funding_bucket_proxy_owner_id').val();
+          var name = $('#funding_bucket_proxy_name').val();
+          var specific_organizations_with_budgets = [];
 
-        i++;
-      }
+          var i = 0;
+          while(i<funding_bucket_proxy_owner_id.options.length){
+            var val = funding_bucket_proxy_owner_id.options[i].value;
+            var input_name = 'agency_budget_id_'+val
+            var input_value = $('input:text[name='+input_name+']').val();
 
-      $.ajax({
-        url: url,
-        data: {
-          template_id: template_id,
-          start_year: start_year,
-          end_year: end_year,
-          owner_id: owner_id,
-          name: name,
-          specific_organizations_with_budgets: specific_organizations_with_budgets},
-        success: function(result){
-          if (result.result_count == 0 || $('#funding_bucket_proxy_create_conflict_option_replace').is(':checked')|| $('#funding_bucket_proxy_create_conflict_option_ignore').is(':checked') || $('#funding_bucket_proxy_create_conflict_option_cancel').is(':checked')) {
-            document.getElementById('new_funding_bucket_proxy').submit();
-          }else{
-            $('.bucket_form').valid();
+            if (input_value>0)
+            {
+              specific_organizations_with_budgets.push(val);
+            }
 
-            $('#form-modal').html(result.new_html);
-            $('#form-modal').modal('show');
-          };
-        },
-        error: function (xhr, ajaxOptions, thrownError) {
-          alert("We are sorry but something went wrong. " + xhr.status + " " + thrownError);
+            i++;
           }
-      });
-    }
+
+          $.ajax({
+            url: url,
+            data: {
+              template_id: template_id,
+              start_year: start_year,
+              end_year: end_year,
+              owner_id: owner_id,
+              name: name,
+              specific_organizations_with_budgets: specific_organizations_with_budgets},
+            success: function(result){
+              if (result.result_count == 0 || $('#funding_bucket_proxy_create_conflict_option_replace').is(':checked')|| $('#funding_bucket_proxy_create_conflict_option_ignore').is(':checked') || $('#funding_bucket_proxy_create_conflict_option_cancel').is(':checked')) {
+                document.getElementById('new_funding_bucket_proxy').submit();
+              }else{
+                $('.bucket_form').valid();
+
+                $('#form-modal').html(result.new_html);
+                $('#form-modal').modal('show');
+              };
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+              alert("We are sorry but something went wrong. " + xhr.status + " " + thrownError);
+              }
+          });
+        }
+      }
+    );
   }
 
   function update_fiscal_year_range()
