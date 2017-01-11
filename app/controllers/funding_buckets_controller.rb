@@ -453,6 +453,22 @@ class FundingBucketsController < OrganizationAwareController
     end
   end
 
+  def is_bucket_name_unique
+    bucket_name = params[:bucket_name]
+    bucket = FundingBucket.find_by(name: bucket_name)
+
+    if bucket.nil?
+      result = true
+    else
+      result = false
+    end
+
+
+    respond_to do |format|
+      format.json { render json: result.to_json }
+    end
+  end
+
   def find_expected_match_percent
     bucket_name = params[:bucket_name]
     bucket = FundingBucket.find_by(name: bucket_name)
@@ -612,7 +628,7 @@ class FundingBucketsController < OrganizationAwareController
         existing_bucket.budget_amount = bucket.budget_amount
         existing_bucket.updator = current_user
         if bucket_proxy.name.blank?
-          existing_bucket.name = "#{existing_bucket.funding_source.name}-#{existing_bucket.funding_template.name}-#{existing_bucket.owner.short_name}-#{existing_bucket.fiscal_year_for_name(existing_bucket.fy_year)}"
+          existing_bucket.name = "#{existing_bucket.funding_source.name}-#{existing_bucket.funding_template.name}-#{existing_bucket.owner.short_name}-#{existing_bucket.fiscal_year_for_name(existing_bucket.fiscal_year)}"
         else
           existing_bucket.name = bucket_proxy.name
         end
