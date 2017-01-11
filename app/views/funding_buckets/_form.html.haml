@@ -111,7 +111,8 @@
   });
 
   $('.bucket_form').validate({
-    debug: true
+    debug: true,
+    onkeyup: false
   });
 
   $( "#funding_bucket_proxy_fiscal_year_range_start" ).rules( "add", {
@@ -128,6 +129,25 @@
 
   $( "#funding_bucket_proxy_name" ).rules( "add", {
     UniqueBucketName: true,
+    required: true,
+    remote: function () {
+      var name_to_check = $('#funding_bucket_proxy_name').val();
+      var url = '#{is_bucket_name_unique_funding_buckets_path}';
+      var r = {
+        url: url,
+        type: "post",
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        cache: false,
+        data: {bucket_name: name_to_check},
+        dataFilter: function(response) {
+          return response; //return true or false
+        }
+      };
+    },
+    messages: {
+      remote: "This name is not unique. Please ensure the bucket name is unique."
+    }
   });
 
   $.validator.addClassRules("agency_budget", {
@@ -152,15 +172,6 @@
   $.validator.addMethod('PercentThreeDigits', function(value, element) {
      return this.optional(element) || /^\d*(\.\d{0,3})?$/.test(value);
   }, "Please enter a correct percent up to three decimal places.");
-
-  //$.validator.addMethod('UniqueBucketName', function(value, element) {
-  //
-  //    console.log('Pre is name unique = '+ is_name_unique);
-  //    is_bucket_name_unique(function(result){is_name_unique = result});
-  //    console.log('POST is name unique = '+ is_name_unique);
-  //
-  //    return is_name_unique;
-  //}, "This name is not unique. Please ensure the bucket name is unique.");
 
   var agencies = []
 
@@ -304,22 +315,19 @@
   }
 
   $.validator.addMethod('UniqueBucketName', function(value, element) {
-    var is_unique_bucket_name = false;
     var name_to_check = $('#funding_bucket_proxy_name').val();
     var url = '#{is_bucket_name_unique_funding_buckets_path}';
-
     $.ajax({
       url: url,
       data: {bucket_name: name_to_check},
       success: function(result){
-        is_unique_bucket_name = result;
+        return result;
       },
       error: function (xhr, ajaxOptions, thrownError) {
         alert("We are sorry but something went wrong. " + xhr.status + " " + thrownError);
         }
       });
-      return is_unique_bucket_name;
-  }, "This name is not unique. Please ensure the bucket name is unique.");
+  };
 
   function set_bucket_configuration_from_template(template_id){
     var url = '#{find_configuration_options_from_template_id_funding_buckets_path}';
