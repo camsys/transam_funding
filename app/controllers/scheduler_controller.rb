@@ -288,7 +288,18 @@ class SchedulerController < AbstractCapitalProjectsController
   end
 
   def get_alis(year)
-    ActivityLineItem.where(:capital_project_id => @projects.ids, :fy_year => year)
+    alis = ActivityLineItem.where(:capital_project_id => @projects.ids, :fy_year => year)
+
+    case params[:sort]
+      when 'cost'
+        alis.sort_by{|a| a.cost}
+      when 'pcnt_funded'
+        alis.sort_by{|a| a.pcnt_funded}
+      when 'num_assets'
+        alis.sort_by{|a| a.assets.count}
+      else
+        alis
+    end
   end
 
   private
