@@ -209,8 +209,8 @@ class FundingBucketsController < OrganizationAwareController
     end
     if @template_organizations.present?
       @template_organizations = @template_organizations
-    elsif params[:template_id]
-      @bucket_proxy.template_id = params[:template_id]
+    elsif params[:funding_template_id]
+      @bucket_proxy.template_id = params[:funding_template_id]
       @template_organizations = find_organizations(@bucket_proxy.template_id)
 
       @bucket_proxy.fiscal_year_range_start = params[:fiscal_year_range_start].to_i
@@ -222,6 +222,9 @@ class FundingBucketsController < OrganizationAwareController
     else
       @template_organizations = []
       @fiscal_years = []
+    end
+    if params[:owner_id]
+      @bucket_proxy.owner_id = params[:owner_id]
     end
   end
 
@@ -282,14 +285,14 @@ class FundingBucketsController < OrganizationAwareController
       unless @bucket_proxy.return_to_bucket_index == 'false'
         redirect_to funding_buckets_path, notice: 'Buckets successfully created.'
       else
-        redirect_to new_funding_bucket_path(program_id: @bucket_proxy.program_id, template_id: @bucket_proxy.template_id, owner_id: @bucket_proxy.owner_id, fiscal_year_range_start: @bucket_proxy.fiscal_year_range_start, fiscal_year_range_end: @bucket_proxy.fiscal_year_range_end, name: @bucket_proxy.name, total_amount: @bucket_proxy.total_amount  ), notice: 'Buckets successfully created.'
+        redirect_to new_funding_bucket_path(program_id: @bucket_proxy.program_id, funding_template_id: @bucket_proxy.template_id, owner_id: @bucket_proxy.owner_id, fiscal_year_range_start: @bucket_proxy.fiscal_year_range_start, fiscal_year_range_end: @bucket_proxy.fiscal_year_range_end, name: @bucket_proxy.name, total_amount: @bucket_proxy.total_amount  ), notice: 'Buckets successfully created.'
       end
     else
       create_new_buckets(bucket_proxy)
       unless @bucket_proxy.return_to_bucket_index == 'false'
         redirect_to funding_buckets_path, notice: 'Buckets successfully created.'
       else
-        redirect_to new_funding_bucket_path(funding_source_id: @bucket_proxy.program_id, template_id: @bucket_proxy.template_id, owner_id: @bucket_proxy.owner_id, fiscal_year_range_start: @bucket_proxy.fiscal_year_range_start, fiscal_year_range_end: @bucket_proxy.fiscal_year_range_end, name: @bucket_proxy.name, total_amount: @bucket_proxy.total_amount  ), notice: 'Buckets successfully created.'
+        redirect_to new_funding_bucket_path(funding_source_id: @bucket_proxy.program_id, funding_template_id: @bucket_proxy.template_id, owner_id: @bucket_proxy.owner_id, fiscal_year_range_start: @bucket_proxy.fiscal_year_range_start, fiscal_year_range_end: @bucket_proxy.fiscal_year_range_end, name: @bucket_proxy.name, total_amount: @bucket_proxy.total_amount  ), notice: 'Buckets successfully created.'
       end
     end
 
@@ -305,6 +308,8 @@ class FundingBucketsController < OrganizationAwareController
     if @organization_list.count == 1
       @funding_bucket.owner_id = @organization_list.first
     end
+
+    @funding_bucket.generate_unique_name()
 
     respond_to do |format|
       if @funding_bucket.save
@@ -447,6 +452,22 @@ class FundingBucketsController < OrganizationAwareController
     program = FundingSource.find_by(id: program_id)
 
     result = program.find_all_valid_fiscal_years
+
+    respond_to do |format|
+      format.json { render json: result.to_json }
+    end
+  end
+
+  def is_bucket_name_unique
+    bucket_name = params[:bucket_name]
+    bucket = FundingBucket.find_by(name: bucket_name)
+
+    if bucket.nil?
+      result = true
+    else
+      result = false
+    end
+
 
     respond_to do |format|
       format.json { render json: result.to_json }
@@ -612,7 +633,7 @@ class FundingBucketsController < OrganizationAwareController
         existing_bucket.budget_amount = bucket.budget_amount
         existing_bucket.updator = current_user
         if bucket_proxy.name.blank?
-          existing_bucket.name = "#{existing_bucket.funding_source.name}-#{existing_bucket.funding_template.name}-#{existing_bucket.owner.short_name}-#{existing_bucket.fiscal_year_for_name(existing_bucket.fy_year)}"
+          existing_bucket.name = "#{existing_bucket.funding_source.name}-#{existing_bucket.funding_template.name}-#{existing_bucket.owner.short_name}-#{existing_bucket.fiscal_year_for_name(existing_bucket.fiscal_year)}"
         else
           existing_bucket.name = bucket_proxy.name
         end
