@@ -309,6 +309,8 @@ class FundingBucketsController < OrganizationAwareController
       @funding_bucket.owner_id = @organization_list.first
     end
 
+    @funding_bucket.generate_unique_name()
+
     respond_to do |format|
       if @funding_bucket.save
         notify_user(:notice, "The grant application was successfully saved.")
