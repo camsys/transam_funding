@@ -83,22 +83,19 @@
   var line_item_total = parseFloat($('#funding_request_funding_request_amount').val());
 
 
-  function get_percent_from_cash_entered(cash_value)
-  {
+  function get_percent_from_cash_entered(cash_value){
     var percent = (cash_value / line_item_total) * 100;
-    return percent;
+    return percent.toFixed(2);
   }
   function get_value_from_percent_funding(percent_funding){
     var cash_value = line_item_total * (percent_funding/100)
-    return cash_value.toFixed(2);
+    return cash_value;
   }
   function update_cash_value_and_percent_funding_for_state_from_match_percent(percent_funding){
     var federal_cash = parseFloat($('#funding_request_federal_amount').val());
     var cash_value = (line_item_total - federal_cash) * (percent_funding/100)
     update_state_percent_from_state_cash();
   }
-
-
 
   function update_total_funds(){
     var federal_cash = parseFloat($('#funding_request_federal_amount').val());
@@ -118,7 +115,6 @@
     var total = federal_cash + state_cash + local_cash
     $('#total_amount').text('$'+total);
   }
-
   function update_total_percents(){
     var federal_percent = parseFloat($('#funding_request_federal_percent').val());
     var state_percent = parseFloat($('#funding_request_state_percent').val());
@@ -146,7 +142,6 @@
       $( "#locking_option" ).removeClass( "fa fa-unlock-alt fa-2x text-success" ).addClass( "fa fa-unlock-alt fa-2x" );
     }
   }
-
   function update_totals(){
     update_total_funds();
     update_total_percents();
@@ -154,7 +149,7 @@
 
   function lock_form(){
     console.log('Testing lock_form');
-    $('#funding_request_funding_request_amount').attr('disabled', true);
+    //$('#funding_request_funding_request_amount').attr('disabled', true);
 
     $('#funding_request_federal_funding_line_item_id').attr('disabled', true);
     $('#funding_request_federal_percent').attr('disabled', true);
@@ -207,15 +202,33 @@
   }
   function update_federal_cash_from_federal_percent(){
     var federal_cash = get_value_from_percent_funding(parseFloat($('#funding_request_federal_percent').val()));
+    federal_cash = apply_federal_rounding_rules(federal_cash);
     $('#funding_request_federal_amount').val(federal_cash);
+    update_federal_percent_from_federal_cash();
   }
   function update_state_cash_from_state_percent(){
     var state_cash = get_value_from_percent_funding(parseFloat($('#funding_request_state_percent').val()));
+    state_cash = apply_state_rounding_rules(state_cash);
     $('#funding_request_state_amount').val(state_cash);
+    update_state_percent_from_state_cash();
   }
   function update_local_cash_from_local_percent(){
     var local_cash = get_value_from_percent_funding(parseFloat($('#funding_request_local_percent').val()));
+    local_cash = apply_local_rounding_rules(local_cash);
     $('#funding_request_local_amount').val(local_cash);
+    update_local_percent_from_local_cash(local_cash);
+  }
+
+  function apply_federal_rounding_rules(cash){
+    return cash.toFixed(0);
+  }
+
+  function apply_state_rounding_rules(cash){
+    return cash.toFixed(0);
+  }
+
+  function apply_local_rounding_rules(cash){
+    return cash.toFixed(0);
   }
 
   $('#locking_option').click(function(){
@@ -224,7 +237,7 @@
     var total_percent = parseFloat(total_percent_text);
 
     if (total_percent>= 100){
-      var is_disabled = $('#funding_request_funding_request_amount').is(':disabled');
+      var is_disabled = $('#funding_request_federal_percent').is(':disabled');
       if(is_disabled){
         unlock_form();
       }else{
@@ -240,13 +253,20 @@
   $('#funding_request_funding_request_amount').change(function(){
     var old_lit = line_item_total;
     line_item_total = parseFloat($('#funding_request_funding_request_amount').val());
+    var are_percents_locked = $('#funding_request_federal_percent').is(':disabled');
 
     //if the values have changed we need to update the percent based on what has been filled in for provided cash from buckets
-    if(old_lit != line_item_total)
+    if(old_lit != line_item_total && !are_percents_locked)
     {
       update_federal_percent_from_federal_cash();
       update_state_percent_from_state_cash();
       update_local_percent_from_local_cash();
+      update_totals();
+    }else if (old_lit != line_item_total && are_percents_locked)
+    {
+      update_federal_cash_from_federal_percent();
+      update_state_cash_from_state_percent();
+      update_local_cash_from_local_percent();
       update_totals();
     }
   });
