@@ -5,7 +5,7 @@
   - if @activity_line_item
     .col-md-8
       = dialog_tag('Funds', {:icon => 'fa fa-usd', :class => "form-part"}) do
-        = render :partial => 'activity_line_items/funding_plans'
+        = render :partial => 'funding_requests/funding_requests_index'
 
       = dialog_tag('Assets', {:icon => 'fa fa-list', :class => "form-part"}) do
         = render :partial => 'assets_modal'
