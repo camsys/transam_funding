@@ -1,135 +1,72 @@
-:ruby
-  total_state = 0
-  total_federal = 0
-  total_local = 0
-  total_amount = 0
-  old_fy_year = 0
-  fy_amount = 0
-  fy_state = 0
-  fy_local = 0
-  fy_federal = 0
-  table_dom_id = SecureRandom.hex
+- if activity_line_item.funding_requests.empty?
+  %p There are no funding requests for this ALI.
+-else
+  %table.table.table-hover
+    %thead
+      %tr
+        %th.center{:colspan => 3} Federal
+        %th.center{:colspan => 3} State
+        %th.center{:colspan => 3} Local
+        %th.center
+        %th.center
 
-%table.table.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
-  :card_view => "false",
-  :pagination => 'true',
-  :page_list => "[5, 10, 20, 50, 100, 200]",
-  :page_size => current_user.num_table_rows,
-  :show_pagination_switch => 'true',
-  :search => 'false',
-  :show_columns => 'true',
-  :show_export => 'true',
-  :show_toggle => 'true',
-  :resizable => 'true',
-  :search => 'false'}}
-  %thead
-    %tr
-      %th.center{:colspan => 4} Capital Project
-      %th.center{:colspan => 3} Federal
-      %th.center{:colspan => 3} State
-      %th.center{:colspan => 2} Local
-      %th.center Total
+      %tr
+        %th.center Fund
+        %th.center Amount
+        %th.center Pcnt
 
-    %tr
-      %th.left Agency
-      %th.center FY
-      %th.left Project
-      %th.center Status
+        %th.center Fund
+        %th.center Amount
+        %th.center Pcnt
 
-      %th.left Fund
-      %th.left Appropriation
-      %th.right Amount
+        %th.center Fund
+        %th.center Amount
+        %th.center Pcnt
 
-      %th.left Fund
-      %th.left Appropriation
-      %th.right Amount
+        %th.center Total
 
-      %th.left Source
-      %th.right Amount
+        %th
 
-      %th.right Amount
-
-  %tbody
-    - funding_requests.each do |req|
-
-      - total_amount += req.total_amount
-      - total_state += req.state_amount
-      - total_local += req.local_amount
-      - total_federal += req.federal_amount
-
-      - fy_year = req.activity_line_item.capital_project.fy_year
-      - if old_fy_year > 0 and old_fy_year != fy_year
+    %tbody
+      - activity_line_item.funding_requests.each do |f|
         %tr
-          %td.left
-          %td.center.sub_total= "#{format_as_fiscal_year(old_fy_year)} Totals"
-          %td.left{:colspan => 4}
-          %td.right.sub_total= format_as_currency(fy_federal)
-          %td.left{:colspan => 2}
-          %td.right.sub_total= format_as_currency(fy_state)
-          %td
-          %td.right.sub_total= format_as_currency(fy_local)
-          %td.right.sub_total= format_as_currency(fy_amount)
-        %tr
-          %td.left{:colspan => 13}
+          %td.left= f.federal_funding_line_item
+          %td.right= format_as_currency(f.federal_amount)
+          %td.right= format_as_percentage(f.federal_percentage, 3)
 
-        - fy_amount = req.total_amount
-        - fy_state = req.state_amount
-        - fy_local = req.local_amount
-        - fy_federal = req.federal_amount
-      - else
-        - fy_amount += req.total_amount
-        - fy_state += req.state_amount
-        - fy_local += req.local_amount
-        - fy_federal += req.federal_amount
+          %td.left= f.state_funding_line_item
+          %td.right= format_as_currency(f.state_amount)
+          %td.right= format_as_percentage(f.state_percentage, 3)
 
-      - old_fy_year = fy_year
+          %td.left= f.local_funding_line_item
+          %td.right= format_as_currency(f.local_amount)
+          %td.right= format_as_percentage(f.local_percentage, 3)
 
-      %tr{:data => {:action_path => capital_project_activity_line_item_path(req.activity_line_item.capital_project, req.activity_line_item)}}
-        %td.left= req.activity_line_item.capital_project.organization
-        %td.center= req.activity_line_item.capital_project.fy_year
-        %td.left= req.activity_line_item.capital_project
-        %td.center= req.activity_line_item.capital_project.state
+          %td.right= format_as_currency(f.total_amount)
 
-        %td.left= req.federal_funding_line_item.funding_source unless req.federal_funding_line_item.nil?
-        %td.left= req.federal_funding_line_item
-        %td.right= format_as_currency(req.federal_amount)
+          %td.right
+            = link_to scheduler_ali_action_scheduler_index_path(:org_id => @org_id, :active_year => @active_year, :ali => activity_line_item.object_key, :funding_request => f.object_key, :invoke => SchedulerController::ALI_EDIT_FUND_ACTION),
+                :remote => :true, :title => 'Edit this funding item', :class => 'btn btn-xs btn-info', :style => 'margin-left: 1px; margin-right: 1px;' do
+              %i.fa.fa-edit
+            = link_to scheduler_ali_action_scheduler_index_path(:org_id => @org_id, :active_year => @active_year, :ali => activity_line_item.object_key, :funding_request => f.object_key, :invoke => SchedulerController::ALI_REMOVE_FUND_ACTION),
+                :title => 'Remove this funding item', :data => {:confirm => "Are you sure you want to remove this fund? The action can't be undone."},
+                :class => 'btn btn-xs btn-warning', :style => 'margin-left: 1px; margin-right: 1px;'  do
+              %i.fa.fa-trash-o
 
-        %td.left= req.state_funding_line_item.funding_source unless req.state_funding_line_item.nil?
-        %td.left= req.state_funding_line_item
-        %td.right= format_as_currency(req.state_amount)
-
+    %tfoot
+      %tr
+        %td.right= format_as_currency(activity_line_item.federal_funds)
         %td.left
-        %td.right= format_as_currency(req.local_amount)
+        %td.right= format_as_percentage(activity_line_item.federal_percentage, 3)
 
-        %td.right= format_as_currency(req.total_amount)
+        %td.right= format_as_currency(activity_line_item.state_funds)
+        %td.left
+        %td.right= format_as_percentage(activity_line_item.state_percentage, 3)
 
-    %tr
-      %td.left
-      %td.center.sub_total= "#{format_as_fiscal_year(old_fy_year)} Totals"
-      %td.left{:colspan => 4}
-      %td.right.sub_total= format_as_currency(fy_federal)
-      %td.left{:colspan => 2}
-      %td.right.sub_total= format_as_currency(fy_state)
-      %td.left
-      %td.right.sub_total= format_as_currency(fy_local)
-      %td.right.sub_total= format_as_currency(fy_amount)
-    %tr
-      %td.left{:colspan => 13}
+        %td.right= format_as_currency(activity_line_item.local_funds)
+        %td.left
+        %td.right= format_as_percentage(activity_line_item.local_percentage, 3)
 
-  %tfoot
-    %tr
-      %td.left
-      %td.center All FY Totals
-      %td.left{:colspan => 4}
-      %td.right= format_as_currency(total_federal)
-      %td.left{:colspan => 2}
-      %td.right= format_as_currency(total_state)
-      %td.left
-      %td.right= format_as_currency(total_local)
-      %td.right= format_as_currency(total_amount)
+        %td.right= format_as_currency(activity_line_item.total_funds)
 
-:javascript
-
-  $(window).resize(function() {
-    $("##{table_dom_id}").bootstrapTable('resetView');
-  });
+        %td

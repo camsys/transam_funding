@@ -46,12 +46,12 @@ class SchedulerController < AbstractCapitalProjectsController
     if current_index == 0
       @prev_record_path = "#"
     else
-      @prev_record_path = scheduler_index_path(:active_year => @active_year, :start_year => @start_year - 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
+      @prev_record_path = scheduler_index_path(:start_year => @start_year - 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
     end
     if current_index == (@total_rows - 1)
       @next_record_path = "#"
     else
-      @next_record_path = scheduler_index_path(:active_year => @active_year, :start_year => @start_year + 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
+      @next_record_path = scheduler_index_path(:start_year => @start_year + 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
     end
 
     # Get the ALIs for each year
@@ -288,7 +288,18 @@ class SchedulerController < AbstractCapitalProjectsController
   end
 
   def get_alis(year)
-    ActivityLineItem.where(:capital_project_id => @projects.ids, :fy_year => year)
+    alis = ActivityLineItem.where(:capital_project_id => @projects.ids, :fy_year => year)
+
+    case params[:sort]
+      when 'cost'
+        alis.sort_by{|a| a.cost}
+      when 'pcnt_funded'
+        alis.sort_by{|a| a.pcnt_funded}
+      when 'num_assets'
+        alis.sort_by{|a| a.assets.count}
+      else
+        alis
+    end
   end
 
   private

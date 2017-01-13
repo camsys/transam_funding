@@ -2,17 +2,11 @@
   .col-md-12
     = render :partial => 'capital_projects/capital_plan_summary', :locals => {:highlight_years => [@active_year]}
 
+#spinner{style: 'display:none;'}= loader_panel_tag({:message => "Processing...", :size => 3, :spinner => "cog"})
+
 .row
   .col-md-12
     #swimlanes
       = render 'swimlanes'
 
-.modal.fade#form-modal{:tabindex => -1, :role => 'dialog', :aria => {:hidden => true}}
-
-#processing-modal.modal.fade
-  .modal-dialog
-    .modal-content
-      .modal-header
-        %h4.modal-title Processing...
-      .modal-body
-        = render partial: 'shared/running_process', locals: {message: "Updating SOGR projects. This process might take a while.", style: ''}
+= render 'index_scripts'
