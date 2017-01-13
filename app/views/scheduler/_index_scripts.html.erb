@@ -1,6 +1,6 @@
 <script type="text/javascript">
 
-  	$(document).ready(function() {
+  $(document).ready(function() {
 
   		transam.make_same_height('.header-part');
 		// install click handlers for navigable objects
@@ -16,5 +16,9 @@
 
     	//setupSwimlaneDragging();  
 	});
+
+  $('body').find('#row_pager a').on( "click", function() {
+    $("#spinner").show();
+  });
 
 </script>
