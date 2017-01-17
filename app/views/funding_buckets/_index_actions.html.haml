@@ -8,13 +8,7 @@
   .form-group  
     %label
       = check_box_tag(:funds_available, '1', @show_funds_available_only, {:class => "bucket-filter"})
-      %b Funds Available Only
+      Funds Available Only
 
-:javascript
-  $(document).ready(function() {
-
-    $('.bucket-filter').change(function() {
-      $('#filter_form').submit();
-    });
-
-  });
+  = button_tag :class => 'btn btn-default', :type => 'submit' do
+    %i.fa.fa-filter
