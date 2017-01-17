@@ -8,7 +8,7 @@
 
   .col-sm-6
     = f.input :funding_bucket_id, :collection => FundingBucket.active.map{ |f| [f.to_s, f.id, {:style => 'display:none;', :data => {owner_id: f.owner_id} } ] }, :label => 'Funding'
-= f.input :not_fully_funded
+= f.input :not_fully_funded, :label => 'Not fully funded (estimated cost not anticipated)'
 
 :javascript
 

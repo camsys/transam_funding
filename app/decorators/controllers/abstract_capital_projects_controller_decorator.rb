@@ -135,6 +135,16 @@ AbstractCapitalProjectsController.class_eval do
       alis = alis.joins(:funding_requests).where('funding_requests.federal_funding_line_item_id = ? OR funding_requests.state_funding_line_item_id = ? OR funding_requests.local_funding_line_item_id = ?', funding_bucket, funding_bucket, funding_bucket)
     end
 
+    if @user_activity_line_item_filter.try(:not_fully_funded)
+      alis = alis.joins(
+          'LEFT JOIN (
+            SELECT SUM(federal_amount + state_amount + local_amount) AS total_amount, activity_line_item_id
+            FROM `funding_requests`  GROUP BY `funding_requests`.`activity_line_item_id`
+          ) AS sum_table
+          ON sum_table.activity_line_item_id = activity_line_items.id'
+      ).where('sum_table.total_amount IS NULL OR sum_table.total_amount < activity_line_items.estimated_cost')
+    end
+
     if alis
       conditions << 'capital_projects.id IN (?)'
       values << alis.pluck(:capital_project_id).uniq
