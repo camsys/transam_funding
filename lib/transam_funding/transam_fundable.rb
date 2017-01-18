@@ -20,10 +20,6 @@ module TransamFundable
     # Associations
     # ----------------------------------------------------
 
-    # Has 0 or more funding plans -- A funding plan identifies the sources and amounts
-    # of funds that will be used to fund the ALI
-    #has_many    :funding_plans,     :dependent => :destroy
-
     # Has 0 or more funding requests, These will be removed if the project is removed.
     has_many    :funding_requests,  :dependent => :destroy
 
