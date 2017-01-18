@@ -136,13 +136,16 @@ AbstractCapitalProjectsController.class_eval do
     end
 
     if @user_activity_line_item_filter.try(:not_fully_funded)
-      alis = alis.joins(
+      cost_statement = "#{ActivityLineItem::COST_SUM_SQL_CLAUSE} AS ali_cost"
+      alis = alis
+        .select("*").select(cost_statement)
+       .joins(
           'LEFT JOIN (
             SELECT SUM(federal_amount + state_amount + local_amount) AS total_amount, activity_line_item_id
             FROM `funding_requests`  GROUP BY `funding_requests`.`activity_line_item_id`
           ) AS sum_table
           ON sum_table.activity_line_item_id = activity_line_items.id'
-      ).where('sum_table.total_amount IS NULL OR sum_table.total_amount < activity_line_items.estimated_cost')
+        ).where('sum_table.total_amount IS NULL OR sum_table.total_amount < activity_line_items.ali_cost')
     end
 
     if alis
