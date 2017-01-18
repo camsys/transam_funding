@@ -54,6 +54,8 @@ class SchedulerController < AbstractCapitalProjectsController
       @next_record_path = scheduler_index_path(:start_year => @start_year + 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
     end
 
+    @total_projects_cost_by_year = @projects.joins(:activity_line_items).group("activity_line_items.fy_year").sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
+
     # Get the ALIs for each year
     @year_1_alis = get_alis(@year_1)
     @year_2_alis = get_alis(@year_2)
