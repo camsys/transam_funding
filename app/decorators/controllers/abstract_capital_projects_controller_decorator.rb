@@ -125,9 +125,10 @@ AbstractCapitalProjectsController.class_eval do
       ali_asset_values << ActivityLineItem.where(team_ali_code_id: @team_ali_code_filter).ids
     end
 
+    alis = ActivityLineItem.all
 
     unless ali_asset_conditions.empty?
-      alis = ActivityLineItem.joins('INNER JOIN activity_line_items_assets ON activity_line_items_assets.activity_line_item_id = activity_line_items.id').where(ali_asset_conditions.join(' AND '), *ali_asset_values)
+      alis = alis.joins('INNER JOIN activity_line_items_assets ON activity_line_items_assets.activity_line_item_id = activity_line_items.id').where(ali_asset_conditions.join(' AND '), *ali_asset_values)
     end
 
     funding_bucket = @user_activity_line_item_filter.try(:funding_bucket_id)
@@ -136,21 +137,20 @@ AbstractCapitalProjectsController.class_eval do
     end
 
     if @user_activity_line_item_filter.try(:not_fully_funded)
-      cost_statement = "#{ActivityLineItem::COST_SUM_SQL_CLAUSE} AS ali_cost"
-      alis = alis
-        .select("*").select(cost_statement)
-       .joins(
+      alis = alis.joins(
           'LEFT JOIN (
             SELECT SUM(federal_amount + state_amount + local_amount) AS total_amount, activity_line_item_id
             FROM `funding_requests`  GROUP BY `funding_requests`.`activity_line_item_id`
           ) AS sum_table
           ON sum_table.activity_line_item_id = activity_line_items.id'
-        ).where('sum_table.total_amount IS NULL OR sum_table.total_amount < activity_line_items.ali_cost')
+      ).where("sum_table.total_amount IS NULL OR sum_table.total_amount < (#{ActivityLineItem::COST_SUM_SQL_CLAUSE})")
     end
+
+
 
     if alis
       conditions << 'capital_projects.id IN (?)'
-      values << alis.pluck(:capital_project_id).uniq
+      values << alis.map(&:capital_project_id)
     end
 
     #-----------------------------------------------------------------------------
