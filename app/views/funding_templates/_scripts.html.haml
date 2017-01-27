@@ -8,14 +8,14 @@
       // save the latest tab
       var this_tab = $(this).attr('href');
       //alert(this_tab);
-      transam.set_ui_key_value('fs_tab', this_tab);
+      transam.set_ui_key_value('funding_template_tab', this_tab);
       if (this_tab == '#chrt') {
         draw_chart();
       }
     });
   });
   $(function() {
-    var last_tab = transam.get_ui_key_value('fs_tab');
+    var last_tab = transam.get_ui_key_value('funding_template_tab');
     if (last_tab) {
       $('a[href='+last_tab+']').tab('show');
     } else {
