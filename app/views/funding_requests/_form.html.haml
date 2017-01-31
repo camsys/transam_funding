@@ -104,6 +104,7 @@
 
     if(isNaN(federal_cash)){
       federal_cash = 0
+      federal_cash = 0
     }
     if(isNaN(state_cash)){
       state_cash = 0
@@ -151,36 +152,36 @@
     console.log('Testing lock_form');
     //$('#funding_request_funding_request_amount').attr('disabled', true);
 
-    $('#funding_request_federal_funding_line_item_id').attr('disabled', true);
-    $('#funding_request_federal_percent').attr('disabled', true);
-    $('#funding_request_federal_amount').attr('disabled', true);
+    $('#funding_request_federal_funding_line_item_id').attr('readonly', true);
+    $('#funding_request_federal_percent').attr('readonly', true);
+    $('#funding_request_federal_amount').attr('readonly', true);
 
-    $('#funding_request_state_funding_line_item_id').attr('disabled', true);
-    $('#funding_request_state_percent').attr('disabled', true);
-    $('#funding_request_state_amount').attr('disabled', true);
+    $('#funding_request_state_funding_line_item_id').attr('readonly', true);
+    $('#funding_request_state_percent').attr('readonly', true);
+    $('#funding_request_state_amount').attr('readonly', true);
 
-    $('#funding_request_local_funding_line_item_id').attr('disabled', true);
-    $('#funding_request_local_percent').attr('disabled', true);
-    $('#funding_request_local_amount').attr('disabled', true);
+    $('#funding_request_local_funding_line_item_id').attr('readonly', true);
+    $('#funding_request_local_percent').attr('readonly', true);
+    $('#funding_request_local_amount').attr('readonly', true);
 
     $( "#locking_option" ).removeClass( "fa fa-unlock-alt fa-2x text-success" ).addClass( "fa fa-lock fa-2x text-danger" );
 
   }
   function unlock_form(){
     console.log('Testing unlock_form');
-    $('#funding_request_funding_request_amount').removeAttr('disabled');
+    $('#funding_request_funding_request_amount').removeAttr('readonly');
 
-    $('#funding_request_federal_funding_line_item_id').removeAttr('disabled');
-    $('#funding_request_federal_percent').removeAttr('disabled');
-    $('#funding_request_federal_amount').removeAttr('disabled');
+    $('#funding_request_federal_funding_line_item_id').removeAttr('readonly');
+    $('#funding_request_federal_percent').removeAttr('readonly');
+    $('#funding_request_federal_amount').removeAttr('readonly');
 
-    $('#funding_request_state_funding_line_item_id').removeAttr('disabled');
-    $('#funding_request_state_percent').removeAttr('disabled');
-    $('#funding_request_state_amount').removeAttr('disabled');
+    $('#funding_request_state_funding_line_item_id').removeAttr('readonly');
+    $('#funding_request_state_percent').removeAttr('readonly');
+    $('#funding_request_state_amount').removeAttr('readonly');
 
-    $('#funding_request_local_funding_line_item_id').removeAttr('disabled');
-    $('#funding_request_local_percent').removeAttr('disabled');
-    $('#funding_request_local_amount').removeAttr('disabled');
+    $('#funding_request_local_funding_line_item_id').removeAttr('readonly');
+    $('#funding_request_local_percent').removeAttr('readonly');
+    $('#funding_request_local_amount').removeAttr('readonly');
 
     $( "#locking_option" ).removeClass( "fa fa-lock fa-2x text-danger" ).addClass( "fa fa-unlock-alt fa-2x text-success" );
   }
@@ -237,7 +238,7 @@
     var total_percent = parseFloat(total_percent_text);
 
     if (total_percent>= 100){
-      var is_disabled = $('#funding_request_federal_percent').is(':disabled');
+      var is_disabled = $('#funding_request_federal_percent').is(':readonly');
       if(is_disabled){
         unlock_form();
       }else{
@@ -253,7 +254,7 @@
   $('#funding_request_funding_request_amount').change(function(){
     var old_lit = line_item_total;
     line_item_total = parseFloat($('#funding_request_funding_request_amount').val());
-    var are_percents_locked = $('#funding_request_federal_percent').is(':disabled');
+    var are_percents_locked = $('#funding_request_federal_percent').is(':readonly');
 
     //if the values have changed we need to update the percent based on what has been filled in for provided cash from buckets
     if(old_lit != line_item_total && !are_percents_locked)

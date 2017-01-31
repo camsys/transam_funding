@@ -25,8 +25,6 @@
         - cost = get_swimlane_activity_cost(asset, year)
         - funds_left -= cost
         = render :partial => 'asset_detail', :locals => {:year => year, :asset => asset, :cost => cost, :color => funds_left > 0 ? '#ccffcc' : '#4e95f4'}
-
-  .panel-footer{year == @active_year ? {:data => {:action_path => scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, ali: ali.object_key)}} : {}}
     %table.table.table-condensed
       %tbody
         - ali.funding_requests.each do |f|
@@ -43,6 +41,8 @@
             %td.right= format_as_currency(f.local_amount)
             %td.right= format_as_currency(f.total_amount)
 
+  .panel-footer{year == @active_year ? {:data => {:action_path => scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, ali: ali.object_key)}} : {}}
+    %table.table.table-condensed
       %tfoot
         %tr
           %td.left{colspan: 2} Total Funding

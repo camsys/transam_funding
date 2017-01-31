@@ -7,6 +7,9 @@
       = dialog_tag('Funds', {:icon => 'fa fa-usd', :class => "form-part"}) do
         = render :partial => 'funding_requests/funding_requests_index'
 
+      = dialog_tag('Funding Request', {:icon => 'fa fa-usd', :class => "form-part"}) do
+        = render :partial => 'funding_requests/form'
+
       = dialog_tag('Assets', {:icon => 'fa fa-list', :class => "form-part"}) do
         = render :partial => 'assets_modal'
 

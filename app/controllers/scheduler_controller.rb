@@ -207,8 +207,6 @@ class SchedulerController < AbstractCapitalProjectsController
     when ALI_EDIT_FUND_ACTION
       @funding_request = FundingRequest.find_by(object_key: params[:funding_request])
       @msg = "The ALI was successfully updated."
-
-
     when ALI_REMOVE_FUND_ACTION
       @funding_request = FundingRequest.find_by(object_key: params[:funding_request])
       if @funding_request.destroy
