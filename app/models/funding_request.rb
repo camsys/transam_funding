@@ -55,6 +55,8 @@ class FundingRequest < ActiveRecord::Base
   attr_accessor   :federal_percent
   attr_accessor   :state_percent
   attr_accessor   :local_percent
+  attr_accessor   :total_percent
+  attr_accessor   :total_amount
 
   #------------------------------------------------------------------------------
   # Scopes
@@ -72,7 +74,9 @@ class FundingRequest < ActiveRecord::Base
     :funding_request_amount,
     :federal_percent,
     :state_percent,
-    :local_percent
+    :local_percent,
+    :total_percent,
+    :total_amount
   ]
 
   #------------------------------------------------------------------------------
