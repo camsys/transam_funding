@@ -1,10 +1,15 @@
 - action ||= 1
+:css
+  .panel-info:hover{
+    border-color: #bce8f1;
+    background-color: #000099 !important;
+  }
 
 .panel.swimlane{:class => year == @active_year ? 'panel-info' : 'panel-default'}
   .panel-heading.swimlane-heading{year == @active_year ? {:data => {:fy => year, :action_path => scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, start_year: year)}} : {} }
     %span.badge.pull-right{id: "year_#{year}_swimlane_badge"}= alis.count
     %h3.panel-title
-      %i.fa.fa-calendar
+      %i.fa.fa-lock
       = format_as_fiscal_year(year)
 
   .panel-body.swimlane-container{:id => "year_#{year}_swimlane"}
