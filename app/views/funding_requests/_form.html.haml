@@ -68,10 +68,16 @@
         .col-xs-6.left
         .col-xs-1.left{:id => "total_amount_label"}
           Total:
-        .col-xs-2{:id => "total_percent"}
-          0%
-        .col-xs-3{:id => "total_amount"}
-          $0
+        .col-xs-2
+          = f.input :total_percent, :wrapper=> :horizontal_prepend, :label => false do
+            = f.input_field :total_percent, :class => "form-control", :digits => true, :min => 0, :max => 100
+            %span.input-group-addon
+              %i.fa.fa-percent
+        .col-xs-3
+          = f.input :total_amount, :wrapper=> :horizontal_prepend, :label => false do
+            %span.input-group-addon
+              %i.fa.fa-usd
+            = f.input_field :total_amount, :class => "form-control", :number => true, :min => 0
       .row
         .col-xs-3
           .col-xs-offset-3.col-xs-3
@@ -85,7 +91,7 @@
 
   function get_percent_from_cash_entered(cash_value){
     var percent = (cash_value / line_item_total) * 100;
-    return percent.toFixed(2);
+    return percent.toFixed(0);
   }
   function get_value_from_percent_funding(percent_funding){
     var cash_value = line_item_total * (percent_funding/100)
@@ -113,8 +119,10 @@
       local_cash = 0
     }
 
-    var total = federal_cash + state_cash + local_cash
-    $('#total_amount').text('$'+total);
+    var total = federal_cash + state_cash + local_cash;
+    console.log("Setting the total CASH VALUE now!");
+    $('#funding_request_total_amount').val(total);
+    $('#funding_request_total_amount').attr('readonly', true);
   }
   function update_total_percents(){
     var federal_percent = parseFloat($('#funding_request_federal_percent').val());
@@ -131,8 +139,10 @@
       local_percent = 0
     }
 
-    var total = federal_percent + state_percent + local_percent
-    $('#total_percent').text(total+'%');
+    var total = federal_percent + state_percent + local_percent;
+    console.log("Setting the total now!");
+    $('#funding_request_total_percent').val(total);
+    $('#funding_request_total_percent').attr('readonly', true);
 
     if(total >= 100){
       //  Allow the user to lock the form set the unlock icon to greem
@@ -376,3 +386,5 @@
 
    update_totals();
   }
+
+  update_totals();
