@@ -22,7 +22,7 @@
       %p.text-primary{:style => 'margin-bottom: 0px;'}
         = "#{ast.manufacture_year} #{ast.description}"
       %p.text-primary{:style => 'margin-bottom: 0px;'}
-        - if ast.type_of? :vehicle or ast.type_of? :support_vehicle
+        - if ast.type_of? :vehicle
           = "Condition: <strong>#{format_as_decimal(ast.reported_condition_rating, 2)}</strong> Miles <strong>#{format_as_integer(ast.reported_mileage)}</strong>".html_safe
         - else
           = "Condition: <strong>#{format_as_decimal(ast.reported_condition_rating, 2)}</strong>".html_safe
