@@ -49,7 +49,7 @@ AbstractCapitalProjectsController.class_eval do
       asset_conditions << 'assets.asset_subtype_id IN (?)'
       asset_values << @asset_subtype_filter
     elsif @user_activity_line_item_filter.try(:asset_type_id).present?
-      @asset_subtype_filter = AssetType.find_by(id: @user_activity_line_item_filter.asset_type_id).asset_subtypes.ids
+      @asset_subtype_filter = AssetSubtype.where(asset_type_id: @user_activity_line_item_filter.asset_type_id).pluck(:id)
       asset_conditions << 'assets.asset_subtype_id IN (?)'
       asset_values << @asset_subtype_filter
     end
@@ -81,8 +81,8 @@ AbstractCapitalProjectsController.class_eval do
     else
       @team_ali_code_filter = [@user_activity_line_item_filter.team_ali_code_id]
 
-      ali_asset_conditions << 'activity_line_items_assets.activity_line_item_id IN (?)'
-      ali_asset_values << ActivityLineItem.where(team_ali_code_id: @team_ali_code_filter).ids
+      ali_asset_conditions << 'activity_line_items.team_ali_code_id IN (?)'
+      ali_asset_values << @team_ali_code_filter
     end
     
 
@@ -115,7 +115,7 @@ AbstractCapitalProjectsController.class_eval do
     # CapitalProject specific
     #-----------------------------------------------------------------------------
     # get the projects based on filtered ALIs
-    @projects = CapitalProject.where(id: @alis.pluck(:capital_project_id)).order(:fy_year, :capital_project_type_id, :created_at)
+    @projects = CapitalProject.where(id: @alis.uniq(:capital_project_id).pluck(:capital_project_id)).order(:fy_year, :capital_project_type_id, :created_at)
 
     # org id is not tied to ALI filter
     # org id is used in scheduler though not necessary but all links specify looking at a single org at a time
