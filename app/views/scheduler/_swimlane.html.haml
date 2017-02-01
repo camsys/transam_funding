@@ -9,7 +9,8 @@
 
   .panel-body.swimlane-container{:id => "year_#{year}_swimlane"}
     - alis.each do |a|
-      = render :partial => 'swimlane_detail', :locals => {:ali => a, :year => year, :action => action}
+      .panel.panel-primary.swimlane-draggable{id: "#{a.object_key}_ali_panel", data: {object_type: 'ali', object_key: a.object_key, fy: year}}
+        = render :partial => 'swimlane_detail', :locals => {:ali => a, :year => year}
 
 
 .modal.fade#form-modal{:tabindex => -1, :role => 'dialog', :aria => {:hidden => true}}
