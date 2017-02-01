@@ -2,7 +2,7 @@
   amount_needed = @activity_line_item.funds_required >= 0 ? @activity_line_item.funds_required : 0
 
 %span
-  .span
+  %span
     - if amount_needed == 0
       %p.text-info
         This ALI is fully funded.
