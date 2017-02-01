@@ -37,17 +37,17 @@
         %th.center{:data => {:field => 'object_key', :visible => 'false'}} Object
         %th.left{data: {field: 'asset_tag', :sortable => 'true'}} Tag
         %th.left{data: {field: 'asset_subtype_id', :sortable => 'true'}} Subtype
-        %th.left{data: {field: 'fuel_type', :sortable => 'true', :sorter => 'generalSorter'}} Fuel
+        %th.left{data: {field: 'fuel_type', :sortable => 'true'}} Fuel
         %th.left{data: {field: 'description', :sortable => 'true'}} Descrip.
 
 
-        %th.center{data: {field: 'age', :sortable => 'true', :sort_name=>"_age_data", :sorter => 'generalSorter'}} Age
+        %th.center{data: {field: 'age', :sortable => 'true'}} Age
         %th.center{data: {field: 'in_backlog', :sortable => 'true', formatter: 'boolean_formatter'}} Bcklg
         %th.right{data: {field: 'reported_mileage', :sortable => 'true', formatter: 'integer_formatter'}} Mileage
         %th.center{data: {field: 'reported_condition_rating', :sortable => 'true'}} Cond.
 
-        %th.center{data: {field: 'policy_replacement_fiscal_year', :sortable => 'true', :sorter => 'generalSorter'}} Policy FY
-        %th.right{data: {field: 'scheduled_cost', :sortable => 'true', :sorter => 'generalSorter', formatter: 'currency_formatter'}} Sch. Cost
+        %th.center{data: {field: 'policy_replacement_fiscal_year', :sortable => 'true'}} Policy FY
+        %th.right{data: {field: 'scheduled_cost', :sortable => 'true', formatter: 'currency_formatter'}} Sch. Cost
         - if popup == '1'
           %th.center{data: {formatter: 'popup_formatter'}}
         - if ali.has_early_replacement_assets?
