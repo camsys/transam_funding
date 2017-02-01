@@ -1,15 +1,21 @@
 - action ||= 1
 
+:css
+  .panel-footer.clickable:hover{
+    background-color: #dddddd !important;
+  }
+
 .panel.swimlane{:class => year == @active_year ? 'panel-info' : 'panel-default'}
   .panel-heading.swimlane-heading{year == @active_year ? {:data => {:fy => year, :action_path => scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, start_year: year)}} : {} }
     %span.badge.pull-right{id: "year_#{year}_swimlane_badge"}= alis.count
     %h3.panel-title
-      %i.fa.fa-calendar
+      %i.fa.fa-lock
       = format_as_fiscal_year(year)
 
   .panel-body.swimlane-container{:id => "year_#{year}_swimlane"}
     - alis.each do |a|
-      = render :partial => 'swimlane_detail', :locals => {:ali => a, :year => year, :action => action}
+      .panel.panel-primary.swimlane-draggable{id: "#{a.object_key}_ali_panel", data: {object_type: 'ali', object_key: a.object_key, fy: year}}
+        = render :partial => 'swimlane_detail', :locals => {:ali => a, :year => year}
 
 
 .modal.fade#form-modal{:tabindex => -1, :role => 'dialog', :aria => {:hidden => true}}

@@ -1,56 +1,60 @@
-- action ||= 0
+.panel-heading.ali-heading
+  %span.pull-right.ali_cost
+    = ali.team_ali_code.to_s
+    - if can? :update, ali
+      .btn-group{:style => 'margin-left: 5px;'}
+        %button.btn.btn-default.btn-xs.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
+          %i.fa.fa-edit
+          %span.caret
+        %ul.dropdown-menu{:role => 'menu'}
+          = render :partial => 'planning/activity_line_item_action_links', :locals => {:project => ali.capital_project, :ali => ali}
+  %i.fa.fa-lg.fa-caret-right.panel-toggle{:style => 'font-size:1.25em;margin-right:5px;', :data => {:toggle => "collapse", :target => "##{ali.object_key}_ali_body"}}
+  = ali.capital_project.name.upcase
+  %br
+  = ali.to_s.upcase
 
-.panel.panel-primary.swimlane-draggable{id: "#{ali.object_key}_ali_panel",
-  data: {object_type: 'ali', object_key: ali.object_key, fy: year}}
-  .panel-heading.ali-heading
-    %span.pull-right.ali_cost
-      = format_as_currency(ali.cost) + (ali.is_cost_estimated? ? " (e)" : "")
-      %span.badge= ali.assets.count
-      - if can? :update, ali
-        .btn-group{:style => 'margin-left: 5px;'}
-          %button.btn.btn-default.btn-xs.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
-            %i.fa.fa-edit
-            %span.caret
-          %ul.dropdown-menu{:role => 'menu'}
-            = render :partial => 'planning/activity_line_item_action_links', :locals => {:project => ali.capital_project, :ali => ali}
-    %i.fa.fa-lg.fa-caret-right.panel-toggle{:style => 'font-size:1.25em;margin-right:5px;', :data => {:toggle => "collapse", :target => "##{ali.object_key}_ali_body"}}
-    = "#{ali.team_ali_code} #{ali}".upcase
-
-  .panel-body.collapse{year == @active_year ? {:id => "#{ali.object_key}_ali_body", :data => {:action_path => scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, ali: ali.object_key)}} : {:id => "#{ali.object_key}_ali_body"}}
-    - if ali.assets.empty?
-      %p There are no assets associated with this ALI
-    - else
-      - funds_left = ali.total_funds
-      - ali.assets.each do |asset|
-        - cost = get_swimlane_activity_cost(asset, year)
-        - funds_left -= cost
-        = render :partial => 'asset_detail', :locals => {:year => year, :asset => asset, :cost => cost, :color => funds_left > 0 ? '#ccffcc' : '#4e95f4'}
-
-  .panel-footer{year == @active_year ? {:data => {:action_path => scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, ali: ali.object_key)}} : {}}
-    %table.table.table-condensed
-      %tbody
-        - ali.funding_requests.each do |f|
-          %tr
-            %td.left= f.federal_funding_line_item
-            %td.right= format_as_currency(f.federal_amount)
-
-          %tr
-            %td.left= f.state_funding_line_item
-            %td.right= format_as_currency(f.state_amount)
-
-          %tr
-            %td.left= f.local_funding_line_item
-            %td.right= format_as_currency(f.local_amount)
-            %td.right= format_as_currency(f.total_amount)
-
-      %tfoot
+- panel_params = {:id => "#{ali.object_key}_ali_body"}
+- if year == @active_year
+  - panel_params[:data] = {:action_path => scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, start_year: year, ali: ali.object_key)}
+  - panel_params[:class] = 'clickable'
+- if ali.object_key == params[:ali]
+  - panel_params[:style] = 'background-color: #d9edf7;'
+.panel-body.collapse{panel_params}
+  - if ali.assets.empty?
+    %p There are no assets associated with this ALI
+  - else
+    - funds_left = ali.total_funds
+    - ali.assets.each do |asset|
+      - cost = get_swimlane_activity_cost(asset, year)
+      - funds_left -= cost
+      = render :partial => 'scheduler/asset_detail', :locals => {:year => year, :asset => asset, :cost => cost, :color => funds_left > 0 ? '#ccffcc' : '#4e95f4'}
+  %table.table.table-condensed
+    %tbody
+      - ali.funding_requests.each do |f|
         %tr
-          %td.left{colspan: 2} Total Funding
-          %td.right= format_as_currency(ali.total_funds)
-        %tr
-          %td.left{colspan: 2} Required
-          %td.right= format_as_currency(ali.funds_required)
+          %td.left= f.federal_funding_line_item
+          %td.right= format_as_currency(f.federal_amount)
 
         %tr
-          %td.left{colspan: 2} Pcnt Funded
-          %td.right= format_as_percentage(ali.pcnt_funded, 3)
+          %td.left= f.state_funding_line_item
+          %td.right= format_as_currency(f.state_amount)
+
+        %tr
+          %td.left= f.local_funding_line_item
+          %td.right= format_as_currency(f.local_amount)
+          %td.right= format_as_currency(f.total_amount)
+
+.panel-footer{panel_params.except(:id)}
+  .row
+    .col-xs-2
+      %span.badge{title: 'Num. Assets'}= ali.assets.count
+    .col-xs-4
+      %span{title: 'Cost'}
+        = link_to edit_cost_capital_project_activity_line_item_path(ali.capital_project, ali), :remote => true do
+          = format_as_currency(ali.cost) + (ali.is_cost_estimated? ? " (e)" : "")
+    .col-xs-2
+      %span.text-success{title: 'Total Funds'}= format_as_currency(ali.total_funds)
+    .col-xs-2
+      %span.text-danger{title: 'Funds Required'}= format_as_currency(ali.funds_required)
+    .col-xs-2
+      %span.pull-right{title: 'Pcnt Funded'}= format_as_percentage(ali.pcnt_funded, 3)
