@@ -1,5 +1,4 @@
 = dialog_tag('Funding Request', {:icon => 'fa fa-usd', :class => "form-part"}) do
-  = render 'funding_requests/funding_messages'
 
   .row
     .col-md-12
@@ -69,16 +68,16 @@
           .col-xs-6.left
           .col-xs-1.left{:id => "total_amount_label"}
             Total:
-        .col-xs-2
-          = f.input :total_percent, :wrapper=> :horizontal_prepend, :label => false do
-            = f.input_field :total_percent, :class => "form-control", :digits => true, :min => 0, :max => 100
-            %span.input-group-addon
-              %i.fa.fa-percent
-        .col-xs-3
-          = f.input :total_amount, :wrapper=> :horizontal_prepend, :label => false do
-            %span.input-group-addon
-              %i.fa.fa-usd
-            = f.input_field :total_amount, :class => "form-control", :number => true, :min => 0
+          .col-xs-2
+            = f.input :total_percent, :wrapper=> :horizontal_prepend, :label => false do
+              = f.input_field :total_percent, :class => "form-control", :digits => true, :min => 0, :max => 100
+              %span.input-group-addon
+                %i.fa.fa-percent
+          .col-xs-3
+            = f.input :total_amount, :wrapper=> :horizontal_prepend, :label => false do
+              %span.input-group-addon
+                %i.fa.fa-usd
+              = f.input_field :total_amount, :class => "form-control", :number => true, :min => 0
         .row
           .col-xs-12
             = f.submit "Save", :class => 'btn btn-primary', :id => 'submit_button'
@@ -101,9 +100,26 @@
     var percent = (cash_value / line_item_total) * 100;
     return percent.toFixed(0);
   }
-  function get_value_from_percent_funding(percent_funding){
-    var cash_value = line_item_total * (percent_funding/100)
-    return cash_value;
+  function get_value_from_percent_funding(percent_funding, percent_type){
+    var cash_value = line_item_total * (percent_funding/100);
+    var rounded_cash_value = Math.round(cash_value);
+    var actual_percent= get_percent_from_cash_entered(rounded_cash_value);
+
+    if(percent_type != 'local')
+    {
+      if(actual_percent > percent_funding)
+      {
+        rounded_cash_value = Math.floor(cash_value);
+      }
+    }else
+    {
+      if(actual_percent < percent_funding)
+      {
+        rounded_cash_value = Math.ceil(cash_value);
+      }
+    }
+
+    return rounded_cash_value;
   }
   function update_cash_value_and_percent_funding_for_state_from_match_percent(percent_funding){
     var federal_cash = parseFloat($('#funding_request_federal_amount').val());
@@ -128,7 +144,6 @@
     }
 
     var total = federal_cash + state_cash + local_cash;
-    console.log("Setting the total CASH VALUE now!");
     $('#funding_request_total_amount').val(total);
     $('#funding_request_total_amount').attr('readonly', true);
   }
@@ -148,7 +163,6 @@
     }
 
     var total = federal_percent + state_percent + local_percent;
-    console.log("Setting the total now!");
     $('#funding_request_total_percent').val(total);
     $('#funding_request_total_percent').attr('readonly', true);
 
@@ -219,20 +233,27 @@
     $('#funding_request_local_percent').val(local_percent);
     update_total_percents();
   }
+
   function update_federal_cash_from_federal_percent(){
-    var federal_cash = get_value_from_percent_funding(parseFloat($('#funding_request_federal_percent').val()));
+    var current_federal_percent = parseFloat($('#funding_request_federal_percent').val());
+    var federal_cash = get_value_from_percent_funding(current_federal_percent, 'federal');
     federal_cash = apply_federal_rounding_rules(federal_cash);
+
+
+
     $('#funding_request_federal_amount').val(federal_cash);
     update_federal_percent_from_federal_cash();
   }
   function update_state_cash_from_state_percent(){
-    var state_cash = get_value_from_percent_funding(parseFloat($('#funding_request_state_percent').val()));
+    var current_state_percent = parseFloat($('#funding_request_state_percent').val());
+    var state_cash = get_value_from_percent_funding(current_state_percent, 'state');
     state_cash = apply_state_rounding_rules(state_cash);
     $('#funding_request_state_amount').val(state_cash);
     update_state_percent_from_state_cash();
   }
   function update_local_cash_from_local_percent(){
-    var local_cash = get_value_from_percent_funding(parseFloat($('#funding_request_local_percent').val()));
+    var current_local_percent = parseFloat($('#funding_request_local_percent').val());
+    var local_cash = get_value_from_percent_funding(current_local_percent, 'local');
     local_cash = apply_local_rounding_rules(local_cash);
     $('#funding_request_local_amount').val(local_cash);
     update_local_percent_from_local_cash(local_cash);
@@ -251,12 +272,10 @@
   }
 
   $('#locking_option').click(function(){
-    var total_percent_text = $('#total_percent').text();
-    total_percent_text = total_percent_text.slice(0, -1);
-    var total_percent = parseFloat(total_percent_text);
+    var total_percent = $('#funding_request_total_percent').val();
 
     if (total_percent>= 100){
-      var is_disabled = $('#funding_request_federal_percent').is(':readonly');
+      var is_disabled = $('#funding_request_federal_percent').is('[readonly]');
       if(is_disabled){
         unlock_form();
       }else{
@@ -272,7 +291,7 @@
   $('#funding_request_funding_request_amount').change(function(){
     var old_lit = line_item_total;
     line_item_total = parseFloat($('#funding_request_funding_request_amount').val());
-    var are_percents_locked = $('#funding_request_federal_percent').is(':readonly');
+    var are_percents_locked = $('#funding_request_federal_percent').is('[readonly]');
 
     //if the values have changed we need to update the percent based on what has been filled in for provided cash from buckets
     if(old_lit != line_item_total && !are_percents_locked)
