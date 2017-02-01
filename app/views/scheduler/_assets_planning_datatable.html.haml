@@ -1,7 +1,6 @@
 :ruby
   table_dom_id = SecureRandom.hex
   popup ||= '0'
-  move_assets_action ||= '0'
 
 :css
   .modal-lg {
@@ -29,27 +28,26 @@
     :show_export => 'false',
     :id_field => 'object_key',
     :state_save => 'true',
-    :state_save_id_table => "assets_id",
+    :state_save_id_table => "assets_scheduler_id",
     :state_save_expire => "1y",
     :classes => 'table-no-bordered'}}
     %thead
       %tr
-        - if move_assets_action == '1'
-          %th.bs-checkbox{:data => {:checkbox => 'true', :field => 'state'}}
+        %th.bs-checkbox{:data => {:checkbox => 'true', :field => 'state'}}
         %th.center{:data => {:field => 'object_key', :visible => 'false'}} Object
         %th.left{data: {field: 'asset_tag', :sortable => 'true'}} Tag
         %th.left{data: {field: 'asset_subtype_id', :sortable => 'true'}} Subtype
-        %th.left{data: {field: 'fuel_type', :sortable => 'true', :sort_name => 'fuel_type_id'}} Fuel
+        %th.left{data: {field: 'fuel_type', :sortable => 'true', :sorter => 'generalSorter'}} Fuel
         %th.left{data: {field: 'description', :sortable => 'true'}} Descrip.
 
 
-        %th.center{data: {field: 'age', :sortable => 'true'}} Age
+        %th.center{data: {field: 'age', :sortable => 'true', :sort_name=>"_age_data", :sorter => 'generalSorter'}} Age
         %th.center{data: {field: 'in_backlog', :sortable => 'true', formatter: 'boolean_formatter'}} Bcklg
         %th.right{data: {field: 'reported_mileage', :sortable => 'true', formatter: 'integer_formatter'}} Mileage
         %th.center{data: {field: 'reported_condition_rating', :sortable => 'true'}} Cond.
 
-        %th.center{data: {field: 'policy_replacement_fiscal_year', :sortable => 'true', :sort_name => 'policy_replacement_year'}} Policy FY
-        %th.right{data: {field: 'scheduled_cost', :sortable => 'true', :sort_name => 'scheduled_replacement_cost', formatter: 'currency_formatter'}} Sch. Cost
+        %th.center{data: {field: 'policy_replacement_fiscal_year', :sortable => 'true', :sorter => 'generalSorter'}} Policy FY
+        %th.right{data: {field: 'scheduled_cost', :sortable => 'true', :sorter => 'generalSorter', formatter: 'currency_formatter'}} Sch. Cost
         - if popup == '1'
           %th.center{data: {formatter: 'popup_formatter'}}
         - if ali.has_early_replacement_assets?
@@ -59,10 +57,7 @@
 
       %tfoot
         %tr
-          - if move_assets_action == '1'
-            %td{:colspan => 10}= "Totals for #{ali.assets.count} assets"
-          - else
-            %td{:colspan => 9}= "Totals for #{ali.assets.count} assets"
+          %td{:colspan => 10}= "Totals for #{ali.assets.count} assets"
           %td.right= format_as_currency(ali.rehabilitation_ali? ? ali.assets.sum(:scheduled_rehabilitation_cost) : ali.assets.sum(:scheduled_replacement_cost))
           - if popup == '1'
             %td
@@ -72,6 +67,12 @@
           %td
 
 :javascript
+
+  function generalSorter(a, b) {
+      if (a > b) return 1;
+      if (a < b) return -1;
+      return 0;
+  }
 
   var selected_assets = [];
   var path = '#{inventory_path("x")}';
@@ -169,8 +170,8 @@
     $(".move-assets-action").on('click', function(e) {
       var href = $(this).attr('href');
       href += ('&targets=' + selected_assets.join(','));
-      
-      
+
+
       var move_year = $(this).data('year');
 
       $(this).attr('href', href);
@@ -181,7 +182,7 @@
       return true;
     });
   });
-  
+
   $('#deselect-all-assets-button').on('click', function(){
     selected_assets = [];
     enable_disable_asset_actions();
@@ -205,7 +206,7 @@
       checkbox = $table.find('input[type=checkbox][value=' +selected_assets[i]+ ']');
       checkbox.length && checkbox.prop('checked', true) && checkbox.parents('tr').addClass('selected');
     }
-    
+
   });
 
   // Enables or disables the package actions depending on how many are selected

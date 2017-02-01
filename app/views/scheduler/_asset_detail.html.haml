@@ -25,7 +25,14 @@
         - if ast.type_of? :vehicle or ast.type_of? :support_vehicle
           = "Condition: <strong>#{format_as_decimal(ast.reported_condition_rating, 2)}</strong> Miles <strong>#{format_as_integer(ast.reported_mileage)}</strong>".html_safe
         - else
-          = "Condition: #{format_as_decimal(ast.reported_condition_rating, 2)}"
+          = "Condition: <strong>#{format_as_decimal(ast.reported_condition_rating, 2)}</strong>".html_safe
+      - if ast.in_backlog || ast.policy_replacement_year != ast.scheduled_replacement_year
+        %p.text-primary{:style => 'margin-bottom: 0px;'}
+          - if ast.policy_replacement_year != ast.scheduled_replacement_year
+            = "Policy Year: <strong>#{ast.policy_replacement_year}</strong>".html_safe
+          - if ast.in_backlog
+            = "In Backlog: <strong>#{format_as_boolean(ast.in_backlog)}</strong>".html_safe
+
 
   .row{:id => "#{ast.object_key}_#{year}_form_panel"}
 
