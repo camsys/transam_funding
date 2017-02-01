@@ -2,12 +2,11 @@
   amount_needed = @activity_line_item.funds_required >= 0 ? @activity_line_item.funds_required : 0
 
 %span
-  - if amount_needed == 0
-    %p.text-info
-      This ALI is fully funded.
-  - else
-    %p.text-warning
-      You need an additional <strong>#{format_as_currency(amount_needed)}</strong> to fund this ALI.
-
-
+  .span
+    - if amount_needed == 0
+      %text-info
+        This ALI is fully funded.
+    - else
+      %text-warning
+        You need an additional <strong>#{format_as_currency(amount_needed)}</strong> to fund this ALI.
   %i.fa.fa-unlock-alt.fa-2x{:id => "ali_locking_option"}

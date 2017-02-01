@@ -8,3 +8,39 @@
   .col-md-12
     %button.btn.btn-primary{onclick: "$('#funding_request_form_div').show();"} Add
 
+:javascript
+
+  var amount_needed = "#{@activity_line_item.funds_required}";
+
+  if(amount_needed <= 0)
+  {
+    $("#ali_locking_option" ).removeClass( "fa fa-unlock-alt fa-2x" ).addClass( "fa fa-unlock-alt fa-2x text-success" );
+    lock_ali();
+  }
+
+   $('#ali_locking_option').click(function(){
+    if (amount_needed <= 0){
+      var is_hidden = $('.btn-info.edit').is(':hidden');
+      if(is_hidden){
+        unlock_ali();
+      }else{
+        lock_ali();
+      }
+    }else{
+      $(".btn-info.funding-request-line-item-edit" ).show();
+      $(".btn-warning.funding-request-line-item-delete").show();
+    }
+  });
+
+
+  function lock_ali(){
+    $(".btn-info.funding-request-line-item-edit" ).hide();
+    $(".btn-warning.funding-request-line-item-delete").hide();
+    $( "#ali_locking_option" ).removeClass( "fa fa-unlock-alt fa-2x text-success" ).addClass( "fa fa-lock fa-2x text-danger" );
+  }
+
+  function unlock_ali(){
+    $(".btn-info.funding-request-line-item-edit" ).show();
+    $(".btn-warning.funding-request-line-item-delete").show();
+    $("#ali_locking_option" ).removeClass( "fa fa-lock fa-2x text-danger" ).addClass( "fa fa-unlock-alt fa-2x text-success" );
+  }
