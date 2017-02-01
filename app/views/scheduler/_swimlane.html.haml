@@ -1,5 +1,10 @@
 - action ||= 1
 
+:css
+  .panel-footer.clickable:hover{
+    background-color: #dddddd !important;
+  }
+
 .panel.swimlane{:class => year == @active_year ? 'panel-info' : 'panel-default'}
   .panel-heading.swimlane-heading{year == @active_year ? {:data => {:fy => year, :action_path => scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, start_year: year)}} : {} }
     %span.badge.pull-right{id: "year_#{year}_swimlane_badge"}= alis.count

@@ -1,5 +1,7 @@
 class SchedulerController < AbstractCapitalProjectsController
 
+  include TransamFormatHelper
+
   before_filter :set_view_vars,  :only =>    [:index, :loader, :scheduler_ali_action, :scheduler_swimlane_action]
 
   add_breadcrumb "Home", :root_path
@@ -225,6 +227,9 @@ class SchedulerController < AbstractCapitalProjectsController
   # General purpose action for mamipulating ALIs in the plan. This action
   # must be called as JS
   def scheduler_swimlane_action
+
+    add_breadcrumb "#{Organization.find_by(id: @org_id)} #{format_as_fiscal_year(@start_year)}", scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, start_year: @start_year)
+
     current_index = @years.index(@start_year)
     if current_index == 0
       @prev_record_path = "#"
@@ -241,7 +246,10 @@ class SchedulerController < AbstractCapitalProjectsController
     @year_1_alis = get_alis(@year_1) if @year_1
 
     @activity_line_item = ActivityLineItem.find_by(object_key: params[:ali])
-    @project = @activity_line_item.capital_project if @activity_line_item
+    if @activity_line_item
+      @project = @activity_line_item.capital_project
+      add_breadcrumb @activity_line_item.to_s, scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, start_year: @start_year, ali: @activity_line_item.object_key)
+    end
 
   end
 
