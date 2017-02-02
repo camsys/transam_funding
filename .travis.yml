@@ -15,7 +15,7 @@ before_install:
 - sudo apt-get update
 - sudo apt-get install -qq python-six
 - sudo apt-get install libquantlib0-dev
-- pip install -r spec/support/python_requirements.txt
+- sudo pip install -r spec/support/python_requirements.txt
 before_script:
 - bundle update transam_core transam_transit transam_accounting transam_cpt
 - cp spec/dummy/config/database.travis.yml spec/dummy/config/database.yml
