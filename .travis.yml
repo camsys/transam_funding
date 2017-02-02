@@ -7,9 +7,6 @@ python:
 branches:
   only:
   - master
-env:
-- TEST_COMMAND=bundle exec rspec
-- TEST_COMMAND=python -m unittest discover
 before_install:
 - mysql -e "create database IF NOT EXISTS transam_funding_testing;" -uroot
 - sudo apt-get update
@@ -22,4 +19,4 @@ before_script:
 script:
 - bundle exec rake app:transam_funding:prepare_rspec
 - bundle exec rspec
-- $TEST_COMMAND
+- python -m unittest discover
