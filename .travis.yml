@@ -2,8 +2,8 @@ language: ruby
 sudo: required
 rvm:
 - 2.1.1
-python:
-- 3.4
+addons:
+  firefox: "49.0"
 branches:
   only:
   - master
