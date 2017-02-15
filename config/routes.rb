@@ -50,6 +50,7 @@ Rails.application.routes.draw do
   # Asset replacement/rehabilitation
   resources :scheduler, :only => [:index] do
     collection do
+      get 'choose_org'
       post  'scheduler_action'
       get   'scheduler_swimlane_action'
       post  'scheduler_ali_action'

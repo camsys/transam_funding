@@ -1,0 +1,12 @@
+.row
+  .col-md-6.col-md-offset-3
+    %fieldset
+      %legend Funding Projects
+
+      = form_tag scheduler_index_path, :id => 'filter_form', :method => "get", :class => 'form-vertical', :role => 'form' do
+        .form-group
+          = select_tag(:org_id, options_for_select(Organization.all.collect{|a| [a.coded_name, a.id]}), :class => "form-control", :prompt => "Choose Org...")
+
+        = button_tag :class => 'btn btn-primary', :type => 'submit' do
+          Submit
+
