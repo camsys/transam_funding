@@ -40,6 +40,10 @@ class SchedulerController < AbstractCapitalProjectsController
     ['No', NO]
   ]
 
+  def choose_org
+
+  end
+
   # Returns the list of assets that are scheduled for replacement/rehabilitation in the given
   # fiscal years.
   def index
