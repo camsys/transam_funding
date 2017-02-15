@@ -2,16 +2,16 @@
   = link_to "#", :class => "dropdown-toggle", :data => {"toggle" => "dropdown"}, :title => 'Funding' do
     %i.fa.fa-usd.fa-2x
     %b.caret
-  %ul.dropdown-menu.columns-3
+  %ul.dropdown-menu.columns-2
     .row
-      .col-sm-4
+      .col-sm-6
         %ul.multi-column-dropdown
           %li.text-left
             = link_to funding_sources_path, :style => 'font-weight:bold;' do
               %i.fa.fa-book.fa-fw
               Funding Programs
           - FundingSource.all.each do |program|
-            %li.text-left
+            %li.text-left.small
               = link_to funding_source_path(program) do
                 %i.fa.fa-fw.fa-book
                 = program
@@ -21,7 +21,7 @@
               = link_to new_funding_source_path do
                 %i.fa.fa-plus.fa-fw
                 = "Add Funding Program";
-      .col-sm-4
+      .col-sm-6
         %ul.multi-column-dropdown
           - if can? :read, FundingTemplate
             %li.text-left
@@ -40,8 +40,8 @@
             = link_to my_funds_funding_buckets_path do
               %i.fa.fa-fw.fa-usd
               = 'My Funds'
-      .col-sm-4
-        %ul.multi-column-dropdown
+
+          %li.divider
           - if @organization_list.count == 1
             %li.text-left
               = link_to scheduler_index_path(org_id: @organization_list.first) do
@@ -49,12 +49,7 @@
                 Funding Projects
           - else
             %li.text-left
-              = link_to '#', :style => 'font-weight:bold;' do
+              = link_to choose_org_scheduler_index_path do
                 %i.fa.fa-calendar.fa-fw
                 Funding Projects
 
-            - Organization.where(id: @organization_list).each do |org|
-              %li.text-left
-                = link_to scheduler_index_path(org_id: org.id) do
-                  %i.fa.fa-fw.fa-calendar
-                  = org.short_name
