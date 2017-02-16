@@ -174,7 +174,7 @@ class FundingBucket< ActiveRecord::Base
   end
 
   def generate_unique_name
-    self.name = "#{funding_template.funding_source.name}-#{funding_template.name}-#{owner.short_name}-#{fiscal_year_for_name(self.fy_year)}"
+    self.name = "#{funding_template.name}-#{owner.short_name}-#{fiscal_year_for_name(self.fy_year)}"
   end
 
   #------------------------------------------------------------------------------
