@@ -1,0 +1,16 @@
+.panel.panel-default.dashboard-panel
+  .panel-heading
+    Available Funds
+  .panel-body
+    %table.table.table-hover.table-condensed
+      %thead
+        %tr
+          %th.left Name
+          %th.center Total
+          %th.center Available
+      %tbody
+        - FundingBucket.where(owner_id: @organization_list).each do |b|
+          %tr{:data => {:action_path => funding_bucket_path(b)}}
+            %td.left= b.name
+            %td.center= format_as_currency(b.budget_amount)
+            %td.center= format_as_currency(b.budget_remaining)
