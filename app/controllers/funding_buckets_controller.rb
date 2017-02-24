@@ -8,6 +8,13 @@ class FundingBucketsController < OrganizationAwareController
 
   INDEX_KEY_LIST_VAR    = "funding_buckets_key_list_cache_var"
 
+
+  def get_dashboard_summary
+    respond_to do |format|
+      format.js { render partial: 'dashboards/funding_widget_table', locals: {fy_year: params[:fy_year] }  }
+    end
+  end
+
   # GET /buckets
   def index
     authorize! :read, FundingBucket

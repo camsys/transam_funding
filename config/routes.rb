@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   resources :funding_buckets do
     collection do
+      get 'get_dashboard_summary'
+
       get 'my_funds'
 
       get 'find_templates_from_program_id'

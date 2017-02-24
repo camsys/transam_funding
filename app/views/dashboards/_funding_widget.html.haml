@@ -1,16 +1,32 @@
 .panel.panel-default.dashboard-panel
   .panel-heading
     Available Funds
-  .panel-body
-    %table.table.table-hover.table-condensed
-      %thead
-        %tr
-          %th.left Name
-          %th.center Total
-          %th.center Available
-      %tbody
-        - FundingBucket.where(owner_id: @organization_list).each do |b|
-          %tr{:data => {:action_path => funding_bucket_path(b)}}
-            %td.left= b.name
-            %td.center= format_as_currency(b.budget_amount)
-            %td.center= format_as_currency(b.budget_remaining)
+    .pull-right
+      = select_tag(:funding_fy, options_for_select(get_fiscal_years, :selected => params[:funding_fy] || current_fiscal_year_year ), :class => "form-control", :style => 'margin-top: -5px;')
+  #funding-widget.panel-body
+
+:javascript
+
+  $(document).ready(function() {
+    update_funding_widget();
+  });
+
+  $('#funding_fy').change(function() {
+    update_funding_widget();
+  });
+
+  function update_funding_widget () {
+    $.ajax({
+      url: "/funding_buckets/get_dashboard_summary",
+      type: 'GET',
+      dataType: 'json',
+      data: {fy_year: $('#funding_fy').val()},
+      complete: function(response, status) {
+        if (response.status == 200) {
+          $('#funding-widget').html(response.responseText);
+        } else {
+          $('#funding-widget').html(response.statusText);
+        }
+      }
+    });
+  }
