@@ -7,12 +7,10 @@
 
 :javascript
 
-  $(document).ready(function() {
-    update_funding_widget();
-  });
-
   $('#funding_fy').change(function() {
+    $("#spinner").show();
     update_funding_widget();
+    $("#spinner").hide();
   });
 
   function update_funding_widget () {
