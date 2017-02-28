@@ -178,11 +178,6 @@ class FundingRequestsController < OrganizationAwareController
   # PATCH/PUT /funding_requests/1.json
   def update
 
-    add_breadcrumb @project.project_number, capital_project_path(@project)
-    add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
-    add_breadcrumb @funding_request.name, capital_project_funding_request_path(@project, @funding_request)
-    add_breadcrumb "Modify"
-
     # Record who updated the record
     @funding_request.updator = current_user
 
