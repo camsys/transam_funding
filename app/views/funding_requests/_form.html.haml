@@ -367,18 +367,6 @@
     }
   });
 
-  $(document).ready(function() {
-      // Disable the submit button
-      //$('#submit_button').attr("disabled", "disabled");
-      // Add an event listener on the selector
-      $('#funding_request_federal_funding_line_item_id').change(function() {
-        var val = $('#funding_request_federal_funding_line_item_id').val();
-        var url = '/funding_sources/details/?funding_line_item_id=' + val;
-        transam.ajax_render_action(url, 'get');
-        $('#federal_fund_details').html("");
-      });
-  });
-
 
   function get_bucket_percent(bucket_name, source)
   {

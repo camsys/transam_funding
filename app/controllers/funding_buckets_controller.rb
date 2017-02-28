@@ -483,8 +483,10 @@ class FundingBucketsController < OrganizationAwareController
 
   def find_expected_match_percent
     bucket_name = params[:bucket_name]
-    bucket = FundingBucket.find_by(name: bucket_name)
-    result = bucket.funding_source.match_required
+    if bucket_name.present?
+      bucket = FundingBucket.find_by(name: bucket_name)
+      result = bucket.funding_source.match_required
+    end
 
     respond_to do |format|
       format.json { render json: result.to_json }
