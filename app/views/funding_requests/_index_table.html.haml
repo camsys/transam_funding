@@ -1,3 +1,5 @@
+- show_actions ||= '1'
+
 - if activity_line_item.funding_requests.empty?
   %p There are no funding requests for this ALI.
 -else
@@ -25,7 +27,8 @@
 
         %th.center Total
 
-        %th
+        - if show_actions == '1'
+          %th
 
     %tbody
       - activity_line_item.funding_requests.each do |f|
@@ -44,14 +47,15 @@
 
           %td.right= format_as_currency(f.total_amount)
 
-          %td.right
-            = link_to scheduler_ali_action_scheduler_index_path(:org_id => @org_id, :active_year => @active_year, :ali => activity_line_item.object_key, :funding_request => f.object_key, :invoke => SchedulerController::ALI_EDIT_FUND_ACTION),
-                :remote => :true, :title => 'Edit this funding item', :class => 'btn btn-xs btn-info funding-request-line-item-edit', :style => 'margin-left: 1px; margin-right: 1px;' do
-              %i.fa.fa-edit
-            = link_to scheduler_ali_action_scheduler_index_path(:org_id => @org_id, :active_year => @active_year, :ali => activity_line_item.object_key, :funding_request => f.object_key, :invoke => SchedulerController::ALI_REMOVE_FUND_ACTION),
-                :title => 'Remove this funding item', :data => {:confirm => "Are you sure you want to remove this fund? The action can't be undone."},
-                :class => 'btn btn-xs btn-warning funding-request-line-item-delete', :style => 'margin-left: 1px; margin-right: 1px;'  do
-              %i.fa.fa-trash-o
+          - if show_actions == '1'
+            %td.right
+              = link_to scheduler_ali_action_scheduler_index_path(:org_id => @org_id, :active_year => @active_year, :ali => activity_line_item.object_key, :funding_request => f.object_key, :invoke => SchedulerController::ALI_EDIT_FUND_ACTION),
+                  :remote => :true, :title => 'Edit this funding item', :class => 'btn btn-xs btn-info funding-request-line-item-edit', :style => 'margin-left: 1px; margin-right: 1px;' do
+                %i.fa.fa-edit
+              = link_to scheduler_ali_action_scheduler_index_path(:org_id => @org_id, :active_year => @active_year, :ali => activity_line_item.object_key, :funding_request => f.object_key, :invoke => SchedulerController::ALI_REMOVE_FUND_ACTION),
+                  :title => 'Remove this funding item', :data => {:confirm => "Are you sure you want to remove this fund? The action can't be undone."},
+                  :class => 'btn btn-xs btn-warning funding-request-line-item-delete', :style => 'margin-left: 1px; margin-right: 1px;'  do
+                %i.fa.fa-trash-o
 
     %tfoot
       %tr
@@ -69,4 +73,5 @@
 
         %td.right= format_as_currency(activity_line_item.total_funds)
 
-        %td
+        - if show_actions == '1'
+          %td
