@@ -25,7 +25,8 @@
       = render 'assets'
   .tab-pane.fade#cost
     .tab-content
-      = render 'cost_justification'
+      #cost_justification
+        = render 'cost_justification'
   .tab-pane.fade#fund
     .tab-content
       = render :partial => 'funding_requests/index_table', :locals => {:activity_line_item => @activity_line_item, :show_actions => '0'}
