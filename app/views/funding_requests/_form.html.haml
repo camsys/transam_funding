@@ -3,6 +3,7 @@
   .row
     .col-md-12
       = simple_form_for([@project, @activity_line_item, (@funding_request || FundingRequest.new)],
+              :html => {:class => 'form-vertical funding_request_form' },
               :wrapper => :horizontal_form,
               :wrapper_mappings => {:check_boxes => :horizontal_radio_and_checkboxes, :radio_buttons => :horizontal_radio_and_checkboxes, :file => :horizontal_file_input, :boolean => :horizontal_boolean}) do |f|
         .row
@@ -10,7 +11,7 @@
             = f.input :funding_request_amount, :wrapper=> :horizontal_prepend, :label => 'Line Amount' do
               %span.input-group-addon
                 %i.fa.fa-usd
-              = f.input_field :funding_request_amount, :class => "form-control", :digits => true, :min => 0, :max => 10000000
+              = f.input_field :funding_request_amount, :class => "form-control", :required=> true, :digits => true, :min => 1, :max => 10000000
 
           .col-xs-2
           .col-xs-2
@@ -23,7 +24,7 @@
 
           .col-xs-2
             = f.input :federal_percent, :wrapper=> :horizontal_prepend, :label => false do
-              = f.input_field :federal_percent, :class => "form-control", :digits => true, :min => 0, :max => 100
+              = f.input_field :federal_percent, :class => "form-control", :value => 0, :digits => true, :min => 0, :max => 100
               %span.input-group-addon
                 %i.fa.fa-percent
 
@@ -39,7 +40,7 @@
 
           .col-xs-2
             = f.input :state_percent, :wrapper=> :horizontal_prepend, :label => false do
-              = f.input_field :state_percent, :class => "form-control", :digits => true, :min => 0, :max => 100
+              = f.input_field :state_percent, :class => "form-control", :value => 0, :digits => true, :min => 0, :max => 100
               %span.input-group-addon
                 %i.fa.fa-percent
 
@@ -55,7 +56,7 @@
 
           .col-xs-2
             = f.input :local_percent, :wrapper=> :horizontal_prepend, :label => false do
-              = f.input_field :local_percent, :class => "form-control", :digits => true, :min => 0, :max => 100
+              = f.input_field :local_percent, :class => "form-control", :value => 0, :digits => true, :min => 0, :max => 100
               %span.input-group-addon
                 %i.fa.fa-percent
 
@@ -87,6 +88,33 @@
 
 
 :javascript
+
+  // jquery validations
+  $('.funding_request_form').validate();
+
+  $( "#funding_request_federal_amount" ).rules( "add", {
+    FundRequired: $('#funding_request_federal_funding_line_item_id').val()
+  });
+  $( "#funding_request_state_amount" ).rules( "add", {
+    FundRequired: $('#funding_request_state_funding_line_item_id').val()
+  });
+  $( "#funding_request_local_amount" ).rules( "add", {
+    FundRequired: $('#funding_request_local_funding_line_item_id').val()
+  });
+
+  $.validator.addMethod('FundRequired', function(value, element, params) {
+      var results;
+
+      if (parseInt(value) > 0) {
+        results = (params != "");
+      } else {
+        results = true;
+      }
+
+      return this.optional(element) || results ;
+  }, "Please enter a fund.");
+
+
   var line_item_total = parseFloat($('#funding_request_funding_request_amount').val());
 
     $('#cancel_btn').click(function(e) {
