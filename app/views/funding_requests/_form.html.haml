@@ -93,20 +93,21 @@
   $('.funding_request_form').validate();
 
   $( "#funding_request_federal_amount" ).rules( "add", {
-    FundRequired: $('#funding_request_federal_funding_line_item_id').val()
+    FundRequired: true
   });
   $( "#funding_request_state_amount" ).rules( "add", {
-    FundRequired: $('#funding_request_state_funding_line_item_id').val()
+    FundRequired: true
   });
   $( "#funding_request_local_amount" ).rules( "add", {
-    FundRequired: $('#funding_request_local_funding_line_item_id').val()
+    FundRequired: true
   });
 
-  $.validator.addMethod('FundRequired', function(value, element, params) {
+  $.validator.addMethod('FundRequired', function(value, element) {
       var results;
 
       if (parseInt(value) > 0) {
-        results = (params != "");
+        // get whether this is federal/state/local
+        results = (parseInt($('#funding_request_'+ $(element).attr('id').split('_')[2]+'_funding_line_item_id').val()) > 0);
       } else {
         results = true;
       }
