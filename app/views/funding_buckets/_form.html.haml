@@ -221,7 +221,7 @@
     if(start_fy === end_fy && start_fy > 0)
     {
       $("#escalate_by_div_id").hide();
-      funding_bucket_proxy_inflation_percentage.value = null;
+      $('#funding_bucket_proxy_inflation_percentage').val(null);
       display_escalate_by = false;
       if(multiple_buckets_for_agency_year)
       {
@@ -253,7 +253,7 @@
     {
       $('#funding_bucket_proxy_fiscal_year_range_end').val($('#funding_bucket_proxy_fiscal_year_range_start').val());
     }
-    show_escalate_by($('#funding_bucket_proxy_fiscal_year_range_start').val, $('#funding_bucket_proxy_fiscal_year_range_end').val());
+    show_escalate_by($('#funding_bucket_proxy_fiscal_year_range_start').val(), $('#funding_bucket_proxy_fiscal_year_range_end').val());
 
   });
   $('#funding_bucket_proxy_fiscal_year_range_end').change(function(){
