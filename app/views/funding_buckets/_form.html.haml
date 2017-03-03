@@ -253,7 +253,7 @@
     {
       $('#funding_bucket_proxy_fiscal_year_range_end').val($('#funding_bucket_proxy_fiscal_year_range_start').val());
     }
-    show_escalate_by($('#funding_bucket_proxy_fiscal_year_range_start.value, funding_bucket_proxy_fiscal_year_range_end').val());
+    show_escalate_by($('#funding_bucket_proxy_fiscal_year_range_start').val, $('#funding_bucket_proxy_fiscal_year_range_end').val());
 
   });
   $('#funding_bucket_proxy_fiscal_year_range_end').change(function(){
@@ -261,7 +261,7 @@
     {
       $('#funding_bucket_proxy_fiscal_year_range_start').val($('#funding_bucket_proxy_fiscal_year_range_end').val());
     }
-    show_escalate_by($('#funding_bucket_proxy_fiscal_year_range_start.value, funding_bucket_proxy_fiscal_year_range_end').val());
+    show_escalate_by($('#funding_bucket_proxy_fiscal_year_range_start').val(), $('#funding_bucket_proxy_fiscal_year_range_end').val());
   });
   $('#funding_bucket_proxy_owner_id').change(function(){
     update_bucket_name();
