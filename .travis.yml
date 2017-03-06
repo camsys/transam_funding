@@ -29,4 +29,4 @@ script:
 - bundle exec rake app:transam_funding:prepare_rspec
 - bundle exec rspec
 - cd spec/python_unittest/
-- python -m unittest bucket_creation_form
+# - python -m unittest bucket_creation_form
