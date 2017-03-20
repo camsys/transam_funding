@@ -1,8 +1,9 @@
 #funding_requests
   = render 'funding_requests/funding_messages'
-  .row
-    .col-md-12{:style => 'height:160px;overflow-y:auto;'}
-      = render :partial => 'funding_requests/index_table', :locals => {:activity_line_item => @activity_line_item}
+  %span
+    %row
+      .col-md-12{:style => 'overflow-y:auto;'}
+        = render :partial => 'funding_requests/index_table', :locals => {:activity_line_item => @activity_line_item}
 
 
 

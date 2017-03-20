@@ -86,11 +86,26 @@
 
       .col-md-4#federal_fund_details
 
-.row
-  .col-md-12
-    %button.btn.btn-primary{onclick: "$('#funding_request_form_div').show();"} Add
-
 :javascript
+
+  var is_panel_hidden = $('#form_panel_body').is(':hidden');
+
+  function reset_form_on_edit()
+  {
+    var fund_request = "#{@funding_request}";
+
+    console.log("fund_request follows");
+    console.log(fund_request);
+    console.log("fund_request above");
+
+    if(is_panel_hidden)
+    {
+      $('#form_panel_body').show();
+    }
+
+
+  }
+
 
   // jquery validations
   $('.funding_request_form').validate();
@@ -123,7 +138,7 @@
 
     $('#cancel_btn').click(function(e) {
       e.preventDefault();
-      $('#funding_request_form_div').hide();
+      $('#form_panel_body').hide();
       return false;
   });
 

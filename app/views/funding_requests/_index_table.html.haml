@@ -5,10 +5,13 @@
 -else
   -federal_funds_total = 0
   -federal_funding_requests = []
+  -federal_percent_funded = 0
   -state_funds_total = 0
   -state_funding_requests = []
+  -state_percent_funded = 0
   -local_funds_total = 0
   -local_funding_requests = []
+  -local_percent_funded = 0
 
 
   -activity_line_item.funding_requests.each do |fr|
@@ -24,14 +27,22 @@
       -local_funding_request = {'name' => fr.local_funding_line_item.to_s, 'amount' => format_as_currency(fr.local_amount)}
       -local_funds_total = local_funds_total+fr.local_amount
       -local_funding_requests << local_funding_request
+  -unless federal_funds_total==0
+    -federal_percent_funded = (federal_funds_total.to_f / activity_line_item.cost)*100
+  -unless state_funds_total==0
+    -state_percent_funded = (state_funds_total.to_f / activity_line_item.cost)*100
+  -unless local_funds_total==0
+    -local_percent_funded = (local_funds_total.to_f / activity_line_item.cost)*100
   %span
     %span
       .row
         %col-xs-2
           %strong
             FEDERAL FUNDS
-        %col-xs-8.pull-right
+        %col-xs-8
           =format_as_currency(federal_funds_total)
+        %col-xs-2.pull-right
+          =format_as_percentage(federal_percent_funded)
       -federal_funding_requests.each do |ffr|
         .row
           %col-xs-6
@@ -42,8 +53,10 @@
         %col-xs-2
           %strong
             STATE FUNDS
-        %col-xs-8.pull-right
+        %col-xs-8
           =format_as_currency(state_funds_total)
+        %col-xs-2.pull-right
+          =format_as_percentage(state_percent_funded)
       -state_funding_requests.each do |sfr|
         .row
           %col-xs-6
@@ -54,8 +67,10 @@
         %col-xs-2
           %strong
             LOCAL FUNDS
-        %col-xs-8.pull-right
+        %col-xs-8
           =format_as_currency(local_funds_total)
+        %col-xs-2.pull-right
+          =format_as_percentage(local_percent_funded)
       -local_funding_requests.each do |lfr|
         .row
           %col-xs-6
