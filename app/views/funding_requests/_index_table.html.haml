@@ -1,6 +1,7 @@
 - show_actions ||= '1'
+- show_footer ||= '1'
 
-- if activity_line_item.funding_requests.empty?
+- if funding_requests.empty?
   %p There are no funding requests for this ALI.
 -else
   -federal_funds_total = 0
@@ -14,7 +15,7 @@
   -local_percent_funded = 0
 
 
-  -activity_line_item.funding_requests.each do |fr|
+  -funding_requests.each do |fr|
     -unless(fr.federal_funding_line_item.blank?)
       -federal_funding_request = {'name' => fr.federal_funding_line_item.to_s, 'amount' => format_as_currency(fr.federal_amount)}
       -federal_funds_total = federal_funds_total+fr.federal_amount
