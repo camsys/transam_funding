@@ -4,15 +4,5 @@
 
   - if @activity_line_item
     .col-md-8
-      = dialog_tag('Funds', {:icon => 'fa fa-usd', :class => "form-part"}) do
-        #funding_requests
-          = render :partial => 'funding_requests/funding_requests_index'
-
-      #funding_request_form_div{style: 'display:none;'}
-        = render :partial => 'funding_requests/form'
-
-      = dialog_tag('Assets', {:icon => 'fa fa-list', :class => "form-part"}) do
-        = render :partial => 'assets_modal'
-
-      = dialog_tag('Funding Status', {:icon => 'fa fa-calendar', :class => "form-part"}) do
-        = render :partial => 'status_modal'
+      -#= dialog_tag(@activity_line_item.to_s, {:class => "form-part"}) do
+      =render :partial => 'ali_detail_tabs'

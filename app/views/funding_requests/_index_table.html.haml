@@ -4,76 +4,77 @@
 - if funding_requests.empty?
   %p There are no funding requests for this ALI.
 -else
-  %table.table.table-hover
-    %thead
-      %tr
-        %th.center{:colspan => 3} Federal
-        %th.center{:colspan => 3} State
-        %th.center{:colspan => 3} Local
-        %th.center
-        %th.center
+  -federal_funds_total = 0
+  -federal_funding_requests = []
+  -federal_percent_funded = 0
+  -state_funds_total = 0
+  -state_funding_requests = []
+  -state_percent_funded = 0
+  -local_funds_total = 0
+  -local_funding_requests = []
+  -local_percent_funded = 0
 
-      %tr
-        %th.center Fund
-        %th.center Amount
-        %th.center Pcnt
 
-        %th.center Fund
-        %th.center Amount
-        %th.center Pcnt
-
-        %th.center Fund
-        %th.center Amount
-        %th.center Pcnt
-
-        %th.center Total
-
-        - if show_actions == '1'
-          %th
-
-    %tbody
-      - funding_requests.each do |f|
-        %tr
-          %td.left= f.federal_funding_line_item
-          %td.right= format_as_currency(f.federal_amount)
-          %td.right= format_as_percentage(f.federal_percentage, 3)
-
-          %td.left= f.state_funding_line_item
-          %td.right= format_as_currency(f.state_amount)
-          %td.right= format_as_percentage(f.state_percentage, 3)
-
-          %td.left= f.local_funding_line_item
-          %td.right= format_as_currency(f.local_amount)
-          %td.right= format_as_percentage(f.local_percentage, 3)
-
-          %td.right= format_as_currency(f.total_amount)
-
-          - if show_actions == '1'
-            %td.right
-              = link_to scheduler_ali_action_scheduler_index_path(:org_id => @org_id, :active_year => @active_year, :ali => activity_line_item.object_key, :funding_request => f.object_key, :invoke => SchedulerController::ALI_EDIT_FUND_ACTION),
-                  :remote => :true, :title => 'Edit this funding item', :class => 'btn btn-xs btn-info funding-request-line-item-edit', :style => 'margin-left: 1px; margin-right: 1px;' do
-                %i.fa.fa-edit
-              = link_to scheduler_ali_action_scheduler_index_path(:org_id => @org_id, :active_year => @active_year, :ali => activity_line_item.object_key, :funding_request => f.object_key, :invoke => SchedulerController::ALI_REMOVE_FUND_ACTION),
-                  :title => 'Remove this funding item', :data => {:confirm => "Are you sure you want to remove this fund? The action can't be undone."},
-                  :class => 'btn btn-xs btn-warning funding-request-line-item-delete', :style => 'margin-left: 1px; margin-right: 1px;'  do
-                %i.fa.fa-trash-o
-
-    - if show_footer == '1'
-      %tfoot
-        %tr
-          %td.right= format_as_currency(activity_line_item.federal_funds)
-          %td.left
-          %td.right= format_as_percentage(activity_line_item.federal_percentage, 3)
-
-          %td.right= format_as_currency(activity_line_item.state_funds)
-          %td.left
-          %td.right= format_as_percentage(activity_line_item.state_percentage, 3)
-
-          %td.right= format_as_currency(activity_line_item.local_funds)
-          %td.left
-          %td.right= format_as_percentage(activity_line_item.local_percentage, 3)
-
-          %td.right= format_as_currency(activity_line_item.total_funds)
-
-          - if show_actions == '1'
-            %td
+  -funding_requests.each do |fr|
+    -unless(fr.federal_funding_line_item.blank?)
+      -federal_funding_request = {'name' => fr.federal_funding_line_item.to_s, 'amount' => format_as_currency(fr.federal_amount)}
+      -federal_funds_total = federal_funds_total+fr.federal_amount
+      -federal_funding_requests << federal_funding_request
+    -unless(fr.state_funding_line_item.blank?)
+      -state_funding_request = {'name' =>  fr.state_funding_line_item.to_s, 'amount' => format_as_currency(fr.state_amount)}
+      -state_funds_total = state_funds_total+fr.state_amount
+      -state_funding_requests << state_funding_request
+    -unless(fr.federal_funding_line_item.blank?)
+      -local_funding_request = {'name' => fr.local_funding_line_item.to_s, 'amount' => format_as_currency(fr.local_amount)}
+      -local_funds_total = local_funds_total+fr.local_amount
+      -local_funding_requests << local_funding_request
+  -unless federal_funds_total==0
+    -federal_percent_funded = (federal_funds_total.to_f / activity_line_item.cost)*100
+  -unless state_funds_total==0
+    -state_percent_funded = (state_funds_total.to_f / activity_line_item.cost)*100
+  -unless local_funds_total==0
+    -local_percent_funded = (local_funds_total.to_f / activity_line_item.cost)*100
+  %span
+    %span
+      .row
+        %col-xs-2
+          %strong
+            FEDERAL FUNDS
+        %col-xs-8
+          =format_as_currency(federal_funds_total)
+        %col-xs-2.pull-right
+          =format_as_percentage(federal_percent_funded)
+      -federal_funding_requests.each do |ffr|
+        .row
+          %col-xs-6
+            =ffr['name']
+          %col-xs-2.pull-right
+            =ffr['amount']
+      .row
+        %col-xs-2
+          %strong
+            STATE FUNDS
+        %col-xs-8
+          =format_as_currency(state_funds_total)
+        %col-xs-2.pull-right
+          =format_as_percentage(state_percent_funded)
+      -state_funding_requests.each do |sfr|
+        .row
+          %col-xs-6
+            =sfr['name']
+          %col-xs-2.pull-right
+            =sfr['amount']
+      .row
+        %col-xs-2
+          %strong
+            LOCAL FUNDS
+        %col-xs-8
+          =format_as_currency(local_funds_total)
+        %col-xs-2.pull-right
+          =format_as_percentage(local_percent_funded)
+      -local_funding_requests.each do |lfr|
+        .row
+          %col-xs-6
+            =lfr['name']
+          %col-xs-2.pull-right
+            =lfr['amount']
