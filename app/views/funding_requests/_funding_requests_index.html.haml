@@ -3,7 +3,7 @@
   %span
     %row
       .col-md-12{:style => 'overflow-y:auto;'}
-        = render :partial => 'funding_requests/index_table', :locals => {:activity_line_item => @activity_line_item, :funding_requests => @activity_line_item.funding_requests}
+        = render :partial => 'funding_requests/index_table', :locals => {:funding_requests => @activity_line_item.funding_requests, :cost => @activity_line_item.cost}
 
 .row
   .col-md-12
