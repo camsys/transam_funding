@@ -29,11 +29,11 @@
       -local_funds_total = local_funds_total+fr.local_amount
       -local_funding_requests << local_funding_request
   -unless federal_funds_total==0
-    -federal_percent_funded = (federal_funds_total.to_f / activity_line_item.cost)*100
+    -federal_percent_funded = (federal_funds_total.to_f / cost)*100
   -unless state_funds_total==0
-    -state_percent_funded = (state_funds_total.to_f / activity_line_item.cost)*100
+    -state_percent_funded = (state_funds_total.to_f / cost)*100
   -unless local_funds_total==0
-    -local_percent_funded = (local_funds_total.to_f / activity_line_item.cost)*100
+    -local_percent_funded = (local_funds_total.to_f / cost)*100
   %span
     %span
       .row
