@@ -1,0 +1,96 @@
+- activity_line_item = @activity_line_item
+- if activity_line_item.funding_requests.empty?
+  %p There are no funding requests for this ALI.
+  = render :partial => 'funding_requests/form'
+-else
+  .panel
+    .panel.body{id: 'form_panel_body'}
+      = render :partial => 'funding_requests/form'
+  .row
+    .col-md-12
+      = link_to scheduler_ali_action_scheduler_index_path(:org_id => @org_id, :active_year => @active_year, :ali => activity_line_item.object_key,
+                :invoke => SchedulerController::ALI_EDIT_FUND_ACTION), :remote => :true, :title => 'Edit this funding item', :class => 'btn btn-xs btn-info funding-request-line-item-edit',
+                :style => 'margin-left: 1px; margin-right: 1px;', :onclick => "edit_funding_request(0, 0, 0, 0, 0, 0, 0,0, 0, 0);" do
+        %i.fa.fa-plus
+
+  - activity_line_item.funding_requests.each do |f|
+    .panel
+      .panel.body{id: "funding_request_panel_#{f.object_key}"}
+        %table.table.table-hover{id: "funding_request_table_#{f.object_key}"}
+          %thead
+            %tr
+              %th.left Line Amount
+              %th.left=format_as_currency(f.funding_request_amount)
+            %tr
+              %th.center Fund
+              %th.right Pcnt
+              %th.right Amount
+
+              %th.right
+                = link_to scheduler_ali_action_scheduler_index_path(:org_id => @org_id, :active_year => @active_year, :ali => activity_line_item.object_key, :funding_request => f.object_key,
+                :invoke => SchedulerController::ALI_EDIT_FUND_ACTION), :remote => :true, :title => 'Edit this funding item', :class => 'btn btn-xs btn-info funding-request-line-item-edit',
+                :style => 'margin-left: 1px; margin-right: 1px;', :onclick => "edit_funding_request(#{f.funding_request_amount},
+                                                #{(f.federal_funding_line_item_id || 0)}, #{f.federal_percent}, #{f.federal_amount},
+                                                #{(f.state_funding_line_item_id || 0)}, #{f.state_percent}, #{f.state_amount},
+                                                #{(f.local_funding_line_item_id || 0)}, #{f.local_percent}, #{f.local_amount});", :data => {@funding_request => f} do
+                  %i.fa.fa-edit
+                = link_to scheduler_ali_action_scheduler_index_path(:org_id => @org_id, :active_year => @active_year, :ali => activity_line_item.object_key, :funding_request => f.object_key,
+                :invoke => SchedulerController::ALI_REMOVE_FUND_ACTION), :title => 'Remove this funding item',
+                :data => {:confirm => "Are you sure you want to remove this fund? The action can't be undone."}, :class => 'btn btn-xs btn-warning funding-request-line-item-delete',
+                :style => 'margin-left: 1px; margin-right: 1px;'  do
+                  %i.fa.fa-trash-o
+
+          %tbody
+            %tr
+              %td.center= f.federal_funding_line_item
+              %td.right= format_as_percentage(f.federal_percentage, 3)
+              %td.right= format_as_currency(f.federal_amount)
+              %td
+            %tr
+              %td.center= f.state_funding_line_item
+              %td.right= format_as_percentage(f.state_percentage, 3)
+              %td.right= format_as_currency(f.state_amount)
+              %td
+            %tr
+              %td.center= f.local_funding_line_item
+              %td.right= format_as_percentage(f.local_percentage, 3)
+              %td.right= format_as_currency(f.local_amount)
+              %td
+
+
+          %tfoot
+            %tr
+              %td
+              %td Total:
+              %td.right=format_as_currency(f.total_percent)
+              %td.right=format_as_currency(f.total_amount)
+
+  .row
+    .col-md-12
+      = link_to scheduler_ali_action_scheduler_index_path(:org_id => @org_id, :active_year => @active_year, :ali => activity_line_item.object_key, :funding_request => nil,
+                :invoke => SchedulerController::ALI_EDIT_FUND_ACTION), :remote => :true, :title => 'Add new funding item', :class => 'btn btn-xs btn-info button.btn.btn-primary Add',
+                :style => 'margin-left: 1px; margin-right: 1px;', onclick: "$('edit_funding_request(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);", data: {@funding_request => FundingRequest.new} do
+        %i.fa.fa-plus
+:javascript
+  $('#form_panel_body').hide();
+  // $('#funding-request-line-item-edit');
+
+  function edit_funding_request(funding_request_amount, federal_fund_id, federal_fund_percent, federal_fund_amount,
+                                 state_fund_id, state_fund_percent, state_fund_amount, local_fund_id, local_fund_percent, local_fund_amount)
+  {
+    $('#funding_request_funding_request_amount').val(funding_request_amount);
+
+    $('#funding_request_federal_funding_line_item_id').val(federal_fund_id);
+    $('#funding_request_federal_percent').val(federal_fund_percent);
+    $('#funding_request_federal_amount').val(federal_fund_amount);
+
+    $('#funding_request_state_funding_line_item_id').val(state_fund_id);
+    $('#funding_request_state_percent').val(state_fund_percent);
+    $('#funding_request_state_amount').val(state_fund_amount);
+
+    $('#funding_request_local_funding_line_item_id').val(local_fund_id);
+    $('#funding_request_local_percent').val(local_fund_percent);
+    $('#funding_request_local_amount').val(local_fund_amount);
+
+    $('#form_panel_body').show()
+  }
