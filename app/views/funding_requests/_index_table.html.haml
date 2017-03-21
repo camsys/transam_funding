@@ -1,7 +1,4 @@
-- show_actions ||= '1'
-- show_footer ||= '1'
-
-- if funding_requests.empty?
+- if @activity_line_item.funding_requests.empty?
   %p There are no funding requests for this ALI.
 -else
   -federal_funds_total = 0
@@ -15,7 +12,7 @@
   -local_percent_funded = 0
 
 
-  -funding_requests.each do |fr|
+  -@activity_line_item.funding_requests.each do |fr|
     -unless(fr.federal_funding_line_item.blank?)
       -federal_funding_request = {'name' => fr.federal_funding_line_item.to_s, 'amount' => format_as_currency(fr.federal_amount)}
       -federal_funds_total = federal_funds_total+fr.federal_amount
@@ -29,11 +26,11 @@
       -local_funds_total = local_funds_total+fr.local_amount
       -local_funding_requests << local_funding_request
   -unless federal_funds_total==0
-    -federal_percent_funded = (federal_funds_total.to_f / cost)*100
+    -federal_percent_funded = (federal_funds_total.to_f / @activity_line_item.cost)*100
   -unless state_funds_total==0
-    -state_percent_funded = (state_funds_total.to_f / cost)*100
+    -state_percent_funded = (state_funds_total.to_f / @activity_line_item.cost)*100
   -unless local_funds_total==0
-    -local_percent_funded = (local_funds_total.to_f / cost)*100
+    -local_percent_funded = (local_funds_total.to_f / @activity_line_item.cost)*100
   %span
     %span
       .row
