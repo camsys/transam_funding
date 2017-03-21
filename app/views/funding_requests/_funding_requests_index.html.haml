@@ -2,7 +2,7 @@
   = render 'funding_requests/funding_messages'
   .row
     .col-md-12{:style => 'height:160px;overflow-y:auto;'}
-      = render :partial => 'funding_requests/index_table', :locals => {:activity_line_item => @activity_line_item}
+      = render :partial => 'funding_requests/index_table', :locals => {:funding_requests => @activity_line_item.funding_requests}
 
 .row
   .col-md-12

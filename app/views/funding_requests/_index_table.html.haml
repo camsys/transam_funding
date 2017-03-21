@@ -1,6 +1,7 @@
 - show_actions ||= '1'
+- show_footer ||= '1'
 
-- if activity_line_item.funding_requests.empty?
+- if funding_requests.empty?
   %p There are no funding requests for this ALI.
 -else
   %table.table.table-hover
@@ -31,7 +32,7 @@
           %th
 
     %tbody
-      - activity_line_item.funding_requests.each do |f|
+      - funding_requests.each do |f|
         %tr
           %td.left= f.federal_funding_line_item
           %td.right= format_as_currency(f.federal_amount)
@@ -57,21 +58,22 @@
                   :class => 'btn btn-xs btn-warning funding-request-line-item-delete', :style => 'margin-left: 1px; margin-right: 1px;'  do
                 %i.fa.fa-trash-o
 
-    %tfoot
-      %tr
-        %td.right= format_as_currency(activity_line_item.federal_funds)
-        %td.left
-        %td.right= format_as_percentage(activity_line_item.federal_percentage, 3)
+    - if show_footer == '1'
+      %tfoot
+        %tr
+          %td.right= format_as_currency(activity_line_item.federal_funds)
+          %td.left
+          %td.right= format_as_percentage(activity_line_item.federal_percentage, 3)
 
-        %td.right= format_as_currency(activity_line_item.state_funds)
-        %td.left
-        %td.right= format_as_percentage(activity_line_item.state_percentage, 3)
+          %td.right= format_as_currency(activity_line_item.state_funds)
+          %td.left
+          %td.right= format_as_percentage(activity_line_item.state_percentage, 3)
 
-        %td.right= format_as_currency(activity_line_item.local_funds)
-        %td.left
-        %td.right= format_as_percentage(activity_line_item.local_percentage, 3)
+          %td.right= format_as_currency(activity_line_item.local_funds)
+          %td.left
+          %td.right= format_as_percentage(activity_line_item.local_percentage, 3)
 
-        %td.right= format_as_currency(activity_line_item.total_funds)
+          %td.right= format_as_currency(activity_line_item.total_funds)
 
-        - if show_actions == '1'
-          %td
+          - if show_actions == '1'
+            %td

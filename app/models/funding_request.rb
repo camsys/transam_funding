@@ -15,6 +15,7 @@ class FundingRequest < ActiveRecord::Base
   # Callbacks
   #------------------------------------------------------------------------------
   after_initialize                  :set_defaults
+  before_save                       :update_buckets
 
   #------------------------------------------------------------------------------
   # Associations
@@ -141,6 +142,34 @@ class FundingRequest < ActiveRecord::Base
     self.federal_percent        = federal_percentage
     self.state_percent          = state_percentage
     self.local_percent          = local_percentage
+  end
+
+  def update_buckets
+    if self.changes.include? 'federal_funding_line_item_id'
+      f = FundingBucket.find_by(id: self.federal_funding_line_item_id_was)
+      f.budget_committed -= self.federal_amount_was
+      f.save!
+    end
+    if self.changes.include? 'state_funding_line_item_id'
+      f = FundingBucket.find_by(id: self.state_funding_line_item_id_was)
+      f.budget_committed -= self.state_amount_was
+      f.save!
+    end
+    if self.changes.include? 'local_funding_line_item_id'
+      f = FundingBucket.find_by(id: self.local_funding_line_item_id_was)
+      f.budget_committed -= self.local_amount_was
+      f.save!
+    end
+
+    if self.federal_funding_line_item_id
+      FundingBucket.find_by(id: self.federal_funding_line_item_id).update!(budget_committed: FundingRequest.where(federal_funding_line_item_id: self.federal_funding_line_item_id).sum(:federal_amount))
+    end
+    if self.state_funding_line_item_id
+      FundingBucket.find_by(id: self.state_funding_line_item_id).update!(budget_committed: FundingRequest.where(state_funding_line_item_id: self.state_funding_line_item_id).sum(:state_amount))
+    end
+    if self.local_funding_line_item_id
+      FundingBucket.find_by(id: self.local_funding_line_item_id).update!(budget_committed: FundingRequest.where(local_funding_line_item_id: self.local_funding_line_item_id).sum(:local_amount))
+    end
   end
 
 end

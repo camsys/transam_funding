@@ -1,4 +1,5 @@
 - orgs = @funding_template.get_organizations
+- funding_requests = FundingRequest.where('federal_funding_line_item_id = ? OR state_funding_line_item_id = ? OR local_funding_line_item_id = ?', @funding_bucket.id, @funding_bucket.id, @funding_bucket.id)
 
 %ul.nav.nav-tabs
   - if @funding_template.owner == FundingSourceType.find_by(name: 'State')
@@ -10,8 +11,8 @@
   %li
     %a{:href => "#tagged", :data =>{:toggle => 'tab'}}
       %span{:style => 'white-space: nowrap !important;'}
-        Tagged Assets
-        %span.badge= "TBD"
+        Funding Line Items
+        %span.badge= funding_requests.count
 
 .tab-content{:style => 'max-height:400px;overflow-y: auto;'}
   - if @funding_template.owner == FundingSourceType.find_by(name: 'State')
@@ -23,4 +24,5 @@
 
   .tab-pane.fade#tagged
     .tab-content
+      = render :partial => 'funding_requests/index_table', :locals => {:funding_requests => funding_requests, :show_actions => 0, :show_footer => 0}
 
