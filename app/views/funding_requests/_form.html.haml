@@ -32,7 +32,7 @@
           .col-xs-3
             = f.input :federal_amount, :wrapper=> :horizontal_prepend, :label => false do
               %span.input-group-addon
-                %i.fa.fa-usd
+                %i.fa.fa-usd{id: 'federal_amount_usd_symbol'}
               = f.input_field :federal_amount, :class => "form-control", :digits => true, :min => 0, :max => 10000000
 
         .row
@@ -48,7 +48,7 @@
           .col-xs-3
             = f.input :state_amount, :wrapper=> :horizontal_prepend, :label => false do
               %span.input-group-addon
-                %i.fa.fa-usd
+                %i.fa.fa-usd{id: 'state_amount_usd_symbol'}
               = f.input_field :state_amount, :class => "form-control", :digits => true, :min => 0, :max => 10000000
 
         .row
@@ -64,7 +64,7 @@
           .col-xs-3
             = f.input :local_amount, :wrapper=> :horizontal_prepend, :label => false do
               %span.input-group-addon
-                %i.fa.fa-usd
+                %i.fa.fa-usd{id: 'local_amount_usd_symbol'}
               = f.input_field :local_amount, :class => "form-control", :number => true, :min => 0
         .row
           .col-xs-6.left
@@ -88,6 +88,9 @@
       .col-md-4#federal_fund_details
 
 :javascript
+  var federal_bucket_budget_remaining = 0;
+  var state_bucket_budget_remaining = 0;
+  var local_bucket_budget_remaining = 0;
 
   // jquery validations
   $('.funding_request_form').validate();
@@ -151,8 +154,8 @@
     return rounded_cash_value;
   }
   function update_cash_value_and_percent_funding_for_state_from_match_percent(percent_funding){
-    var federal_cash = parseFloat($('#funding_request_federal_amount').val());
-    var cash_value = (line_item_total - federal_cash) * (percent_funding/100)
+    var state_cash = parseFloat($('#funding_request_state_amount').val());
+    var cash_value = (line_item_total - state_cash) * (percent_funding/100)
     update_state_percent_from_state_cash();
   }
 
@@ -162,14 +165,13 @@
     var local_cash = parseFloat($('#funding_request_local_amount').val());
 
     if(isNaN(federal_cash)){
-      federal_cash = 0
-      federal_cash = 0
+      federal_cash = 0;
     }
     if(isNaN(state_cash)){
-      state_cash = 0
+      state_cash = 0;
     }
     if(isNaN(local_cash)){
-      local_cash = 0
+      local_cash = 0;
     }
 
     var total = federal_cash + state_cash + local_cash;
@@ -204,9 +206,39 @@
       $( "#locking_option" ).removeClass( "fa fa-unlock-alt fa-2x text-success" ).addClass( "fa fa-unlock-alt fa-2x" );
     }
   }
+
+  function update_bucket_budget_remaining_totals()
+  {
+    if(parseFloat($('#funding_request_federal_amount').val()) > federal_bucket_budget_remaining)
+    {
+      $( "#federal_amount_usd_symbol" ).removeClass("fa fa-usd").addClass("fa fa-usd text-danger");
+      $('#federal_amount_usd_symbol').prop('title', 'The bucket is or will be overdrawn.');
+    } else {
+      $( "#federal_amount_usd_symbol" ).removeClass( "fa fa-usd text-danger" ).addClass( "fa fa-usd" );
+      $('#federal_amount_usd_symbol').prop('title', 'The bucket is not overdrawn');
+    }
+    if(parseFloat($('#funding_request_state_amount').val()) > state_bucket_budget_remaining)
+    {
+      $( "#state_amount_usd_symbol" ).removeClass("fa fa-usd").addClass("fa fa-usd text-danger");
+      $('#state_amount_usd_symbol').prop('title', 'The bucket is or will be overdrawn.');
+    } else {
+      $( "#state_amount_usd_symbol" ).removeClass( "fa fa-usd text-danger" ).addClass( "fa fa-usd" );
+      $('#state_amount_usd_symbol').prop('title', 'The bucket is not overdrawn');
+    }
+    if(parseFloat($('#funding_request_local_amount').val()) > local_bucket_budget_remaining)
+    {
+      $( "#local_amount_usd_symbol" ).removeClass( "fa fa-usd text-danger" ).addClass( "fa fa-usd" );
+      $('#local_amount_usd_symbol').prop('title', 'The bucket is or will be overdrawn.');
+    } else {
+      $( "#local_amount_usd_symbol" ).removeClass( "fa fa-usd text-danger" ).addClass( "fa fa-usd" );
+      $('#local_amount_usd_symbol').prop('title', 'The bucket is not overdrawn');
+    }
+  }
+
   function update_totals(){
     update_total_funds();
     update_total_percents();
+    update_bucket_budget_remaining_totals();
   }
 
   function lock_form(){
@@ -408,17 +440,20 @@
         var cash_value = 0;
         if(source == 'federal')
         {
-          cash_value = get_value_from_percent_funding(result);
-          $('#funding_request_federal_percent').val(result);
+          federal_bucket_budget_remaining = result.bucket_budget_remaining;
+          cash_value = get_value_from_percent_funding(result.bucket_percent);
+          $('#funding_request_federal_percent').val(result.bucket_percent);
           $('#funding_request_federal_amount').val(cash_value);
         }else if(source == 'state')
         {
-          update_cash_value_and_percent_funding_for_state_from_match_percent(result);
+          state_bucket_budget_remaining = result.bucket_budget_remaining;
+          update_cash_value_and_percent_funding_for_state_from_match_percent(result.bucket_percent);
         }else if(source == 'local')
         {
+          local_bucket_budget_remaining = result.bucket_budget_remaining;
           result = 100 - (parseFloat($('#funding_request_federal_percent').val()) + parseFloat($('#funding_request_state_percent').val()));
-          cash_value = get_value_from_percent_funding(result);
-          $('#funding_request_local_percent').val(result);
+          cash_value = get_value_from_percent_funding(result.bucket_percent);
+          $('#funding_request_local_percent').val(result.bucket_percent);
           $('#funding_request_local_amount').val(cash_value);
         }
         update_totals();
