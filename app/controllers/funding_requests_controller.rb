@@ -92,6 +92,7 @@ class FundingRequestsController < OrganizationAwareController
 
     respond_to do |format|
       format.html # index.html.erb
+      format.js
       format.json { render :json => @funding_requests }
       format.xls
     end

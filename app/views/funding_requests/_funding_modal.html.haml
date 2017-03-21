@@ -1,0 +1,88 @@
+:ruby
+  second_table_dom_id = SecureRandom.hex
+  move_assets_action ||= '0'
+
+.modal-dialog.modal-lg
+  .modal-content
+    .modal-header
+      %button.close{:data => {:dismiss => "modal"}}
+        x
+      %h3.modal-title
+        = "#{@activity_line_item.capital_project}: #{@activity_line_item}"
+    .modal-body
+      .panel.panel-primary
+        .panel-heading.ali-heading.funding-line-item-panel-heading
+          .col-xs-2
+            %span.badge{title: 'Num. Funding Lines'}= (@activity_line_item.funding_requests.count/3.to_f).ceil
+          .col-xs-4
+            %span{title: 'Cost'}= format_as_currency(@activity_line_item.cost) + (@activity_line_item.is_cost_estimated? ? " (e)" : "")
+          .col-xs-2
+            %span.text-success{title: 'Total Funds'}= format_as_currency(@activity_line_item.total_funds)
+          %col-xs-2
+            %span.text-danger{title: 'Funds Required'}= format_as_currency(@activity_line_item.funds_required)
+          %col-xs-2
+            %span.pull-right{title: 'Pcnt Funded'}= format_as_percentage(@activity_line_item.pcnt_funded, 3)
+
+        - funding_requests = []
+        - panel_params = {:id => "#{@activity_line_item.object_key}_ali_body"}
+        - @activity_line_item.funding_requests.each do |fr|
+          - request = {object_key: fr.object_key, federal_name: fr.federal_funding_line_item.to_s, federal_amount: format_as_currency(fr.federal_amount), state_name: fr.state_funding_line_item.to_s, state_amount: format_as_currency(fr.state_amount), local_name: fr.local_funding_line_item.to_s, local_amount: format_as_currency(fr.local_amount), funding_request_amount: format_as_currency(fr.funding_request_amount)}
+          - funding_requests << request
+
+        .panel-body{panel_params}
+          .table-responsive
+            - if move_assets_action == "1"
+              %table.table.table-condensed.table-hover{:id => second_table_dom_id, :data => {:toggle => 'table',
+                :data => funding_requests.to_json,
+                :card_view => "false",
+                :search => 'false',
+                :striped => 'true',
+                :single_select => 'false',
+                :show_columns => 'false',
+                :toolbar => "#asset-actions",
+                :row_style => 'row_style',
+                :click_to_select => 'false',
+                :show_export => 'false',
+                :id_field => 'object_key',
+                :state_save => 'true',
+                :state_save_id_table => "assets_id",
+                :state_save_expire => "1y",
+                :classes => 'table-no-bordered'}}
+                %thead
+                  %tr
+                    - if move_assets_action == '1'
+                      %th.bs-checkbox{:data => {:checkbox => 'true', :field => 'state'}}
+                    %th.center{:data=> {:field => 'object_key', :visible => 'false'}} Object
+                    %th.center{data: {field: 'federal_name'}} Federal Source
+                    %th.center{data: {field: 'federal_amount'}} Federal Amount
+                    %th.center{data: {field: 'state_name'}} State asdasdasSource
+                    %th.center{data: {field: 'state_amount'}} State Amount
+                    %th.center{data: {field: 'local_name'}} Local Source
+                    %th.center{data: {field: 'local_amount'}} Local Amount
+                    %th.center{data: {field: 'funding_request_amount'}} Requested Amount
+            -else
+              %table.table.table-condensed.table-hover{:id => second_table_dom_id, :data => {:toggle => 'table',
+                :data => funding_requests.to_json,
+                :card_view => "false",
+                :search => 'false',
+                :striped => 'true',
+                :row_style => 'row_style',
+                :id_field => 'object_key',
+                :classes => 'table-no-bordered'}}
+                %thead
+                  %tr
+                    - if move_assets_action == '1'
+                      %th.bs-checkbox{:data => {:checkbox => 'true', :field => 'state'}}
+                    %th.center{:data=> {:field => 'object_key', :visible => 'false'}} Object
+                    %th.center{data: {field: 'federal_name'}} Federal Source
+                    %th.center{data: {field: 'federal_amount'}} Federal Amount
+                    %th.center{data: {field: 'state_name'}} State Source
+                    %th.center{data: {field: 'state_amount'}} State Amount
+                    %th.center{data: {field: 'local_name'}} Local Source
+                    %th.center{data: {field: 'local_amount'}} Local Amount
+                    %th.center{data: {field: 'funding_request_amount'}} Requested Amount
+
+:javascript
+  $(document).ready(function() {
+    $("##{second_table_dom_id}").bootstrapTable();
+  });
