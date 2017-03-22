@@ -1,0 +1,41 @@
+:ruby
+  table_dom_id = SecureRandom.hex
+
+.table-responsive
+  %table.table.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
+    :card_view => "false",
+    :pagination => 'true',
+    :show_pagination_switch => 'true',
+    :page_list => "[5, 10, 20, 50, 100, 200]",
+    :page_size => current_user.num_table_rows,
+    :search => 'false',
+    :export_types => "['csv', 'txt', 'excel']",
+    :show_export => 'true',
+    :show_columns => 'true',
+    :state_save => 'true',
+    :state_save_id_table => "fr.id",
+    :state_save_expire => "1y",
+    :show_multi_sort => 'true',
+    :sort_priority => '[{"sortName": "fr.activity_line_item.fy_year","sortOrder":"asc"},{"sortName":"fr.activity_line_item.name","sortOrder":"asc"}]'}}
+
+    %thead
+      %tr
+        %th.center{:data => {:sortable => 'true'}} ALI
+        %th.center{:data => {:sortable => 'true'}} FY
+        %th.center{:data => {:sortable => 'true'}} ALI Total
+        %th.center{:data => {:sortable => 'true'}} Bucket Allocation
+    %tbody
+      - funding_requests.each do |fr|
+        %tr{:id => fr.object_key, :class => 'action-path'}
+          %td.left= fr.activity_line_item.name
+          %td.left= format_as_fiscal_year(fr.activity_line_item.fy_year)
+          -if fr.activity_line_item.is_cost_estimated?
+            %td.left= format_as_currency(fr.activity_line_item.cost)+'(e)'
+          -else
+            %td.left= format_as_currency(fr.activity_line_item.cost)
+          -if fr.federal_funding_line_item_id == @funding_bucket.id
+            %td.left= format_as_currency(fr.federal_amount)
+          -elsif fr.state_funding_line_item_id == @funding_bucket.id
+            %td.left= format_as_currency(fr.state_amount)
+          -elsif fr.local_funding_line_item_id == @funding_bucket.id
+            %td.left= format_as_currency(fr.local_amount)
