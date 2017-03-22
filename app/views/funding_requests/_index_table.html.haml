@@ -21,7 +21,7 @@
       -state_funding_request = {'name' =>  fr.state_funding_line_item.to_s, 'amount' => format_as_currency(fr.state_amount)}
       -state_funds_total = state_funds_total+fr.state_amount
       -state_funding_requests << state_funding_request
-    -unless(fr.federal_funding_line_item.blank?)
+    -unless(fr.local_funding_line_item.blank?)
       -local_funding_request = {'name' => fr.local_funding_line_item.to_s, 'amount' => format_as_currency(fr.local_amount)}
       -local_funds_total = local_funds_total+fr.local_amount
       -local_funding_requests << local_funding_request

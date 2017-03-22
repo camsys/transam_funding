@@ -1,29 +1,29 @@
 #Details_tabs
   %ul.nav.nav-tabs
-    %li
-      %a{:href => "#summary", :data =>{:toggle => 'tab'}, :icon => 'fa fa-usd'}
+    %li{:class => 'active'}
+      %a{:href => "#summary", :data =>{:toggle => 'tab'}}
         Summary
         %span.badge= (@activity_line_item.funding_requests.count)
     %li
-      %a{:href => "#details", :data =>{:toggle => 'tab'}, :icon => 'fa fa-usd'}
+      %a{:href => "#details", :data =>{:toggle => 'tab'}}
         Details
     %li
-      %a{:href => "#assets", :data =>{:toggle => 'tab'}, :icon => 'fa fa-list'}
+      %a{:href => "#assets", :data =>{:toggle => 'tab'}}
         Assets
     %li
-      %a{:href => "#comments", :data =>{:toggle => 'tab'}, :icon => 'fa fa-calendar'}
+      %a{:href => "#comments", :data =>{:toggle => 'tab'}}
         Comments
         %span.badge= @activity_line_item.comments.count
 
     %li
-      %a{:href => "#tasks", :data =>{:toggle => 'tab'}, :icon => 'fa fa-calendar'}
+      %a{:href => "#tasks", :data =>{:toggle => 'tab'}}
         %span{:style => 'white-space: nowrap !important;'}
           Tasks
           %span.badge= @activity_line_item.tasks.count
 
 
   .tab-content{:style => 'max-height:1000px;overflow-y: auto;'}
-    .tab-pane.fade#summary
+    .tab-pane.fade.active.in#summary
       .tab-content
         = render 'funding_requests/funding_requests_index'
 
