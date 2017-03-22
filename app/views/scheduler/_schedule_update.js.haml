@@ -1,6 +1,6 @@
 - if @action == SchedulerController::ALI_EDIT_FUND_ACTION
-  $('#funding_request_form_div').show();
-  $('#funding_request_form_div').html("#{raw escape_javascript(render 'funding_requests/form')}");
+  $('#form_panel_body').show()
+  $('#form_panel_body').html("#{raw escape_javascript(render 'funding_requests/form')}");
   update_federal_percent_from_federal_cash();
   update_state_percent_from_state_cash();
   update_local_percent_from_local_cash();

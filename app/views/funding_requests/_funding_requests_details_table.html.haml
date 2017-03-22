@@ -10,7 +10,7 @@
     .col-md-12
       = link_to scheduler_ali_action_scheduler_index_path(:org_id => @org_id, :active_year => @active_year, :ali => activity_line_item.object_key,
                 :invoke => SchedulerController::ALI_EDIT_FUND_ACTION), :remote => :true, :title => 'Edit this funding item', :class => 'btn btn-xs btn-info funding-request-line-item-edit',
-                :style => 'margin-left: 1px; margin-right: 1px;', :onclick => "edit_funding_request(0, 0, 0, 0, 0, 0, 0,0, 0, 0);" do
+                :style => 'margin-left: 1px; margin-right: 1px;' do
         %i.fa.fa-plus
 
   - activity_line_item.funding_requests.each do |f|
@@ -29,10 +29,7 @@
               %th.right
                 = link_to scheduler_ali_action_scheduler_index_path(:org_id => @org_id, :active_year => @active_year, :ali => activity_line_item.object_key, :funding_request => f.object_key,
                 :invoke => SchedulerController::ALI_EDIT_FUND_ACTION), :remote => :true, :title => 'Edit this funding item', :class => 'btn btn-xs btn-info funding-request-line-item-edit',
-                :style => 'margin-left: 1px; margin-right: 1px;', :onclick => "edit_funding_request(#{f.funding_request_amount},
-                                                #{(f.federal_funding_line_item_id || 0)}, #{f.federal_percent}, #{f.federal_amount},
-                                                #{(f.state_funding_line_item_id || 0)}, #{f.state_percent}, #{f.state_amount},
-                                                #{(f.local_funding_line_item_id || 0)}, #{f.local_percent}, #{f.local_amount});", :data => {@funding_request => f} do
+                :style => 'margin-left: 1px; margin-right: 1px;' do
                   %i.fa.fa-edit
                 = link_to scheduler_ali_action_scheduler_index_path(:org_id => @org_id, :active_year => @active_year, :ali => activity_line_item.object_key, :funding_request => f.object_key,
                 :invoke => SchedulerController::ALI_REMOVE_FUND_ACTION), :title => 'Remove this funding item',
@@ -69,7 +66,7 @@
     .col-md-12
       = link_to scheduler_ali_action_scheduler_index_path(:org_id => @org_id, :active_year => @active_year, :ali => activity_line_item.object_key, :funding_request => nil,
                 :invoke => SchedulerController::ALI_EDIT_FUND_ACTION), :remote => :true, :title => 'Add new funding item', :class => 'btn btn-xs btn-info button.btn.btn-primary Add',
-                :style => 'margin-left: 1px; margin-right: 1px;', onclick: "$('edit_funding_request(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);", data: {@funding_request => FundingRequest.new} do
+                :style => 'margin-left: 1px; margin-right: 1px;' do
         %i.fa.fa-plus
 :javascript
   $('#form_panel_body').hide();
