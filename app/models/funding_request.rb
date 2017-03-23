@@ -15,7 +15,8 @@ class FundingRequest < ActiveRecord::Base
   # Callbacks
   #------------------------------------------------------------------------------
   after_initialize                  :set_defaults
-  before_save                       :update_buckets
+  before_save                       :update_old_buckets
+  after_save                        :update_new_buckets
 
   #------------------------------------------------------------------------------
   # Associations
@@ -144,7 +145,7 @@ class FundingRequest < ActiveRecord::Base
     self.local_percent          = local_percentage
   end
 
-  def update_buckets
+  def update_old_buckets
     if self.changes.include?('federal_funding_line_item_id') && !self.federal_amount_was.nil?
       f = FundingBucket.find_by(id: self.federal_funding_line_item_id_was)
       f.budget_committed -= self.federal_amount_was
@@ -160,7 +161,9 @@ class FundingRequest < ActiveRecord::Base
       f.budget_committed -= self.local_amount_was
       f.save!
     end
+  end
 
+  def update_new_buckets
     if self.federal_funding_line_item_id
       FundingBucket.find_by(id: self.federal_funding_line_item_id).update!(budget_committed: FundingRequest.where(federal_funding_line_item_id: self.federal_funding_line_item_id).sum(:federal_amount))
     end
