@@ -150,16 +150,16 @@ class FundingRequest < ActiveRecord::Base
     Rails.logger.info "Update bucket sums"
 
     self.changes.each do |field, changes|
-      if field.last(3) == '_id'
-        amount_field = "#{field.split('_')[0]}_amount_was"
+      if field.last(13) == '_line_item_id' && field != 'activity_line_item_id'
+        amount_field = "#{field.split('_')[0]}_amount"
 
         if changes[0].present?
           f = FundingBucket.find_by(id: changes[0])
-          f.update!(budget_committed: f.budget_committed - self["#{amount_field}_was"].to_i)
+          f.update!(budget_committed: f.budget_committed - self.send("#{amount_field}_was".to_sym).to_i)
         end
         if changes[1].present?
-            f = FundingBucket.find_by(id: changes[1])
-            f.update!(budget_committed: f.budget_committed + self["#{amount_field}"].to_i)
+          f = FundingBucket.find_by(id: changes[1])
+          f.update!(budget_committed: f.budget_committed + self["#{amount_field}"].to_i)
         end
       elsif field.last(7) == '_amount' && field != 'funding_request_amount'
         line_item_field = "#{field.split('_')[0]}_funding_line_item_id"
@@ -169,7 +169,7 @@ class FundingRequest < ActiveRecord::Base
 
           if line_item_val.present?
             f = FundingBucket.find_by(id: line_item_val)
-            f.update!(budget_committed: f.budget_committed - self["#{field}_was"].to_i + self["#{field}"].to_i)
+            f.update!(budget_committed: f.budget_committed - self.send("#{field}_was".to_sym).to_i + self["#{field}"].to_i)
           end
         end
 
