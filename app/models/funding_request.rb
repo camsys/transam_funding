@@ -68,6 +68,7 @@ class FundingRequest < ActiveRecord::Base
     :object_key,
     :federal_funding_line_item_id,
     :state_funding_line_item_id,
+    :local_funding_line_item_id,
     :activity_line_item_id,
     :federal_amount,
     :state_amount,
@@ -145,31 +146,36 @@ class FundingRequest < ActiveRecord::Base
   end
 
   def update_buckets
-    if self.changes.include? 'federal_funding_line_item_id' && !self.federal_amount_was.nil?
-      f = FundingBucket.find_by(id: self.federal_funding_line_item_id_was)
-      f.budget_committed -= self.federal_amount_was
-      f.save!
-    end
-    if self.changes.include? 'state_funding_line_item_id' && !self.state_funding_line_item_id_was.nil?
-      f = FundingBucket.find_by(id: self.state_funding_line_item_id_was)
-      f.budget_committed -= self.state_amount_was
-      f.save!
-    end
-    if self.changes.include? 'local_funding_line_item_id' && !self.local_funding_line_item_id_was.nil?
-      f = FundingBucket.find_by(id: self.local_funding_line_item_id_was)
-      f.budget_committed -= self.local_amount_was
-      f.save!
+
+    Rails.logger.info "Update bucket sums"
+
+    self.changes.each do |field, changes|
+      if field.last(3) == '_id'
+        amount_field = "#{field.split('_')[0]}_amount_was"
+
+        if changes[0].present?
+          f = FundingBucket.find_by(id: changes[0])
+          f.update!(budget_committed: f.budget_committed - self["#{amount_field}_was"].to_i)
+        end
+        if changes[1].present?
+            f = FundingBucket.find_by(id: changes[1])
+            f.update!(budget_committed: f.budget_committed + self["#{amount_field}"].to_i)
+        end
+      elsif field.last(7) == '_amount' && field != 'funding_request_amount'
+        line_item_field = "#{field.split('_')[0]}_funding_line_item_id"
+
+        unless self.changes.include? line_item_field # dont update amount if bucket change as handled earlier
+          line_item_val = self[line_item_field]
+
+          if line_item_val.present?
+            f = FundingBucket.find_by(id: line_item_val)
+            f.update!(budget_committed: f.budget_committed - self["#{field}_was"].to_i + self["#{field}"].to_i)
+          end
+        end
+
+      end
     end
 
-    if self.federal_funding_line_item_id
-      FundingBucket.find_by(id: self.federal_funding_line_item_id).update!(budget_committed: FundingRequest.where(federal_funding_line_item_id: self.federal_funding_line_item_id).sum(:federal_amount))
-    end
-    if self.state_funding_line_item_id
-      FundingBucket.find_by(id: self.state_funding_line_item_id).update!(budget_committed: FundingRequest.where(state_funding_line_item_id: self.state_funding_line_item_id).sum(:state_amount))
-    end
-    if self.local_funding_line_item_id
-      FundingBucket.find_by(id: self.local_funding_line_item_id).update!(budget_committed: FundingRequest.where(local_funding_line_item_id: self.local_funding_line_item_id).sum(:local_amount))
-    end
   end
 
 end
