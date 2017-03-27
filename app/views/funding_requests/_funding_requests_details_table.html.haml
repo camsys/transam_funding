@@ -9,7 +9,7 @@
   .row
     .col-md-12
       = link_to scheduler_ali_action_scheduler_index_path(:org_id => @org_id, :active_year => @active_year, :ali => activity_line_item.object_key,
-                :invoke => SchedulerController::ALI_EDIT_FUND_ACTION), :remote => :true, :title => 'Edit this funding item', :class => 'btn btn-xs btn-info funding-request-line-item-edit',
+                :invoke => SchedulerController::ALI_EDIT_FUND_ACTION), :remote => :true, :title => 'Add new funding line item', :class => 'btn btn-xs btn-info funding-request-line-item-edit',
                 :style => 'margin-left: 1px; margin-right: 1px;' do
         %i.fa.fa-plus
 
@@ -65,7 +65,7 @@
   .row
     .col-md-12
       = link_to scheduler_ali_action_scheduler_index_path(:org_id => @org_id, :active_year => @active_year, :ali => activity_line_item.object_key, :funding_request => nil,
-                :invoke => SchedulerController::ALI_EDIT_FUND_ACTION), :remote => :true, :title => 'Add new funding item', :class => 'btn btn-xs btn-info button.btn.btn-primary Add',
+                :invoke => SchedulerController::ALI_EDIT_FUND_ACTION), :remote => :true, :title => 'Add new funding line item', :class => 'btn btn-xs btn-info button.btn.btn-primary Add',
                 :style => 'margin-left: 1px; margin-right: 1px;' do
         %i.fa.fa-plus
 :javascript
