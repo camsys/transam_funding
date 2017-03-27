@@ -268,12 +268,7 @@ class SchedulerController < AbstractCapitalProjectsController
       @active_year = params[:active_year].to_i
     end
 
-    # This is the first year that the user can plan for
-    @first_year = current_fiscal_year_year + 1
-    # This is the last year of a 3 year plan
-    @last_year = last_fiscal_year_year - 2
-    # This is an array of years that the user can plan for
-    @years = (@first_year..@last_year).to_a
+   get_planning_years
 
     # Set the view up. Start year is the first year in the view
     @start_year = params[:start_year].blank? ? @first_year : params[:start_year].to_i
