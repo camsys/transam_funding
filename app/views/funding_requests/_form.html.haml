@@ -201,6 +201,9 @@
 
   function get_percent_from_cash_entered(cash_value){
     var percent = find_percent_down_to_three_decimal_places(cash_value / line_item_total);
+    if(isNaN(percent)){
+      percent = 0
+    }
     return percent.toFixed(3);
   }
   function get_value_from_percent_funding(non_decimalized_percent_funding, percent_type){
@@ -370,6 +373,7 @@
   function update_federal_percent_from_federal_cash(){
     var federal_percent = get_percent_from_cash_entered(get_federal_cash());
     //todo clean this up
+    console.log('federal_percent = get_percent_from_cash_entered(get_federal_cash())__'+federal_percent+'__ in update_federal_percent_from_federal_cash');
     set_federal_percent(federal_percent);
     update_total_percents();
   }
@@ -498,7 +502,7 @@
       }
     }else{
       var percent_complete = get_percent_from_cash_entered(federal_request_amount);
-      set_federal_percent(percent_complete*100);
+      set_federal_percent(percent_complete);
     }
   });
 
