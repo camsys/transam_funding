@@ -150,8 +150,8 @@ class FundingBucket< ActiveRecord::Base
     self.owner_id = agency_id.nil? ? bucket_proxy.owner_id : agency_id
     self.active=true
 
-    funding_template = FundingTemplate.find_by(id: self.funding_template_id)
-    owner = Organization.find_by(id: self.owner_id)
+    self.funding_template = FundingTemplate.find_by(id: self.funding_template_id)
+    self.owner = Organization.find_by(id: self.owner_id)
 
     if bucket_proxy.name.blank?
       generate_unique_name
@@ -174,7 +174,7 @@ class FundingBucket< ActiveRecord::Base
   end
 
   def generate_unique_name
-    self.name = "#{funding_template.name}-#{owner.short_name}-#{fiscal_year_for_name(self.fy_year)}"
+    self.name = "#{self.funding_template.name}-#{self.owner.short_name}-#{fiscal_year_for_name(self.fy_year)}"
   end
 
   #------------------------------------------------------------------------------

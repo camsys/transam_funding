@@ -529,7 +529,6 @@ class FundingBucketsController < OrganizationAwareController
       bucket = new_bucket_from_proxy(bucket_proxy)
       create_single_organization_buckets(bucket, bucket_proxy, existing_buckets, create_conflict_option, 'Create')
     else
-      bucket = new_bucket_from_proxy(bucket_proxy)
       organizations = find_organizations(bucket_proxy.template_id)
 
 
