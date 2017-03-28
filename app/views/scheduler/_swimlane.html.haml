@@ -68,3 +68,9 @@
       }
 
     });
+
+    $('.expand_swimlane').click(function(event){
+      event.stopPropagation();
+
+      $($(this).data('target')).collapse('toggle');
+    });
