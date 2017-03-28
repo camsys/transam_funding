@@ -1,0 +1,68 @@
+:ruby
+  popup ||= '0'
+  alis  ||= project.activity_line_items
+
+.table-responsive
+  %table.table.table-condensed
+    %thead
+      %tr
+        %th Name
+        %th.center FY
+        %th.center Sub Category
+        %th.right Count
+        %th.right Cost
+        %th.right Total Funds
+        %th.right Funds Required
+        %th.right Pcnt Funded
+        - if popup
+          %th.center
+        - if project.has_early_replacement_assets?
+          %th.center
+
+    %tbody
+      - sum_assets = 0
+      - alis.each do |ali|
+        - sum_assets += ali.assets.count
+        %tr{:data => {:action_path => "#{capital_project_activity_line_item_path(project, ali)}"}}
+
+          %td.left.nowrap= ali.name
+          %td.center.nowrap= format_as_fiscal_year(ali.fy_year)
+          %td.center.nowrap= ali.team_ali_code
+          %td.right.nowrap= format_as_integer(ali.assets.count)
+          %td.right.nowrap= format_as_currency(ali.cost) + (ali.is_cost_estimated? ? " (e)" : "")
+          %td.right.nowrap= format_as_currency(ali.total_funds)
+          %td.right.nowrap= format_as_currency(ali.funds_required)
+          %td.right.nowrap= format_as_percentage(ali.pcnt_funded, 3)
+
+          - if popup == '1' and ali.assets.present?
+            %td.center
+              - popup_partial = ali.notional? ? 'activity_line_items/assets_notional_datatable' : 'activity_line_items/assets_planning_datatable'
+              %a{:tabindex => 0, :class => 'transam-popover', :data => {:toggle => "popover", :html => 'true', :placement => 'left', :container => 'body', :title => "#{ali}: Assets",  :content => "#{raw render :partial => popup_partial, :locals => {:ali => ali, :popup => '0'}}"}}
+                %i.fa.fa-info-circle.text-info.fa-1-25x
+          - if ali.has_early_replacement_assets?
+            %td.center
+              %a{:tabindex => 0, :class => 'transam-tooltip', :data => {:toggle => "tooltip", :placement => 'left', :title => "Contains early replacement assets"}}
+                %i.fa.fa-exclamation-triangle{style: 'color: red !important;'}
+
+
+    %tfoot
+      %tr
+        %td{:colspan => 3}
+        %td.right.nowrap= format_as_integer(sum_assets)
+
+        %td.right.nowrap= format_as_currency(project.total_cost)
+        %td.right.nowrap= format_as_currency(project.total_funds)
+        %td.right.nowrap= format_as_currency(project.funding_difference)
+        %td.right.nowrap= format_as_percentage(project.total_funds * 100.0 / project.total_cost, 3)
+        - if popup
+          %td.center
+
+:javascript
+  $('.transam-popover').popover({
+    trigger: 'hover',
+    html: 'true',
+    placement: 'left',
+    container: 'body'
+  });
+
+  $('.transam-tooltip').tooltip();
