@@ -33,45 +33,60 @@
     -local_percent_funded = (local_funds_total.to_f / @activity_line_item.cost)*100
   %span
     %span
-      .row
-        %col-xs-2
-          %strong
-            FEDERAL FUNDS
-        %col-xs-8
-          =format_as_currency(federal_funds_total)
-        %col-xs-2.pull-right
-          =format_as_percentage(federal_percent_funded)
-      -federal_funding_requests.each do |ffr|
-        .row
-          %col-xs-6
-            =ffr['name']
-          %col-xs-2.pull-right
-            =ffr['amount']
-      .row
-        %col-xs-2
-          %strong
-            STATE FUNDS
-        %col-xs-8
-          =format_as_currency(state_funds_total)
-        %col-xs-2.pull-right
-          =format_as_percentage(state_percent_funded)
-      -state_funding_requests.each do |sfr|
-        .row
-          %col-xs-6
-            =sfr['name']
-          %col-xs-2.pull-right
-            =sfr['amount']
-      .row
-        %col-xs-2
-          %strong
-            LOCAL FUNDS
-        %col-xs-8
-          =format_as_currency(local_funds_total)
-        %col-xs-2.pull-right
-          =format_as_percentage(local_percent_funded)
-      -local_funding_requests.each do |lfr|
-        .row
-          %col-xs-6
-            =lfr['name']
-          %col-xs-2.pull-right
-            =lfr['amount']
+      %table-responsive
+        %table.table
+          %tbody
+            %tr{:style => "border-top: 0px"}
+              %td.left{:style => "border-top: 0px; width: 35%"}
+                %strong
+                  FEDERAL FUNDS
+              %td.left{:style => "border-top: 0px;"}
+                %strong
+                  =format_as_currency(federal_funds_total)
+              %td.left{:style => "border-top: 0px; width: 50%"}
+                %strong
+                  =format_as_percentage(federal_percent_funded)
+            -federal_funding_requests.each do |ffr|
+              %tr
+                %td.right
+                  =ffr['name']
+                %td.left
+                  =ffr['amount']
+                %td.left
+                  &nbsp;
+            %tr
+              %td.left
+                %strong
+                  STATE FUNDS
+              %td.left
+                %strong
+                  =format_as_currency(state_funds_total)
+              %td.left
+                %strong
+                  =format_as_percentage(state_percent_funded)
+            -state_funding_requests.each do |sfr|
+              %tr
+                %td.right
+                  =sfr['name']
+                %td.left
+                  =sfr['amount']
+                %td.left
+                  &nbsp;
+            %tr
+              %td.left
+                %strong
+                  LOCAL FUNDS
+              %td.left
+                %strong
+                  =format_as_currency(local_funds_total)
+              %td.left
+                %strong
+                  =format_as_percentage(local_percent_funded)
+            -local_funding_requests.each do |lfr|
+              %tr
+                %td.right
+                  =lfr['name']
+                %td.left
+                  =lfr['amount']
+                %td.left
+                  &nbsp;
