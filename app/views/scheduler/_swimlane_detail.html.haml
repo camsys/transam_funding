@@ -14,9 +14,8 @@
   = ali.to_s.upcase
 
 - panel_params = {:id => "#{ali.object_key}_ali_body"}
-- if year == @active_year
-  - panel_params[:data] = {:action_path => scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, start_year: year, ali: ali.object_key)}
-  - panel_params[:class] = 'clickable'
+- panel_params[:data] = {:action_path => scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, start_year: year, ali: ali.object_key)}
+- panel_params[:class] = 'clickable'
 - if ali.object_key == params[:ali]
   - panel_params[:style] = 'background-color: #d9edf7;'
 .panel-body.collapse{panel_params}

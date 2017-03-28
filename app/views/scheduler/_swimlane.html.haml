@@ -4,10 +4,24 @@
   .panel-footer.clickable:hover{
     background-color: #dddddd !important;
   }
+  .panel.swimlane.panel-default:hover{
+    border-color: #bce8f1;
+  }
+  .panel.swimlane.panel-default:hover > .panel-heading {
+    color: #3399f3;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+  }
 
-.panel.swimlane{:class => year == @active_year ? 'panel-info' : 'panel-default'}
-  .panel-heading.swimlane-heading{year == @active_year ? {:data => {:fy => year, :action_path => scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, start_year: year)}} : {} }
+
+.panel.swimlane{class: "#{@active_year.present? ? 'panel-info' : 'panel-default'}"}
+  .panel-heading.swimlane-heading{:data => {:fy => year, :action_path => scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, start_year: year)}}
     %span.badge.pull-right{id: "year_#{year}_swimlane_badge"}= alis.count
+    - if @active_year
+      .pull-right
+        .form-group
+          = select_tag(:sort, options_for_select([['Cost', 'cost'], ['Pcnt Funded', 'pcnt_funded'], ['# of assets', 'num_assets']], :selected => params[:sort]), :prompt => 'Sort by...', :class => "form-control", :style => 'margin-top: -7px;')
+
     %h3.panel-title
       %i.fa.fa-lock
       = format_as_fiscal_year(year)
@@ -19,3 +33,38 @@
 
 
 .modal.fade#form-modal{:tabindex => -1, :role => 'dialog', :aria => {:hidden => true}}
+
+:javascript
+
+    $('#sort').on('click', function(event) {
+      event.stopPropagation();
+    });
+
+    $('#sort').on('change', function(event) {
+      var url = document.location.href
+      var newAdditionalURL = "";
+      var tempArray = url.split("?");
+      var baseURL = tempArray[0];
+      var aditionalURL = tempArray[1];
+      var temp = "";
+      if (aditionalURL){
+        var tempArray = aditionalURL.split("&");
+        for ( var i in tempArray ){
+          if(tempArray[i].indexOf("sort") == -1){
+            newAdditionalURL += temp+tempArray[i];
+            temp = "&";
+          }
+        }
+      }
+      if ($(this).val().length > 1) {
+        var rows_txt = temp+"sort="+$(this).val();
+        var finalURL = baseURL+"?"+newAdditionalURL+rows_txt;
+      } else {
+        var finalURL = baseURL+"?"+newAdditionalURL;
+      }
+
+      if ((baseURL.indexOf("planning") >= 0) || (baseURL.indexOf("capital_projects") >= 0) || (baseURL.indexOf("scheduler") >= 0)) {
+        document.location.href = finalURL;
+      }
+
+    });

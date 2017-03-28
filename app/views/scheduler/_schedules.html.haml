@@ -1,6 +1,6 @@
 .row
   .col-md-12
-    = render :partial => 'capital_projects/capital_plan_summary', :locals => {:highlight_years => [@active_year]}
+    = render :partial => 'capital_projects/capital_plan_summary'
 
 #spinner{style: 'display:none;'}= loader_panel_tag({:message => "Processing...", :size => 3, :spinner => "cog"})
 

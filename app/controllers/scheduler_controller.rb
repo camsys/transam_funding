@@ -5,7 +5,6 @@ class SchedulerController < AbstractCapitalProjectsController
   before_filter :set_view_vars,  :only =>    [:index, :loader, :scheduler_ali_action, :scheduler_swimlane_action]
 
   add_breadcrumb "Home", :root_path
-  add_breadcrumb "Scheduler", :scheduler_index_path
 
   # Include the fiscal year mixin
   include FiscalYear
@@ -139,6 +138,8 @@ class SchedulerController < AbstractCapitalProjectsController
   # must be called as JS
   def scheduler_ali_action
 
+    @active_year = @start_year
+
     @activity_line_item = ActivityLineItem.find_by_object_key(params[:ali])
     @project = @activity_line_item.capital_project
     @action = params[:invoke]
@@ -236,6 +237,8 @@ class SchedulerController < AbstractCapitalProjectsController
 
     add_breadcrumb "#{Organization.find_by(id: @org_id)} #{format_as_fiscal_year(@start_year)}", scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, start_year: @start_year)
 
+    @active_year = @start_year
+
     current_index = @years.index(@start_year)
     if current_index == 0
       @prev_record_path = "#"
@@ -264,10 +267,6 @@ class SchedulerController < AbstractCapitalProjectsController
   # Sets the view variables that control the filters. called before each action is invoked
   def set_view_vars
 
-    unless params[:active_year].blank?
-      @active_year = params[:active_year].to_i
-    end
-
    get_planning_years
 
     # Set the view up. Start year is the first year in the view
@@ -275,15 +274,6 @@ class SchedulerController < AbstractCapitalProjectsController
     @year_1 = @start_year
     @year_2 = @start_year + 1
     @year_3 = @start_year + 2
-
-    # Set up the active year class var
-    if @active_year.nil?
-      @active_year = @year_1
-    elsif @active_year < @start_year
-      @active_year = @year_1
-    elsif @active_year > @year_3
-      @active_year = @year_3
-    end
 
     # Add ability to page year by year
     @total_rows = @years.size
@@ -293,6 +283,8 @@ class SchedulerController < AbstractCapitalProjectsController
     @row_pager_remote = true
 
     get_projects
+
+    add_breadcrumb "Scheduler", scheduler_index_path(org_id: @org_id)
 
   end
 
