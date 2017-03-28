@@ -3,13 +3,14 @@
     %li{:class => 'active'}
       %a{:href => "#summary", :data =>{:toggle => 'tab'}}
         Summary
-        %span.badge= (@activity_line_item.funding_requests.count)
     %li
-      %a{:href => "#details", :data =>{:toggle => 'tab'}}
-        Details
+      %a{:href => "#requests", :data =>{:toggle => 'tab'}}
+        Requests
+        %span.badge= (@activity_line_item.funding_requests.count)
     %li
       %a{:href => "#assets", :data =>{:toggle => 'tab'}}
         Assets
+        %span.badge.pull-right= (@activity_line_item.assets.count)
     %li
       %a{:href => "#comments", :data =>{:toggle => 'tab'}}
         Comments
@@ -27,7 +28,7 @@
       .tab-content
         = render 'funding_requests/funding_requests_index'
 
-    .tab-pane.fade#details
+    .tab-pane.fade#requests
       .tab-content
         = render 'funding_requests/funding_requests_details_table'
 
