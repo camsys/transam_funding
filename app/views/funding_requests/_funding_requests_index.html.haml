@@ -5,10 +5,6 @@
       .col-md-12{:style => 'overflow-y:auto;'}
         = render 'funding_requests/index_table'
 
-.row
-  .col-md-12
-    %button.btn.btn-primary{onclick: "$('#funding_request_form_div').show();"} Add
-
 :javascript
 
   var amount_needed = "#{@activity_line_item.funds_required}";
