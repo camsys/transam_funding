@@ -297,11 +297,11 @@ class SchedulerController < AbstractCapitalProjectsController
 
     case params[:sort]
       when 'cost'
-        alis.sort_by{|a| a.cost}
+        alis.sort_by{|a| a.cost}.reverse!
       when 'pcnt_funded'
-        alis.sort_by{|a| a.pcnt_funded}
+        alis.sort_by{|a| a.pcnt_funded}.reverse!
       when 'num_assets'
-        alis.sort_by{|a| a.assets.count}
+        alis.sort_by{|a| a.assets.count}.reverse!
       else
         alis
     end
