@@ -47,6 +47,8 @@ class SchedulerController < AbstractCapitalProjectsController
   # fiscal years.
   def index
 
+    add_breadcrumb "Scheduler", scheduler_index_path(org_id: @org_id)
+
     current_index = @years.index(@start_year)
     if current_index == 0
       @prev_record_path = "#"
@@ -137,6 +139,8 @@ class SchedulerController < AbstractCapitalProjectsController
   # General purpose action for mamipulating ALIs in the plan. This action
   # must be called as JS
   def scheduler_ali_action
+
+    add_breadcrumb "Scheduler", scheduler_index_path(org_id: @org_id)
 
     @active_year = @start_year
 
@@ -235,6 +239,8 @@ class SchedulerController < AbstractCapitalProjectsController
   # must be called as JS
   def scheduler_swimlane_action
 
+    add_breadcrumb "Scheduler", scheduler_index_path(org_id: @org_id)
+
     add_breadcrumb "#{Organization.find_by(id: @org_id)} #{format_as_fiscal_year(@start_year)}", scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, start_year: @start_year)
 
     @active_year = @start_year
@@ -283,8 +289,6 @@ class SchedulerController < AbstractCapitalProjectsController
     @row_pager_remote = true
 
     get_projects
-
-    add_breadcrumb "Scheduler", scheduler_index_path(org_id: @org_id)
 
   end
 
