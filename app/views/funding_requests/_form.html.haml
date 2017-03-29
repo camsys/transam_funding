@@ -116,7 +116,6 @@
       return this.optional(element) || results ;
   }, "Please enter a fund.");
 
-
   var line_item_total = parseFloat($('#funding_request_funding_request_amount').val());
 
     $('#cancel_btn').click(function(e) {
@@ -124,6 +123,25 @@
       $('#form_panel_body').hide();
       return false;
   });
+
+  function lock_on_load()
+  {
+    var federal_bucket_name = $('#funding_request_federal_funding_line_item_id option:selected').text();
+    var state_bucket_name = $('#funding_request_state_funding_line_item_id option:selected').text();
+    var local_bucket_name = $('#funding_request_local_funding_line_item_id option:selected').text();
+    if(federal_bucket_name == "")
+    {
+      lock_federal_funds_and_percent();
+    }
+    if(state_bucket_name == "")
+    {
+      lock_state_funds_and_percent();
+    }
+    if(local_bucket_name == "")
+    {
+      lock_local_funds_and_percent();
+    }
+  }
 
   function get_federal_cash()
   {
@@ -187,7 +205,6 @@
   {
     $('#funding_request_local_percent').val((local_percentage*100).toFixed(1));
   }
-
   function convert_non_decimal_percent_to_decimal(non_decimal_percent)
   {
     return non_decimal_percent/100;
@@ -337,43 +354,75 @@
 
 
   function lock_form(){
-    $('#funding_request_federal_funding_line_item_id').attr('readonly', true);
-    $('#funding_request_federal_percent').attr('readonly', true);
-    $('#funding_request_federal_amount').attr('readonly', true);
+    // $('#funding_request_federal_funding_line_item_id').attr('readonly', true);
+    // $('#funding_request_state_funding_line_item_id').attr('readonly', true);
+    // $('#funding_request_local_funding_line_item_id').attr('readonly', true);
 
-    $('#funding_request_state_funding_line_item_id').attr('readonly', true);
-    $('#funding_request_state_percent').attr('readonly', true);
-    $('#funding_request_state_amount').attr('readonly', true);
-
-    $('#funding_request_local_funding_line_item_id').attr('readonly', true);
-    $('#funding_request_local_percent').attr('readonly', true);
-    $('#funding_request_local_amount').attr('readonly', true);
-
+    lock_federal_percent();
+    lock_state_percent();
+    lock_local_percent();
     $( "#locking_option" ).removeClass( "fa fa-unlock-alt fa-2x text-success" ).addClass( "fa fa-lock fa-2x text-danger" );
 
   }
   function unlock_form(){
-    $('#funding_request_funding_request_amount').removeAttr('readonly');
+    // $('#funding_request_federal_funding_line_item_id').removeAttr('readonly');
+    // $('#funding_request_state_funding_line_item_id').removeAttr('readonly');
+    // $('#funding_request_local_funding_line_item_id').removeAttr('readonly');
 
-    $('#funding_request_federal_funding_line_item_id').removeAttr('readonly');
-    $('#funding_request_federal_percent').removeAttr('readonly');
-    $('#funding_request_federal_amount').removeAttr('readonly');
-
-    $('#funding_request_state_funding_line_item_id').removeAttr('readonly');
-    $('#funding_request_state_percent').removeAttr('readonly');
-    $('#funding_request_state_amount').removeAttr('readonly');
-
-    $('#funding_request_local_funding_line_item_id').removeAttr('readonly');
-    $('#funding_request_local_percent').removeAttr('readonly');
-    $('#funding_request_local_amount').removeAttr('readonly');
-
+    unlock_federal_percent();
+    unlock_state_percent();
+    unlock_local_percent();
     $( "#locking_option" ).removeClass( "fa fa-lock fa-2x text-danger" ).addClass( "fa fa-unlock-alt fa-2x text-success" );
   }
+
+  function lock_federal_percent(){
+    $('#funding_request_federal_percent').attr('readonly', true);
+  }
+  function lock_state_percent(){
+    $('#funding_request_state_percent').attr('readonly', true);
+  }
+  function lock_local_percent(){
+    $('#funding_request_local_percent').attr('readonly', true);
+  }
+  function unlock_federal_percent(){
+    $('#funding_request_federal_percent').removeAttr('readonly');
+  }
+  function unlock_state_percent(){
+    $('#funding_request_state_percent').removeAttr('readonly');
+  }
+  function unlock_local_percent(){
+    $('#funding_request_local_percent').removeAttr('readonly');
+  }
+
+  function lock_federal_funds_and_percent(){
+    $('#funding_request_federal_amount').attr('readonly', true);
+    lock_federal_percent();
+  }
+  function lock_state_funds_and_percent(){
+    $('#funding_request_state_amount').attr('readonly', true);
+    lock_state_percent();
+  }
+  function lock_local_funds_and_percent(){
+    $('#funding_request_local_amount').attr('readonly', true);
+    lock_local_percent();
+  }
+  function unlock_federal_funds_and_percent(){
+    $('#funding_request_federal_amount').removeAttr('readonly');
+    unlock_federal_percent();
+  }
+  function unlock_state_funds_and_percent(){
+    $('#funding_request_state_amount').removeAttr('readonly');
+    unlock_state_percent();
+  }
+  function unlock_local_funds_and_percent(){
+    $('#funding_request_local_amount').removeAttr('readonly');
+    unlock_local_percent();
+  }
+
 
   function update_federal_percent_from_federal_cash(){
     var federal_percent = get_percent_from_cash_entered(get_federal_cash());
     //todo clean this up
-    console.log('federal_percent = get_percent_from_cash_entered(get_federal_cash())__'+federal_percent+'__ in update_federal_percent_from_federal_cash');
     set_federal_percent(federal_percent);
     update_total_percents();
   }
@@ -393,7 +442,6 @@
     //todo clean this up
     var federal_cash = get_value_from_percent_funding(current_federal_percent, 'federal');
     federal_cash = apply_federal_rounding_rules(federal_cash);
-
     set_federal_cash(federal_cash);
     update_federal_percent_from_federal_cash();
   }
@@ -442,24 +490,11 @@
   });
 
   $('#funding_request_funding_request_amount').change(function(){
-    var old_lit = line_item_total;
     line_item_total = parseFloat($('#funding_request_funding_request_amount').val());
-    var are_percents_locked = $('#funding_request_federal_percent').is('[readonly]');
-
-    //if the values have changed we need to update the percent based on what has been filled in for provided cash from buckets
-    if(old_lit != line_item_total && !are_percents_locked)
-    {
-      update_federal_percent_from_federal_cash();
-      update_state_percent_from_state_cash();
-      update_local_percent_from_local_cash();
-      update_totals();
-    }else if (old_lit != line_item_total && are_percents_locked)
-    {
-      update_federal_cash_from_federal_percent();
-      update_state_cash_from_state_percent();
-      update_local_cash_from_local_percent();
-      update_totals();
-    }
+    update_federal_cash_from_federal_percent();
+    update_state_cash_from_state_percent();
+    update_local_cash_from_local_percent();
+    update_totals();
   });
 
   $('#funding_request_federal_amount').change(function(){
@@ -489,58 +524,89 @@
 
   $('#funding_request_federal_funding_line_item_id').change(function(){
     var federal_request_amount = get_federal_cash();
+    var bucket_name = $('#funding_request_federal_funding_line_item_id option:selected').text()
     if(federal_request_amount == 0)
     {
-      var bucket_name = $('#funding_request_federal_funding_line_item_id option:selected').text()
       if(bucket_name == ""){
         set_federal_cash(0);
         set_federal_percent(0);
         update_totals();
+        lock_federal_funds_and_percent();
       }
       else{
         get_bucket_percent($('#funding_request_federal_funding_line_item_id option:selected').text(), 'federal');
+        unlock_federal_funds_and_percent();
       }
     }else{
-      var percent_complete = get_percent_from_cash_entered(federal_request_amount);
-      set_federal_percent(percent_complete);
+      if(bucket_name == ""){
+        set_federal_cash(0);
+        set_federal_percent(0);
+        update_totals();
+        lock_federal_funds_and_percent();
+      }else{
+        var percent_complete = get_percent_from_cash_entered(federal_request_amount);
+        set_federal_percent(percent_complete);
+        unlock_federal_funds_and_percent();
+      }
     }
   });
 
   $('#funding_request_state_funding_line_item_id').change(function(){
     var state_request_amount = get_state_cash();
+    var bucket_name = $('#funding_request_state_funding_line_item_id option:selected').text()
     if(state_request_amount == 0)
     {
-      var bucket_name = $('#funding_request_state_funding_line_item_id option:selected').text()
       if(bucket_name == ""){
         set_state_cash(0);
         set_state_percent(0);
         update_totals();
+        lock_state_funds_and_percent();
       }
       else{
         get_bucket_percent($('#funding_request_state_funding_line_item_id option:selected').text(), 'state');
+        unlock_state_funds_and_percent();
       }
     }else{
       var percent_complete = get_percent_from_cash_entered(state_request_amount);
       set_state_percent(percent_complete*100);
+      if(bucket_name == ""){
+        set_state_cash(0);
+        set_state_percent(0);
+        update_totals();
+        lock_state_funds_and_percent();
+      }else
+      {
+        unlock_state_funds_and_percent();
+      }
     }
   });
 
   $('#funding_request_local_funding_line_item_id').change(function(){
     var local_request_amount = get_local_cash();
+    var bucket_name = $('#funding_request_local_funding_line_item_id option:selected').text()
     if(local_request_amount == 0)
     {
-      var bucket_name = $('#funding_request_local_funding_line_item_id option:selected').text()
       if(bucket_name == ""){
         set_local_cash(0);
         set_local_percent(0);
         update_totals();
+        lock_local_funds_and_percent();
       }
       else{
         get_bucket_percent($('#funding_request_local_funding_line_item_id option:selected').text(), 'local');
+        unlock_local_funds_and_percent();
       }
     }else{
       var percent_complete = get_percent_from_cash_entered(local_request_amount);
       set_local_percent(percent_complete);
+      if(bucket_name == ""){
+        set_local_cash(0);
+        set_local_percent(0);
+        update_totals();
+        lock_local_funds_and_percent();
+      }else{
+        unlock_local_funds_and_percent();
+      }
     }
   });
 
@@ -585,4 +651,5 @@
    update_totals();
   }
 
+  lock_on_load();
   update_totals();

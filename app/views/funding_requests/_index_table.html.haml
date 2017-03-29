@@ -45,7 +45,7 @@
                   =format_as_currency(federal_funds_total)
               %td.left{:style => "border-top: 0px; width: 50%"}
                 %strong
-                  =format_as_percentage(federal_percent_funded)
+                  =format_as_percentage(federal_percent_funded, 3)
             -federal_funding_requests.each do |ffr|
               %tr
                 %td.right
@@ -63,7 +63,7 @@
                   =format_as_currency(state_funds_total)
               %td.left
                 %strong
-                  =format_as_percentage(state_percent_funded)
+                  =format_as_percentage(state_percent_funded, 3)
             -state_funding_requests.each do |sfr|
               %tr
                 %td.right
@@ -81,7 +81,7 @@
                   =format_as_currency(local_funds_total)
               %td.left
                 %strong
-                  =format_as_percentage(local_percent_funded)
+                  =format_as_percentage(local_percent_funded, 3)
             -local_funding_requests.each do |lfr|
               %tr
                 %td.right

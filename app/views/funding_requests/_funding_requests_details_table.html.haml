@@ -19,9 +19,12 @@
         %table.table.table-hover{id: "funding_request_table_#{f.object_key}"}
           %thead
             %tr
-              %th.left Line Amount
-              %th.left=format_as_currency(f.funding_request_amount)
+              %th.left{stye: 'width: 5%'} &nbsp;
+              %th.right{stye: 'width: 25%'} Line Amount
+              %th.left{stye: 'width: 10%'}=format_as_currency(f.funding_request_amount)
+              %th &nbsp;
             %tr
+              %th.left &nbsp;
               %th.center Fund
               %th.right Pcnt
               %th.right Amount
@@ -39,16 +42,19 @@
 
           %tbody
             %tr
+              %td.left Federal
               %td.center= f.federal_funding_line_item
               %td.right= format_as_percentage(f.federal_percentage, 3)
               %td.right= format_as_currency(f.federal_amount)
               %td
             %tr
+              %td.left State
               %td.center= f.state_funding_line_item
               %td.right= format_as_percentage(f.state_percentage, 3)
               %td.right= format_as_currency(f.state_amount)
               %td
             %tr
+              %td.left Local
               %td.center= f.local_funding_line_item
               %td.right= format_as_percentage(f.local_percentage, 3)
               %td.right= format_as_currency(f.local_amount)
@@ -59,7 +65,7 @@
             %tr
               %td
               %td Total:
-              %td.right=format_as_currency(f.total_percent)
+              %td.right=format_as_percentage(((f.total_amount.to_f/f.funding_request_amount)*100),3)
               %td.right=format_as_currency(f.total_amount)
 
   .row
