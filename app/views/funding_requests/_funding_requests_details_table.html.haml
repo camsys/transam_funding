@@ -64,7 +64,7 @@
           %tfoot
             %tr
               %td
-              %td Total:
+              %td.right Total:
               %td.right=format_as_percentage(f.funding_request_amount > 0 ? (f.total_amount.to_f/f.funding_request_amount*100) : 0,3)
               %td.right=format_as_currency(f.total_amount)
               %td
