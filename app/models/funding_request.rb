@@ -16,6 +16,7 @@ class FundingRequest < ActiveRecord::Base
   #------------------------------------------------------------------------------
   after_initialize                  :set_defaults
   before_save                       :update_buckets
+  before_destroy                    :update_buckets_on_destroy
 
   #------------------------------------------------------------------------------
   # Associations
@@ -147,6 +148,8 @@ class FundingRequest < ActiveRecord::Base
 
   def update_buckets
 
+    puts "aaaaa"
+
     Rails.logger.info "Update bucket sums"
 
     self.changes.each do |field, changes|
@@ -176,6 +179,15 @@ class FundingRequest < ActiveRecord::Base
       end
     end
 
+  end
+
+  def update_buckets_on_destroy
+    ['federal', 'state', 'local'].each do |funding_line_type|
+      if self["#{funding_line_type}_funding_line_item_id"]
+        f = FundingBucket.find_by(id: self["#{funding_line_type}_funding_line_item_id"])
+        f.update!(budget_committed: f.budget_committed - self["#{funding_line_type}_amount"])
+      end
+    end
   end
 
 end
