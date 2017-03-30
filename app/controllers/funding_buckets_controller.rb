@@ -368,22 +368,24 @@ class FundingBucketsController < OrganizationAwareController
   end
 
   def destroy_bucket_app
-    if @funding_bucket.destroy
-      notify_user(:notice, "The grant application was successfully removed.")
-      respond_to do |format|
-        format.html {
-          # check where to redirect to
-          if URI(request.referer || '').path.include? "funding_buckets/#{@funding_bucket.object_key}"
-            if current_user.organization_ids.include? @funding_bucket.owner_id
-              redirect_to my_funds_funding_buckets_path
+    if @funding_bucket.deleteable?
+      if @funding_bucket.destroy
+        notify_user(:notice, "The grant application was successfully removed.")
+        respond_to do |format|
+          format.html {
+            # check where to redirect to
+            if URI(request.referer || '').path.include? "funding_buckets/#{@funding_bucket.object_key}"
+              if current_user.organization_ids.include? @funding_bucket.owner_id
+                redirect_to my_funds_funding_buckets_path
+              else
+                redirect_to funding_buckets_path
+              end
             else
-              redirect_to funding_buckets_path
+              redirect_to :back
             end
-          else
-            redirect_to :back
-          end
-        }
-        format.json { head :no_content }
+          }
+          format.json { head :no_content }
+        end
       end
     end
   end

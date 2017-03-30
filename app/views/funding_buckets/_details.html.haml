@@ -1,5 +1,5 @@
 - orgs = @funding_template.get_organizations
-- funding_requests = FundingRequest.where('federal_funding_line_item_id = ? OR state_funding_line_item_id = ? OR local_funding_line_item_id = ?', @funding_bucket.id, @funding_bucket.id, @funding_bucket.id)
+- funding_requests = @funding_bucket.funding_requests
 
 %ul.nav.nav-tabs
   - if @funding_template.owner == FundingSourceType.find_by(name: 'State')

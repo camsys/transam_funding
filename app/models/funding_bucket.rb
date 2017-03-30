@@ -138,6 +138,14 @@ class FundingBucket< ActiveRecord::Base
     name
   end
 
+  def funding_requests
+    FundingRequest.where('federal_funding_line_item_id = ? OR state_funding_line_item_id = ? OR local_funding_line_item_id = ?', self.id, self.id, self.id)
+  end
+
+  def deleteable?
+    funding_requests.count == 0
+  end
+
   def budget_remaining
     self.budget_amount - self.budget_committed if self.budget_amount.present? && self.budget_committed.present?
   end
