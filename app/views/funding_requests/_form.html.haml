@@ -497,14 +497,15 @@
     lock_on_load();
     update_totals();
     var requested_amount = parseFloat($('#funding_request_funding_request_amount').val());
-    console.log("first_load(){ requested_amount="+requested_amount+"==")
     if(requested_amount == 0)
     {
       line_item_total = parseInt('#{@activity_line_item.funds_required}');
-      console.log("first_load(){ line_item_total__"+line_item_total+"___")
       $('#funding_request_funding_request_amount').val(line_item_total);
 
     }
+    get_bucket_amount_remaining($('#funding_request_federal_funding_line_item_id option:selected').text(), 'federal', get_federal_cash());
+    get_bucket_amount_remaining($('#funding_request_state_funding_line_item_id option:selected').text(), 'state', get_state_cash());
+    get_bucket_amount_remaining($('#funding_request_local_funding_line_item_id option:selected').text(), 'local', get_local_cash());
   }
 
 
@@ -578,9 +579,10 @@
         set_federal_percent(0);
         update_totals();
         lock_federal_funds_and_percent();
+        federal_bucket_budget_remaining = 0;
       }
       else{
-        get_bucket_percent($('#funding_request_federal_funding_line_item_id option:selected').text(), 'federal');
+        get_bucket_percent(bucket_name, 'federal');
         if(!is_locked()){
           unlock_federal_funds_and_percent();
         }
@@ -591,12 +593,14 @@
         set_federal_percent(0);
         update_totals();
         lock_federal_funds_and_percent();
+        federal_bucket_budget_remaining = 0;
       }else{
         var percent_complete = get_percent_from_cash_entered(federal_request_amount);
         set_federal_percent(percent_complete);
         if(!is_locked()){
           unlock_federal_funds_and_percent();
         }
+        get_bucket_amount_remaining(bucket_name, 'federal', 0);
       }
     }
   });
@@ -611,6 +615,7 @@
         set_state_percent(0);
         update_totals();
         lock_state_funds_and_percent();
+        state_bucket_budget_remaining = 0;
       }
       else{
         get_bucket_percent($('#funding_request_state_funding_line_item_id option:selected').text(), 'state');
@@ -627,11 +632,13 @@
         set_state_percent(0);
         update_totals();
         lock_state_funds_and_percent();
+        state_bucket_budget_remaining = 0;
       }else
       {
         if(!is_locked()){
           unlock_state_funds_and_percent();
         }
+        get_bucket_amount_remaining(bucket_name, 'state', 0);
       }
     }
   });
@@ -646,6 +653,7 @@
         set_local_percent(0);
         update_totals();
         lock_local_funds_and_percent();
+        local_bucket_budget_remaining = 0;
       }
       else{
         get_bucket_percent($('#funding_request_local_funding_line_item_id option:selected').text(), 'local');
@@ -661,10 +669,12 @@
         set_local_percent(0);
         update_totals();
         lock_local_funds_and_percent();
+        local_bucket_budget_remaining = 0;
       }else{
         if(!is_locked()){
           unlock_local_funds_and_percent();
         }
+        get_bucket_amount_remaining(bucket_name, 'local', 0);
       }
     }
   });
@@ -708,6 +718,32 @@
     });
 
    update_totals();
+  }
+
+  function get_bucket_amount_remaining(bucket_name, source, add_funds_on_load)
+  {
+    var url = '#{find_expected_match_percent_funding_buckets_path}';
+    $.ajax({
+      url: url,
+      data: {bucket_name: bucket_name},
+      success: function(result){
+        if(source == 'federal')
+        {
+          federal_bucket_budget_remaining = parseInt(result.bucket_budget_remaining) + add_funds_on_load;
+        }else if(source == 'state')
+        {
+          state_bucket_budget_remaining = parseInt(result.bucket_budget_remaining) + add_funds_on_load;
+        }else if(source == 'local')
+        {
+          local_bucket_budget_remaining = parseInt(result.bucket_budget_remaining) + add_funds_on_load;
+        }
+        update_totals();
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        alert("We are sorry but something went wrong. " + xhr.status + " " + thrownError);
+      }
+    });
+      update_totals();
   }
 
 
