@@ -107,7 +107,7 @@
         cost = parseInt(row['scheduled_cost']);
         funds_left = funds_left - cost;
 
-        if (funds_left > 0) {
+        if (funds_left >= 0) {
           $("tr[data-index='" + i + "']").css({"background-color": "#ccffcc"});
         }
       });
