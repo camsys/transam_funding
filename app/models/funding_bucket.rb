@@ -42,9 +42,13 @@ class FundingBucket< ActiveRecord::Base
 
   # Allow selection of active instances
   scope :active, -> { where(:active => true) }
+
   scope :federal, -> { joins(funding_template: :funding_source).where('funding_sources.funding_source_type_id = ?', FundingSourceType.find_by(name: 'Federal')) }
   scope :state, -> { joins(funding_template: :funding_source).where('funding_sources.funding_source_type_id = ?', FundingSourceType.find_by(name: 'State')) }
   scope :local, -> { joins(funding_template: :funding_source).where('funding_sources.funding_source_type_id = ?', FundingSourceType.find_by(name: 'Local')) }
+
+  scope :state_owned, -> (org_id) { find_by_sql(['SELECT * FROM funding_buckets WHERE funding_buckets.owner_id = 1 AND funding_buckets.funding_template_id IN (SELECT funding_template_id FROM funding_templates_organizations WHERE funding_templates_organizations.organization_id = ?)', org_id]) }
+  scope :agency_owned, -> (org_id) { joins(:funding_template).where('funding_templates.owner_id = ? AND funding_buckets.owner_id = ?', FundingSourceType.find_by(name: 'Agency'), org_id) }
 
   scope :current, -> (year) { joins(funding_template: :funding_source).where('funding_buckets.fy_year <= ? AND (((funding_buckets.fy_year + funding_sources.life_in_years) >= ?) OR (funding_sources.life_in_years IS NULL))', year, year) }
 
