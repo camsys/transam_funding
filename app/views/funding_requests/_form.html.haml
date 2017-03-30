@@ -497,10 +497,13 @@
     lock_on_load();
     update_totals();
     var requested_amount = parseFloat($('#funding_request_funding_request_amount').val());
+    console.log("first_load(){ requested_amount="+requested_amount+"==")
     if(requested_amount == 0)
     {
       line_item_total = parseInt('#{@activity_line_item.funds_required}');
+      console.log("first_load(){ line_item_total__"+line_item_total+"___")
       $('#funding_request_funding_request_amount').val(line_item_total);
+
     }
   }
 
@@ -705,10 +708,6 @@
     });
 
    update_totals();
-  }
-
-
-
   }
 
 
