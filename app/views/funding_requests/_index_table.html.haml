@@ -90,3 +90,12 @@
                   =lfr['amount']
                 %td.left
                   &nbsp;
+            %td.left{:style => "border-top: 0px; width: 35%"}
+              %strong
+                TOTAL FUNDS
+              %td.left{:style => "border-top: 0px;"}
+                %strong
+                  =format_as_currency(@activity_line_item.total_funds)
+              %td.left{:style => "border-top: 0px; width: 50%"}
+                %strong
+                  =format_as_percentage(@activity_line_item.pcnt_funded, 3)
