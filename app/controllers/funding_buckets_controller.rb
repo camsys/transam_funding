@@ -611,7 +611,7 @@ class FundingBucketsController < OrganizationAwareController
       while i <= bucket_proxy.fiscal_year_range_end.to_i
         next_year_bucket = new_bucket_from_proxy(bucket_proxy, agency_id)
         next_year_bucket.fy_year = i
-        next_year_bucket.name = "#{next_year_bucket.funding_source.name}-#{next_year_bucket.funding_template.name}-#{next_year_bucket.owner.short_name}-#{next_year_bucket.fiscal_year_for_name(i)}"
+        next_year_bucket.name = "#{next_year_bucket.funding_template.name}-#{next_year_bucket.owner.short_name}-#{next_year_bucket.fiscal_year_for_name(i)}"
 
         unless bucket_proxy.inflation_percentage.blank?
           next_year_budget = next_year_budget + (inflation_percentage * next_year_budget)
@@ -641,7 +641,7 @@ class FundingBucketsController < OrganizationAwareController
         existing_bucket.budget_amount = bucket.budget_amount
         existing_bucket.updator = current_user
         if bucket_proxy.name.blank?
-          existing_bucket.name = "#{existing_bucket.funding_source.name}-#{existing_bucket.funding_template.name}-#{existing_bucket.owner.short_name}-#{existing_bucket.fiscal_year_for_name(existing_bucket.fy_year)}"
+          existing_bucket.name = "#{existing_bucket.funding_template.name}-#{existing_bucket.owner.short_name}-#{existing_bucket.fiscal_year_for_name(existing_bucket.fy_year)}"
         else
           existing_bucket.name = bucket_proxy.name
         end
