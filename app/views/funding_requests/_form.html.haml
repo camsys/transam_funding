@@ -499,7 +499,8 @@
     var requested_amount = parseFloat($('#funding_request_funding_request_amount').val());
     if(requested_amount == 0)
     {
-      $('#funding_request_funding_request_amount').val(parseInt('#{@activity_line_item.funds_required}'))
+      line_item_total = parseInt('#{@activity_line_item.funds_required}');
+      $('#funding_request_funding_request_amount').val(line_item_total);
     }
   }
 
@@ -705,5 +706,10 @@
 
    update_totals();
   }
+
+
+
+  }
+
 
   first_load();
