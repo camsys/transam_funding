@@ -1,5 +1,5 @@
 :ruby
-  state_buckets = FundingBucket.current(@activity_line_item.fy_year).state_owned(@org_id) if current_user.organization.type_of?(Grantor)
+  is_state_user = current_user.organization.type_of?(Grantor)
   agency_buckets = FundingBucket.current(@activity_line_item.fy_year).agency_owned(@org_id)
 
 = dialog_tag('Funding Request', {:icon => 'fa fa-usd', :class => "form-part"}) do
@@ -26,7 +26,7 @@
           .col-xs-7
             -#TODO The fisal year check isn't right. It should actuall be @activity_line_item.fy_year <= bucket.fiscal_year+funding_source.life_in_years AND  @activity_line_item.fy_year >= bucket
 
-            = f.input :federal_funding_line_item_id, :collection => agency_buckets.federal + (state_buckets ? state_buckets.federal : []), :label => 'Federal Funds'
+            = f.input :federal_funding_line_item_id, :collection => agency_buckets.federal + (is_state_user ? FundingBucket.federal.current(@activity_line_item.fy_year).state_owned(@org_id) : []), :label => 'Federal Funds'
 
           .col-xs-2
             = f.input :federal_percent, :wrapper=> :horizontal_prepend, :label => false do
@@ -42,7 +42,7 @@
 
         .row
           .col-xs-7
-            = f.input :state_funding_line_item_id, :collection => agency_buckets.state + (state_buckets ? state_buckets.state : []), :label => 'State Funds'
+            = f.input :state_funding_line_item_id, :collection => agency_buckets.state + (is_state_user ? FundingBucket.state.current(@activity_line_item.fy_year).state_owned(@org_id) : []), :label => 'State Funds'
 
           .col-xs-2
             = f.input :state_percent, :wrapper=> :horizontal_prepend, :label => false do
@@ -58,7 +58,7 @@
 
         .row
           .col-xs-7
-            = f.input :local_funding_line_item_id, :collection => agency_buckets.local + (state_buckets ? state_buckets.local : []), :label => 'Local Funds'
+            = f.input :local_funding_line_item_id, :collection => agency_buckets.local + (is_state_user ? FundingBucket.local.current(@activity_line_item.fy_year).state_owned(@org_id) : []), :label => 'Local Funds'
 
           .col-xs-2
             = f.input :local_percent, :wrapper=> :horizontal_prepend, :label => false do
