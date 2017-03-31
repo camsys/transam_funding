@@ -20,7 +20,7 @@ $("#fy-sum-<%=@activity_line_item.fy_year %>").data('cost',new_fy_sum);
 $("tr[data-project='<%= @activity_line_item.capital_project.object_key %>'] .project-total-cost").html("<%= format_field('Total Cost', format_as_currency(@activity_line_item.capital_project.total_cost)) %>");
 
 // for funding
-$('#<%= @activity_line_item.object_key %>_ali_panel .panel-footer').html("<%= escape_javascript( render :partial => 'scheduler/swimlane_detail_totals', :locals => {:ali => @activity_line_item }) %>");
+location.reload(); // refresh url
 
 function number_to_currency(number, options) {
   var options   = options || {};
