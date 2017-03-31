@@ -257,10 +257,13 @@
 
     return rounded_cash_value;
   }
-  function update_cash_value_and_percent_funding_for_state_from_match_percent(non_decimalized_percent_funding){
-    var state_cash = parseFloat(get_state_cash());
-    var cash_value = (line_item_total - state_cash) * find_percent_down_to_three_decimal_places(non_decimalized_percent_funding);
-    update_state_percent_from_state_cash();
+  function update_cash_value_and_percent_funding_for_state_from_match_percent_taking_federal_percent_into_account(decimalized_percent_funding_ignoring_federal){
+    var remainig_percent_after_federal = 1 - get_federal_percent();
+    var state_percent_after_federal = remainig_percent_after_federal * decimalized_percent_funding_ignoring_federal;
+
+    set_state_percent(state_percent_after_federal);
+
+    update_state_cash_from_state_percent();
   }
 
   function update_total_funds(){
@@ -709,10 +712,8 @@
         }else if(source == 'state')
         {
           state_bucket_budget_remaining = result.bucket_budget_remaining;
-          var percent = find_percent_down_to_three_decimal_places(convert_non_decimal_percent_to_decimal(result.bucket_percent))
-          cash_value = get_value_from_percent_funding(percent);
-          set_state_percent(percent);
-          set_state_cash(cash_value);
+          var state_percent_ignoring_federal = find_percent_down_to_three_decimal_places(convert_non_decimal_percent_to_decimal(result.bucket_percent))
+          update_cash_value_and_percent_funding_for_state_from_match_percent_taking_federal_percent_into_account(state_percent_ignoring_federal);
         }else if(source == 'local')
         {
           local_bucket_budget_remaining = result.bucket_budget_remaining;
