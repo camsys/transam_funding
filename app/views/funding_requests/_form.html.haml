@@ -1,5 +1,5 @@
 :ruby
-  is_state_user = current_user.organization.type_of?(Grantor)
+  is_state_user = (current_user.organization_id == 1)
   agency_buckets = FundingBucket.current(@activity_line_item.fy_year).agency_owned(@org_id)
 
 = dialog_tag('Funding Request', {:icon => 'fa fa-usd', :class => "form-part"}) do
