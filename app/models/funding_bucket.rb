@@ -74,7 +74,7 @@ class FundingBucket< ActiveRecord::Base
 
   def self.state_owned(org_id)
     org = Organization.find(org_id)
-    buckets = FundingBucket.joins(:funding_template).where('funding_templates.owner_id = ?', FundingSourceType.find_by(name: 'Agency'))
+    buckets = FundingBucket.joins(:funding_template).where('funding_templates.owner_id = ?', FundingSourceType.find_by(name: 'State'))
     buckets.select{|b| b.funding_template.get_organizations.include? org}
   end
 
