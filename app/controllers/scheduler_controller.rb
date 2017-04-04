@@ -286,7 +286,6 @@ class SchedulerController < AbstractCapitalProjectsController
     # get the index of the start year in the array
     current_index = @years.index(@start_year)
     @row_number = current_index + 1
-    @row_pager_remote = true
 
     get_projects
 
