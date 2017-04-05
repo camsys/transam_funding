@@ -105,14 +105,8 @@ AbstractCapitalProjectsController.class_eval do
     # org id is not tied to ALI filter
     # org id is used in scheduler though not necessary but all links specify looking at a single org at a time
     # other functionality like planning does not require
-    if params[:org_id].blank?
-      conditions << 'capital_projects.organization_id IN (?)'
-      values << @organization_list
-    else
-      @org_id = params[:org_id].to_i
-      conditions << 'capital_projects.organization_id = ?'
-      values << @org_id
-    end
+    conditions << 'capital_projects.organization_id IN (?)'
+    values << @organization_list
 
     @capital_project_flag_filter = []
 

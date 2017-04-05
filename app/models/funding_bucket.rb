@@ -48,7 +48,7 @@ class FundingBucket< ActiveRecord::Base
   scope :local, -> { joins(funding_template: :funding_source).where('funding_sources.funding_source_type_id = ?', FundingSourceType.find_by(name: 'Local')) }
 
   #scope :state_owned -- class method
-  scope :agency_owned, -> (org_id) { joins(:funding_template).where('funding_templates.owner_id = ? AND funding_buckets.owner_id = ?', FundingSourceType.find_by(name: 'Agency'), org_id) }
+  scope :agency_owned, -> (org_ids) { joins(:funding_template).where('funding_templates.owner_id = ? AND funding_buckets.owner_id IN (?)', FundingSourceType.find_by(name: 'Agency'), org_ids) }
 
   scope :current, -> (year) { joins(funding_template: :funding_source).where('funding_buckets.fy_year <= ? AND (((funding_buckets.fy_year + funding_sources.life_in_years - 1) >= ?) OR (funding_sources.life_in_years IS NULL))', year, year) }
 
@@ -72,10 +72,10 @@ class FundingBucket< ActiveRecord::Base
     FORM_PARAMS
   end
 
-  def self.state_owned(org_id)
-    org = Organization.find(org_id)
+  def self.state_owned(org_ids)
+    orgs = Organization.where(id: org_ids)
     buckets = FundingBucket.joins(:funding_template).where('funding_templates.owner_id = ?', FundingSourceType.find_by(name: 'State'))
-    buckets.select{|b| b.funding_template.get_organizations.include? org}
+    buckets.select{|b| (b.funding_template.get_organizations & orgs).any?}
   end
 
   def self.find_existing_buckets_from_proxy funding_template_id, start_fiscal_year, end_fiscal_year, owner_id, organizations_with_budgets, name
