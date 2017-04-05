@@ -326,8 +326,6 @@
       $('#state_amount_usd_symbol').prop('title', 'The bucket is not overdrawn');
     }
 
-    console.log("get_local_cash()"+get_local_cash()+" > local_bucket_budget_remaining__"+local_bucket_budget_remaining+"__");
-
     if(get_local_cash() > local_bucket_budget_remaining)
     {
       $( "#local_amount_usd_symbol" ).removeClass( "fa fa-usd text-danger" ).addClass( "fa fa-usd text-danger" );
@@ -514,8 +512,6 @@
       $('#funding_request_funding_request_amount').val(line_item_total);
 
     }
-
-    console.log("ON LOAD get_local_cash() _"+get_local_cash()+"_");
 
     get_bucket_amount_remaining($('#funding_request_federal_funding_line_item_id option:selected').text(), 'federal', get_federal_cash());
     get_bucket_amount_remaining($('#funding_request_state_funding_line_item_id option:selected').text(), 'state', get_state_cash());
@@ -741,11 +737,7 @@
       success: function(result){
         if(source == 'federal')
         {
-          console.log("get_federal_cash()="+add_funds_on_load);
-          console.log("result.bucket_budget_remaining="+result.bucket_budget_remaining);
-
           federal_bucket_budget_remaining = parseInt(result.bucket_budget_remaining) + add_funds_on_load;
-          console.log("ADDED federal_bucket_budget_remaining="+federal_bucket_budget_remaining);
         }else if(source == 'state')
         {
           state_bucket_budget_remaining = parseInt(result.bucket_budget_remaining) + add_funds_on_load;
