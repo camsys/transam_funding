@@ -182,7 +182,7 @@
   }
   function set_federal_percent(federal_percentage)
   {
-    $('#funding_request_federal_percent').val((federal_percentage*100).toFixed(1));
+    $('#funding_request_federal_percent').val((federal_percentage*100).toFixed(3));
   }
   function get_state_percent()
   {
@@ -195,7 +195,7 @@
   }
   function set_state_percent(state_percentage)
   {
-    $('#funding_request_state_percent').val((state_percentage*100).toFixed(1));
+    $('#funding_request_state_percent').val((state_percentage*100).toFixed(3));
   }
   function get_local_percent()
   {
@@ -208,7 +208,7 @@
   }
   function set_local_percent(local_percentage)
   {
-    $('#funding_request_local_percent').val((local_percentage*100).toFixed(1));
+    $('#funding_request_local_percent').val((local_percentage*100).toFixed(3));
   }
   function convert_non_decimal_percent_to_decimal(non_decimal_percent)
   {
@@ -223,7 +223,7 @@
 
   //We want percents to be rounded to three decimal places following the DotGrants Logic so 00.1% is the smalled decimal place we support and it would be 0.001
   function find_percent_down_to_three_decimal_places(number){
-    return Math.round(number * 1000)/1000
+    return Math.round(number * 100000)/100000
   }
 
   function get_percent_from_cash_entered(cash_value){
@@ -296,7 +296,7 @@
     var local_percent = get_local_percent();
     var total = federal_percent + state_percent + local_percent;
 
-    $('#funding_request_total_percent').val((total*100).toFixed(1));
+    $('#funding_request_total_percent').val((total*100).toFixed(3));
     $('#funding_request_total_percent').attr('readonly', true);
   }
   function update_bucket_budget_remaining_totals()
