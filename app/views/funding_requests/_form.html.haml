@@ -227,11 +227,13 @@
   }
 
   function get_percent_from_cash_entered(cash_value){
-    var percent = find_percent_down_to_three_decimal_places(cash_value / line_item_total);
+
+    var raw_percent = cash_value / line_item_total;
+    var percent = find_percent_down_to_three_decimal_places(raw_percent);
     if(isNaN(percent)){
       percent = 0
     }
-    return percent.toFixed(3);
+    return percent.toFixed(5);
   }
   function get_value_from_percent_funding(non_decimalized_percent_funding, percent_type){
     var cash_value = line_item_total * find_percent_down_to_three_decimal_places(non_decimalized_percent_funding);
@@ -260,6 +262,7 @@
   function update_cash_value_and_percent_funding_for_state_from_match_percent_taking_federal_percent_into_account(decimalized_percent_funding_ignoring_federal){
     var remainig_percent_after_federal = 1 - get_federal_percent();
     var state_percent_after_federal = remainig_percent_after_federal * decimalized_percent_funding_ignoring_federal;
+
 
     set_state_percent(state_percent_after_federal);
 
