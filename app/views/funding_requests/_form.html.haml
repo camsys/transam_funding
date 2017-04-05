@@ -286,11 +286,10 @@
     $('#funding_request_total_amount').attr('readonly', true);
   }
   function update_total_percents(){
-  //TODO verfiy name is right
-    var amount_requested = parseFloat($('#funding_request_funding_request_amount').val());
-    var federal_cash = get_federal_cash();
-    var state_cash = get_state_cash();
-    var local_cash = get_local_cash();
+  //   var amount_requested = parseFloat($('#funding_request_funding_request_amount').val());
+  //   var federal_cash = get_federal_cash();
+  //   var state_cash = get_state_cash();
+  //   var local_cash = get_local_cash();
 
     var federal_percent = get_federal_percent();
     var state_percent = get_state_percent();
@@ -299,13 +298,6 @@
 
     $('#funding_request_total_percent').val((total*100).toFixed(1));
     $('#funding_request_total_percent').attr('readonly', true);
-
-    //If the user is within 1 percent of a fully funded application we should fix it for them.
-    if((total >= .99 & total <= 1.01) && !is_locked()){
-      //This is the java equivalent of the VB code from dot Grants. But because of the workflow we only adjust this if it looks like the user should be done
-      round_amounts_and_percentages(amount_requested, federal_cash, state_cash, local_cash, federal_percent);
-      //  Allow the user to lock the form set the unlock icon to greem
-    }
   }
   function update_bucket_budget_remaining_totals()
   {
