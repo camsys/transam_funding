@@ -15,7 +15,7 @@
 
 
 .panel.swimlane{class: "#{@active_year.present? ? 'panel-info' : 'panel-default'}"}
-  .panel-heading.swimlane-heading{:data => {:fy => year, :action_path => scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, start_year: year)}}
+  .panel-heading.swimlane-heading{:data => {:fy => year, :action_path => scheduler_swimlane_action_scheduler_index_path(start_year: year)}}
     %span.badge.pull-right{id: "year_#{year}_swimlane_badge"}= alis.count
     - if @active_year
       .pull-right

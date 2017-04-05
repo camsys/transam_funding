@@ -40,20 +40,7 @@
         = 'My Funds'
 
     %li.divider
-    - if @organization_list.count == 1
-      %li.text-left
-        = link_to scheduler_index_path(org_id: @organization_list.first) do
-          %i.fa.fa-fw.fa-calendar
-          Funding Projects
-    - else
-      %li.text-left.dropdown-submenu
-        = link_to '#' do
-          %i.fa.fa-calendar.fa-fw
-          Funding Projects
-
-        %ul.dropdown-menu{style: "overflow-y:scroll; max-height:400px;"}
-          - Organization.where(id: @organization_list).each do |org|
-            %li.text-left
-              = link_to scheduler_index_path(org_id: org.id) do
-                %i.fa.fa-fw.fa-calendar
-                = org.short_name
+    %li.text-left
+      = link_to scheduler_index_path do
+        %i.fa.fa-fw.fa-calendar
+        Funding Projects

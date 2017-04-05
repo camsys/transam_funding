@@ -47,18 +47,18 @@ class SchedulerController < AbstractCapitalProjectsController
   # fiscal years.
   def index
 
-    add_breadcrumb "Scheduler", scheduler_index_path(org_id: @org_id)
+    add_breadcrumb "Scheduler", scheduler_index_path(:start_year => @start_year)
 
     current_index = @years.index(@start_year)
     if current_index == 0
       @prev_record_path = "#"
     else
-      @prev_record_path = scheduler_index_path(:start_year => @start_year - 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
+      @prev_record_path = scheduler_index_path(:start_year => @start_year - 1)
     end
     if current_index == (@total_rows - 1)
       @next_record_path = "#"
     else
-      @next_record_path = scheduler_index_path(:start_year => @start_year + 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
+      @next_record_path = scheduler_index_path(:start_year => @start_year + 1)
     end
 
     @total_projects_cost_by_year = @projects.joins(:activity_line_items).where('activity_line_items.id IN (?)', @alis.ids).group("activity_line_items.fy_year").sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
@@ -140,7 +140,7 @@ class SchedulerController < AbstractCapitalProjectsController
   # must be called as JS
   def scheduler_ali_action
 
-    add_breadcrumb "Scheduler", scheduler_index_path(org_id: @org_id)
+    add_breadcrumb "Scheduler", scheduler_index_path(:start_year => @start_year)
 
     @active_year = @start_year
 
@@ -239,9 +239,9 @@ class SchedulerController < AbstractCapitalProjectsController
   # must be called as JS
   def scheduler_swimlane_action
 
-    add_breadcrumb "Scheduler", scheduler_index_path(org_id: @org_id)
+    add_breadcrumb "Scheduler", scheduler_index_path(:start_year => @start_year)
 
-    add_breadcrumb "#{Organization.find_by(id: @org_id)} #{format_as_fiscal_year(@start_year)}", scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, start_year: @start_year)
+    add_breadcrumb format_as_fiscal_year(@start_year), scheduler_swimlane_action_scheduler_index_path(start_year: @start_year)
 
     @active_year = @start_year
 
@@ -249,12 +249,12 @@ class SchedulerController < AbstractCapitalProjectsController
     if current_index == 0
       @prev_record_path = "#"
     else
-      @prev_record_path = scheduler_swimlane_action_scheduler_index_path(:start_year => @start_year - 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
+      @prev_record_path = scheduler_swimlane_action_scheduler_index_path(:start_year => @start_year - 1)
     end
     if current_index == (@total_rows - 1)
       @next_record_path = "#"
     else
-      @next_record_path = scheduler_swimlane_action_scheduler_index_path(:start_year => @start_year + 1, :asset_subtype_id => @asset_subtype_id, :org_id => @org_id)
+      @next_record_path = scheduler_swimlane_action_scheduler_index_path(:start_year => @start_year + 1)
     end
 
     # Get the ALIs for each year
@@ -263,7 +263,7 @@ class SchedulerController < AbstractCapitalProjectsController
     @activity_line_item = ActivityLineItem.find_by(object_key: params[:ali])
     if @activity_line_item
       @project = @activity_line_item.capital_project
-      add_breadcrumb @activity_line_item.to_s, scheduler_swimlane_action_scheduler_index_path(org_id: @org_id, start_year: @start_year, ali: @activity_line_item.object_key)
+      add_breadcrumb @activity_line_item.to_s, scheduler_swimlane_action_scheduler_index_path(start_year: @start_year, ali: @activity_line_item.object_key)
     end
 
   end
