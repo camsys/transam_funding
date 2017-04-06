@@ -182,7 +182,7 @@
   }
   function set_federal_percent(federal_percentage)
   {
-    $('#funding_request_federal_percent').val((federal_percentage*100).toFixed(1));
+    $('#funding_request_federal_percent').val((federal_percentage*100).toFixed(3));
   }
   function get_state_percent()
   {
@@ -195,7 +195,7 @@
   }
   function set_state_percent(state_percentage)
   {
-    $('#funding_request_state_percent').val((state_percentage*100).toFixed(1));
+    $('#funding_request_state_percent').val((state_percentage*100).toFixed(3));
   }
   function get_local_percent()
   {
@@ -208,7 +208,7 @@
   }
   function set_local_percent(local_percentage)
   {
-    $('#funding_request_local_percent').val((local_percentage*100).toFixed(1));
+    $('#funding_request_local_percent').val((local_percentage*100).toFixed(3));
   }
   function convert_non_decimal_percent_to_decimal(non_decimal_percent)
   {
@@ -223,15 +223,17 @@
 
   //We want percents to be rounded to three decimal places following the DotGrants Logic so 00.1% is the smalled decimal place we support and it would be 0.001
   function find_percent_down_to_three_decimal_places(number){
-    return Math.round(number * 1000)/1000
+    return Math.round(number * 100000)/100000
   }
 
   function get_percent_from_cash_entered(cash_value){
-    var percent = find_percent_down_to_three_decimal_places(cash_value / line_item_total);
+
+    var raw_percent = cash_value / line_item_total;
+    var percent = find_percent_down_to_three_decimal_places(raw_percent);
     if(isNaN(percent)){
       percent = 0
     }
-    return percent.toFixed(3);
+    return percent.toFixed(5);
   }
   function get_value_from_percent_funding(non_decimalized_percent_funding, percent_type){
     var cash_value = line_item_total * find_percent_down_to_three_decimal_places(non_decimalized_percent_funding);
@@ -261,6 +263,7 @@
     var remainig_percent_after_federal = 1 - get_federal_percent();
     var state_percent_after_federal = remainig_percent_after_federal * decimalized_percent_funding_ignoring_federal;
 
+
     set_state_percent(state_percent_after_federal);
 
     update_state_cash_from_state_percent();
@@ -286,26 +289,18 @@
     $('#funding_request_total_amount').attr('readonly', true);
   }
   function update_total_percents(){
-  //TODO verfiy name is right
-    var amount_requested = parseFloat($('#funding_request_funding_request_amount').val());
-    var federal_cash = get_federal_cash();
-    var state_cash = get_state_cash();
-    var local_cash = get_local_cash();
+  //   var amount_requested = parseFloat($('#funding_request_funding_request_amount').val());
+  //   var federal_cash = get_federal_cash();
+  //   var state_cash = get_state_cash();
+  //   var local_cash = get_local_cash();
 
     var federal_percent = get_federal_percent();
     var state_percent = get_state_percent();
     var local_percent = get_local_percent();
     var total = federal_percent + state_percent + local_percent;
 
-    $('#funding_request_total_percent').val((total*100).toFixed(1));
+    $('#funding_request_total_percent').val((total*100).toFixed(3));
     $('#funding_request_total_percent').attr('readonly', true);
-
-    //If the user is within 1 percent of a fully funded application we should fix it for them.
-    if((total >= .99 & total <= 1.01) && !is_locked()){
-      //This is the java equivalent of the VB code from dot Grants. But because of the workflow we only adjust this if it looks like the user should be done
-      round_amounts_and_percentages(amount_requested, federal_cash, state_cash, local_cash, federal_percent);
-      //  Allow the user to lock the form set the unlock icon to greem
-    }
   }
   function update_bucket_budget_remaining_totals()
   {
@@ -325,8 +320,6 @@
       $( "#state_amount_usd_symbol" ).removeClass( "fa fa-usd text-danger" ).addClass( "fa fa-usd" );
       $('#state_amount_usd_symbol').prop('title', 'The bucket is not overdrawn');
     }
-
-    console.log("get_local_cash()"+get_local_cash()+" > local_bucket_budget_remaining__"+local_bucket_budget_remaining+"__");
 
     if(get_local_cash() > local_bucket_budget_remaining)
     {
@@ -514,8 +507,6 @@
       $('#funding_request_funding_request_amount').val(line_item_total);
 
     }
-
-    console.log("ON LOAD get_local_cash() _"+get_local_cash()+"_");
 
     get_bucket_amount_remaining($('#funding_request_federal_funding_line_item_id option:selected').text(), 'federal', get_federal_cash());
     get_bucket_amount_remaining($('#funding_request_state_funding_line_item_id option:selected').text(), 'state', get_state_cash());
@@ -741,11 +732,7 @@
       success: function(result){
         if(source == 'federal')
         {
-          console.log("get_federal_cash()="+add_funds_on_load);
-          console.log("result.bucket_budget_remaining="+result.bucket_budget_remaining);
-
           federal_bucket_budget_remaining = parseInt(result.bucket_budget_remaining) + add_funds_on_load;
-          console.log("ADDED federal_bucket_budget_remaining="+federal_bucket_budget_remaining);
         }else if(source == 'state')
         {
           state_bucket_budget_remaining = parseInt(result.bucket_budget_remaining) + add_funds_on_load;
