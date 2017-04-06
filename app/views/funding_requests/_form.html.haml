@@ -428,26 +428,6 @@
     update_bucket_budget_remaining_totals();
   }
 
-  function round_amounts_and_percentages(amount_requested, federal_cash, state_cash, local_cash, federal_percent){
-    //Compare Total to the Sum of State, Federal, and Local Amounts
-    //If amounts do not match, adjust in Fed first, Local second
-    var actual_total = federal_cash+state_cash+local_cash
-    if(amount_requested != actual_total)
-    {
-      var difference_between_actual_and_requested = actual_total - amount_requested;
-      if(federal_percent > 0){
-        set_federal_cash(federal_cash - difference_between_actual_and_requested);
-        update_federal_percent_from_federal_cash();
-      }else
-      {
-        set_local_cash(local_cash - difference_between_actual_and_requested);
-        update_local_percent_from_local_cash
-      }
-    }
-
-  }
-
-
   function lock_form(){
     lock_federal_percent();
     lock_state_percent();
