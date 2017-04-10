@@ -1,17 +1,19 @@
 - activity_line_item = @activity_line_item
 - if activity_line_item.funding_requests.empty?
   %p There are no funding requests for this ALI.
-  = render :partial => 'funding_requests/form'
+  - if can? :create, FundingRequest
+    = render :partial => 'funding_requests/form'
 -else
-  .panel
-    .panel.body{id: 'form_panel_body'}
-      = render :partial => 'funding_requests/form'
-  .row
-    .col-md-12
-      = link_to scheduler_ali_action_scheduler_index_path(:ali => activity_line_item.object_key,
-                :invoke => SchedulerController::ALI_EDIT_FUND_ACTION), :remote => :true, :title => 'Add new funding line item', :class => 'btn btn-xs btn-info funding-request-line-item-edit',
-                :style => 'margin-left: 1px; margin-right: 1px;' do
-        %i.fa.fa-plus
+  - if can? :create, FundingRequest
+    .panel
+      .panel.body{id: 'form_panel_body'}
+        = render :partial => 'funding_requests/form'
+    .row
+      .col-md-12
+        = link_to scheduler_ali_action_scheduler_index_path(:ali => activity_line_item.object_key,
+                  :invoke => SchedulerController::ALI_EDIT_FUND_ACTION), :remote => :true, :title => 'Add new funding line item', :class => 'btn btn-xs btn-info funding-request-line-item-edit',
+                  :style => 'margin-left: 1px; margin-right: 1px;' do
+          %i.fa.fa-plus
 
   - activity_line_item.funding_requests.each do |f|
     .panel
@@ -19,26 +21,28 @@
         %table.table.table-hover{id: "funding_request_table_#{f.object_key}"}
           %thead
             %tr
-              %th.left{stye: 'width: 5%'} &nbsp;
-              %th.right{stye: 'width: 25%'} Line Amount
-              %th.left{stye: 'width: 10%'}=format_as_currency(f.funding_request_amount)
-              %th &nbsp;
+              %th.left
+              %th.left
+              %th.right Line Amount
+              %th.right=format_as_currency(f.funding_request_amount)
+              - if can? :update, FundingRequest
+                %th &nbsp;
             %tr
               %th.left &nbsp;
               %th.center Fund
               %th.right Pcnt
               %th.right Amount
-
-              %th.right
-                = link_to scheduler_ali_action_scheduler_index_path(:ali => activity_line_item.object_key, :funding_request => f.object_key,
-                :invoke => SchedulerController::ALI_EDIT_FUND_ACTION), :remote => :true, :title => 'Edit this funding item', :class => 'btn btn-xs btn-info funding-request-line-item-edit',
-                :style => 'margin-left: 1px; margin-right: 1px;' do
-                  %i.fa.fa-edit
-                = link_to scheduler_ali_action_scheduler_index_path(:ali => activity_line_item.object_key, :funding_request => f.object_key,
-                :invoke => SchedulerController::ALI_REMOVE_FUND_ACTION), :title => 'Remove this funding item',
-                :data => {:confirm => "Are you sure you want to remove this fund? The action can't be undone."}, :class => 'btn btn-xs btn-warning funding-request-line-item-delete',
-                :style => 'margin-left: 1px; margin-right: 1px;'  do
-                  %i.fa.fa-trash-o
+              - if can? :update, FundingRequest
+                %th.right
+                  = link_to scheduler_ali_action_scheduler_index_path(:ali => activity_line_item.object_key, :funding_request => f.object_key,
+                  :invoke => SchedulerController::ALI_EDIT_FUND_ACTION), :remote => :true, :title => 'Edit this funding item', :class => 'btn btn-xs btn-info funding-request-line-item-edit',
+                  :style => 'margin-left: 1px; margin-right: 1px;' do
+                    %i.fa.fa-edit
+                  = link_to scheduler_ali_action_scheduler_index_path(:ali => activity_line_item.object_key, :funding_request => f.object_key,
+                  :invoke => SchedulerController::ALI_REMOVE_FUND_ACTION), :title => 'Remove this funding item',
+                  :data => {:confirm => "Are you sure you want to remove this fund? The action can't be undone."}, :class => 'btn btn-xs btn-warning funding-request-line-item-delete',
+                  :style => 'margin-left: 1px; margin-right: 1px;'  do
+                    %i.fa.fa-trash-o
 
           %tbody
             %tr
@@ -69,12 +73,13 @@
               %td.right=format_as_currency(f.total_amount)
               %td
 
-  .row
-    .col-md-12
-      = link_to scheduler_ali_action_scheduler_index_path(:ali => activity_line_item.object_key, :funding_request => nil,
-                :invoke => SchedulerController::ALI_EDIT_FUND_ACTION), :remote => :true, :title => 'Add new funding line item', :class => 'btn btn-xs btn-info button.btn.btn-primary Add',
-                :style => 'margin-left: 1px; margin-right: 1px;' do
-        %i.fa.fa-plus
+  - if can? :create, FundingRequest
+    .row
+      .col-md-12
+        = link_to scheduler_ali_action_scheduler_index_path(:ali => activity_line_item.object_key, :funding_request => nil,
+                  :invoke => SchedulerController::ALI_EDIT_FUND_ACTION), :remote => :true, :title => 'Add new funding line item', :class => 'btn btn-xs btn-info button.btn.btn-primary Add',
+                  :style => 'margin-left: 1px; margin-right: 1px;' do
+          %i.fa.fa-plus
 :javascript
   $('#form_panel_body').hide();
   // $('#funding-request-line-item-edit');

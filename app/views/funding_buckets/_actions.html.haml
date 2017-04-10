@@ -16,9 +16,9 @@
             %i.fa.fa-edit.fa-fw
             = " Update this bucket's budget"
 
-      - if (can? :destroy_bucket_app, @funding_bucket) && @funding_bucket.is_bucket_app?
+      - if (can? :destroy, @funding_bucket) && @funding_bucket.deleteable?
         %li
-          = link_to destroy_bucket_app_funding_bucket_path(@funding_bucket), :method => :delete, :data => {:confirm => "Are you sure you want to remove this grant application? The action can't be undone."} do
+          = link_to funding_bucket_path(@funding_bucket), :method => :delete, :data => {:confirm => "Are you sure you want to remove this #{@funding_bucket.is_bucket_app? ? 'grant application' : 'bucket'}? The action can't be undone."} do
             %i.fa.fa-trash-o.fa-fw
-            = " Remove this grant application"
+            = " Remove this #{@funding_bucket.is_bucket_app? ? 'grant application' : 'bucket'}"
 

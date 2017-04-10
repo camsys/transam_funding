@@ -14,6 +14,8 @@ module Abilities
       end
       can :my_funds, FundingBucket
 
+      can :manage, FundingRequest
+
 
     end
   end
