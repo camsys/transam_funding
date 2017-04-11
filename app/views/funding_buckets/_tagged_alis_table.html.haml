@@ -26,7 +26,7 @@
         %th.center{:data => {:sortable => 'true'}} Bucket Allocation
     %tbody
       - funding_requests.each do |fr|
-        %tr{:id => fr.object_key, :class => 'action-path'}
+        %tr{:data =>{:ali => fr.activity_line_item.object_key, :year => fr.activity_line_item.fy_year}, :class => 'action-path'}
           %td.left= fr.activity_line_item.name
           %td.left= format_as_fiscal_year(fr.activity_line_item.fy_year)
           -if fr.activity_line_item.is_cost_estimated?
@@ -39,3 +39,17 @@
             %td.left= format_as_currency(fr.state_amount)
           -elsif fr.local_funding_line_item_id == @funding_bucket.id
             %td.left= format_as_currency(fr.local_amount)
+
+:javascript
+  $('#' + '#{table_dom_id}').on('click', 'td', function () {
+    var path = "#{scheduler_swimlane_action_scheduler_index_path(ali: 'xxx', start_year: 'yyy')}";
+    var ali = $(this).parent('tr').data('ali');
+    var year = $(this).parent('tr').data('year');
+
+
+    if ($(this).attr('data-field') != 'action-cell') {
+      path = path.replace("xxx", ali);
+      var url = path.replace("yyy", year);
+      document.location.href = url;
+    }
+  });
