@@ -32,7 +32,7 @@
           %td.right.nowrap= format_as_currency(ali.cost) + (ali.is_cost_estimated? ? " (e)" : "")
           %td.right.nowrap= format_as_currency(ali.total_funds)
           %td.right.nowrap= format_as_currency(ali.funds_required)
-          %td.right.nowrap= format_as_percentage(ali.pcnt_funded, 3)
+          %td.right.nowrap= format_as_percentage(ali.pcnt_funded.to_i)
 
           - if popup == '1' and ali.assets.present?
             %td.center

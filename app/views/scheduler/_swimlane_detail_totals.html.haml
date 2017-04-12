@@ -10,4 +10,4 @@
   .col-xs-2
     %span.text-danger{title: 'Funds Required'}= format_as_currency(ali.funds_required)
   .col-xs-2
-    %span.pull-right{title: 'Pcnt Funded'}= format_as_percentage(ali.pcnt_funded, 3)
+    %span.pull-right{title: 'Pcnt Funded'}= format_as_percentage(ali.pcnt_funded.to_i)
