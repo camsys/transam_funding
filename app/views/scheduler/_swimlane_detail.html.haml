@@ -22,11 +22,9 @@
   - if ali.assets.empty?
     %p There are no assets associated with this ALI
   - else
-    - funds_left = ali.total_funds
     - ali.assets.each do |asset|
       - cost = get_swimlane_activity_cost(asset, year)
-      - funds_left -= cost
-      = render :partial => 'scheduler/asset_detail', :locals => {:year => year, :asset => asset, :cost => cost, :color => funds_left >= 0 ? '#ccffcc' : '#4e95f4'}
+      = render :partial => 'scheduler/asset_detail', :locals => {:year => year, :asset => asset, :cost => cost, :color => '#4e95f4'}
   %table.table.table-condensed
     %tbody
       - ali.funding_requests.each do |f|
