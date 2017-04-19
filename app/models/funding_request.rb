@@ -148,7 +148,7 @@ class FundingRequest < ActiveRecord::Base
 
   def update_buckets
 
-    puts "aaaaa"
+    fit_buckets
 
     Rails.logger.info "Update bucket sums"
 
@@ -186,6 +186,20 @@ class FundingRequest < ActiveRecord::Base
       if self["#{funding_line_type}_funding_line_item_id"]
         f = FundingBucket.find_by(id: self["#{funding_line_type}_funding_line_item_id"])
         f.update!(budget_committed: f.budget_committed - self["#{funding_line_type}_amount"])
+      end
+    end
+  end
+
+  # If the total is within $3.00 of the requested amount fit the numbers together
+  # That means try to get the requested amount = the total amount. First by adjusting the federal
+  # dollars if there is a federal bucket attached, if there isn't adjust the local instead.
+  def fit_buckets
+    difference_between_actual_and_requested = total_amount - funding_request_amount
+    if(difference_between_actual_and_requested < 3 && difference_between_actual_and_requested > -3)
+      if !federal_funding_line_item_id.nil?
+        self.federal_amount = self.federal_amount - difference_between_actual_and_requested
+      elsif !local_funding_line_item_id.nil?
+        self.local_amount = self.local_amount - difference_between_actual_and_requested
       end
     end
   end
