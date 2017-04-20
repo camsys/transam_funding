@@ -368,7 +368,7 @@
     unlock_federal_percent();
     unlock_state_percent();
     unlock_local_percent();
-    $( "#locking_option" ).removeClass( "fa fa-lock fa-2x text-danger" ).addClass( "fa fa-unlock-alt fa-2x text-success" );
+    $( "#locking_option" ).removeClass( "fa fa-lock fa-2x text-danger" ).addClass( "fa fa-unlock-alt fa-2x" );
     lock_on_load();
   }
 
@@ -517,15 +517,11 @@
   $('#locking_option').click(function(){
     var total_percent = $('#funding_request_total_percent').val();
 
-    if (total_percent == 100){
-      var is_disabled = is_locked();
-      if(is_disabled){
-        unlock_form();
-      }else{
-        lock_form();
-      }
-    }else{
+    var is_disabled = is_locked();
+    if(is_disabled){
       unlock_form();
+    }else{
+      lock_form();
     }
   });
 
