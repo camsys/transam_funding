@@ -1,12 +1,14 @@
 #Details_tabs
   %ul.nav.nav-tabs
+    %li
+      %a{:href => "#summary", :data =>{:toggle => 'tab'}}
+        Summary
+
     %li{:class => 'active'}
       %a{:href => "#requests", :data =>{:toggle => 'tab'}}
         Funding
         %span.badge= (@activity_line_item.funding_requests.count)
-    %li
-      %a{:href => "#summary", :data =>{:toggle => 'tab'}}
-        Summary
+
     %li
       %a{:href => "#assets", :data =>{:toggle => 'tab'}}
         Assets
@@ -24,13 +26,15 @@
 
 
   .tab-content{:style => 'max-height:1000px;overflow-y: auto;'}
+    .tab-pane.fade#summary
+      .tab-content
+        = render 'funding_requests/funding_requests_index'
+
     .tab-pane.fade.active.in#requests
       .tab-content
         = render 'funding_requests/funding_requests_details_table'
 
-    .tab-pane.fade#summary
-      .tab-content
-        = render 'funding_requests/funding_requests_index'
+
 
     .tab-pane.fade#assets
       .tab-content
