@@ -24,11 +24,11 @@
 
 
   .tab-content{:style => 'max-height:1000px;overflow-y: auto;'}
-    .tab-pane.fade#requests
+    .tab-pane.fade.active.in#requests
       .tab-content
         = render 'funding_requests/funding_requests_details_table'
 
-    .tab-pane.fade.active.in#summary
+    .tab-pane.fade#summary
       .tab-content
         = render 'funding_requests/funding_requests_index'
 
