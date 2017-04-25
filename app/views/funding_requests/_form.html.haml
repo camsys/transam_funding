@@ -268,9 +268,9 @@
 
     update_state_cash_from_state_percent();
   }
-  function update_cash_value_and_percent_funding_for_local_from_match_percent_taking_federal_and_state_percent_into_account(remaining_percent, decimalized_percent_funding_ignoring_federal_and_local){
+  function update_cash_value_and_percent_funding_for_local_from_match_percent_taking_federal_and_state_percent_into_account(decimalized_percent_funding_ignoring_federal_and_local){
+    var percent_remaining = 1 - (get_federal_percent() + get_state_percent());
     var local_percent_after_federal_and_state = remaining_percent * decimalized_percent_funding_ignoring_federal_and_local;
-
 
     set_local_percent(local_percent_after_federal_and_state);
 
@@ -716,8 +716,8 @@
         }else if(source == 'local')
         {
           local_bucket_budget_remaining = result.bucket_budget_remaining;
-          var percent_remaining = 1 - (get_federal_percent() + get_state_percent());
-          update_cash_value_and_percent_funding_for_local_from_match_percent_taking_federal_and_state_percent_into_account(percent_remaining, result.bucket_percent);
+          var local_percent_ignoring_federal_and_state = find_percent_down_to_three_decimal_places(convert_non_decimal_percent_to_decimal(result.bucket_percent));
+          update_cash_value_and_percent_funding_for_local_from_match_percent_taking_federal_and_state_percent_into_account(local_percent_ignoring_federal_and_state);
         }
         update_totals();
       },
