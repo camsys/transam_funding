@@ -19,6 +19,7 @@ module TransamFundableCapitalProject
     # ----------------------------------------------------
     # Associations
     # ----------------------------------------------------
+    has_many :funding_requests, :through => :activity_line_items
 
     # ----------------------------------------------------
     # Validations

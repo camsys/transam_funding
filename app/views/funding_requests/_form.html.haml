@@ -16,7 +16,7 @@
             = f.input :funding_request_amount, :wrapper=> :horizontal_prepend, :label => 'Line Amount' do
               %span.input-group-addon
                 %i.fa.fa-usd
-              = f.input_field :funding_request_amount, :class => "form-control", :required=> true, :digits => true, :min => 1, :max => 10000000
+              = f.input_field :funding_request_amount, :class => "form-control", :required=> true, :digits => true, :min => 1, :max => 1000000000000
 
           .col-xs-2
           .col-xs-2
@@ -38,7 +38,7 @@
             = f.input :federal_amount, :wrapper=> :horizontal_prepend, :label => false do
               %span.input-group-addon
                 %i.fa.fa-usd{id: 'federal_amount_usd_symbol'}
-              = f.input_field :federal_amount, :class => "form-control", :digits => true, :min => 0, :max => 10000000
+              = f.input_field :federal_amount, :class => "form-control", :digits => true, :min => 0, :max => 1000000000000
 
         .row
           .col-xs-7
@@ -54,7 +54,7 @@
             = f.input :state_amount, :wrapper=> :horizontal_prepend, :label => false do
               %span.input-group-addon
                 %i.fa.fa-usd{id: 'state_amount_usd_symbol'}
-              = f.input_field :state_amount, :class => "form-control", :digits => true, :min => 0, :max => 10000000
+              = f.input_field :state_amount, :class => "form-control", :digits => true, :min => 0, :max => 1000000000000
 
         .row
           .col-xs-7
@@ -70,7 +70,7 @@
             = f.input :local_amount, :wrapper=> :horizontal_prepend, :label => false do
               %span.input-group-addon
                 %i.fa.fa-usd{id: 'local_amount_usd_symbol'}
-              = f.input_field :local_amount, :class => "form-control", :number => true, :min => 0
+              = f.input_field :local_amount, :class => "form-control", :number => true, :min => 0, :max => 1000000000000
         .row
           .col-xs-6.left
           .col-xs-1.left{:id => "total_amount_label"}
@@ -267,6 +267,14 @@
     set_state_percent(state_percent_after_federal);
 
     update_state_cash_from_state_percent();
+  }
+  function update_cash_value_and_percent_funding_for_local_from_match_percent_taking_federal_and_state_percent_into_account(decimalized_percent_funding_ignoring_federal_and_local){
+    var percent_remaining = 1 - (get_federal_percent() + get_state_percent());
+    var local_percent_after_federal_and_state = percent_remaining * decimalized_percent_funding_ignoring_federal_and_local;
+
+    set_local_percent(local_percent_after_federal_and_state);
+
+    update_local_cash_from_local_percent();
   }
 
   function update_total_funds(){
@@ -704,10 +712,8 @@
         }else if(source == 'local')
         {
           local_bucket_budget_remaining = result.bucket_budget_remaining;
-          result.bucket_percent = 1 - (get_federal_percent() + get_state_percent());
-          cash_value = get_value_from_percent_funding(result.bucket_percent);
-          set_local_percent(find_percent_down_to_three_decimal_places(result.bucket_percent));
-          set_local_cash(cash_value);
+          var local_percent_ignoring_federal_and_state = find_percent_down_to_three_decimal_places(convert_non_decimal_percent_to_decimal(result.bucket_percent));
+          update_cash_value_and_percent_funding_for_local_from_match_percent_taking_federal_and_state_percent_into_account(local_percent_ignoring_federal_and_state);
         }
         update_totals();
       },

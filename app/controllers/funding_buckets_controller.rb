@@ -483,7 +483,13 @@ class FundingBucketsController < OrganizationAwareController
     bucket_name = params[:bucket_name]
     if bucket_name.present?
       bucket = FundingBucket.find_by(name: bucket_name)
-      result = {bucket_percent: bucket.funding_source.match_required, bucket_budget_remaining: bucket.budget_remaining}
+
+      bucket.funding_template.match_required.nil? ?
+          match_percent = bucket.funding_source.match_required :
+          match_percent = bucket.funding_template.match_required
+
+
+      result = {bucket_percent: match_percent, bucket_budget_remaining: bucket.budget_remaining}
     end
 
     respond_to do |format|
