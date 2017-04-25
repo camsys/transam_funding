@@ -270,7 +270,7 @@
   }
   function update_cash_value_and_percent_funding_for_local_from_match_percent_taking_federal_and_state_percent_into_account(decimalized_percent_funding_ignoring_federal_and_local){
     var percent_remaining = 1 - (get_federal_percent() + get_state_percent());
-    var local_percent_after_federal_and_state = remaining_percent * decimalized_percent_funding_ignoring_federal_and_local;
+    var local_percent_after_federal_and_state = percent_remaining * decimalized_percent_funding_ignoring_federal_and_local;
 
     set_local_percent(local_percent_after_federal_and_state);
 
