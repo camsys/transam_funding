@@ -15,7 +15,7 @@
 
 
 .panel.swimlane{class: "#{@active_year.present? ? 'panel-info' : 'panel-default'}"}
-  .panel-heading.swimlane-heading{:data => {:fy => year, :action_path => scheduler_swimlane_action_scheduler_index_path(start_year: year)}}
+  .panel-heading.swimlane-heading{:data => {:fy => year, :action_path => scheduler_swimlane_action_scheduler_index_path(start_year: year, sort: params[:sort])}}
     %span.badge.pull-right{id: "year_#{year}_swimlane_badge"}= alis.count
     - if @active_year
       .pull-right
@@ -64,6 +64,7 @@
       }
 
       if ((baseURL.indexOf("planning") >= 0) || (baseURL.indexOf("capital_projects") >= 0) || (baseURL.indexOf("scheduler") >= 0)) {
+        $("#spinner").show();
         document.location.href = finalURL;
       }
 

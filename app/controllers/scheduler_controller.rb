@@ -249,12 +249,12 @@ class SchedulerController < AbstractCapitalProjectsController
     if current_index == 0
       @prev_record_path = "#"
     else
-      @prev_record_path = scheduler_swimlane_action_scheduler_index_path(:start_year => @start_year - 1)
+      @prev_record_path = scheduler_swimlane_action_scheduler_index_path(:start_year => @start_year - 1, sort: params[:sort])
     end
     if current_index == (@total_rows - 1)
       @next_record_path = "#"
     else
-      @next_record_path = scheduler_swimlane_action_scheduler_index_path(:start_year => @start_year + 1)
+      @next_record_path = scheduler_swimlane_action_scheduler_index_path(:start_year => @start_year + 1, sort: params[:sort])
     end
 
     # Get the ALIs for each year
