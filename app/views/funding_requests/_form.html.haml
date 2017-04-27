@@ -31,7 +31,7 @@
           .col-xs-2
             = f.input :federal_percent, :wrapper=> :horizontal_prepend, :label => false do
               = f.input_field :federal_percent, :class => "form-control", :value => 0, :decimal => true, :min => 0, :max => 100
-              %span.input-group-addon
+              %span.input-group-addon{:id => "federal_percent", :title => "federal_match_percent"}
                 %i.fa.fa-percent
 
           .col-xs-3
@@ -47,7 +47,7 @@
           .col-xs-2
             = f.input :state_percent, :wrapper=> :horizontal_prepend, :label => false do
               = f.input_field :state_percent, :class => "form-control", :value => 0, :decimal => true, :min => 0, :max => 100
-              %span.input-group-addon
+              %span.input-group-addon{:id => "state_percent", :title => "state_match_percent"}
                 %i.fa.fa-percent
 
           .col-xs-3
@@ -63,7 +63,7 @@
           .col-xs-2
             = f.input :local_percent, :wrapper=> :horizontal_prepend, :label => false do
               = f.input_field :local_percent, :class => "form-control", :value => 0, :decimal => true, :min => 0, :max => 100
-              %span.input-group-addon
+              %span.input-group-addon{:id => "local_percent", :title => "local_match_percent"}
                 %i.fa.fa-percent
 
           .col-xs-3
@@ -146,6 +146,19 @@
     {
       lock_local_funds_and_percent();
     }
+  }
+
+  function get_federal_bucket_name()
+  {
+    return $('#funding_request_federal_funding_line_item_id option:selected').text();
+  }
+  function get_state_bucket_name()
+  {
+    return $('#funding_request_state_funding_line_item_id option:selected').text();
+  }
+  function get_local_bucket_name()
+  {
+    return $('#funding_request_local_funding_line_item_id option:selected').text();
   }
 
   function get_federal_cash()
@@ -259,21 +272,42 @@
 
     return rounded_cash_value;
   }
-  function update_cash_value_and_percent_funding_for_state_from_match_percent_taking_federal_percent_into_account(decimalized_percent_funding_ignoring_federal){
+
+  function find_state_percent_after_federal_using_tool_tips(decimalized_percent_funding_ignoring_federal)
+  {
+    var remainig_percent_after_federal = 1 - get_federal_match_percent_tooltip();
+    var state_percent_after_federal = remainig_percent_after_federal * decimalized_percent_funding_ignoring_federal;
+    return state_percent_after_federal;
+  }
+  function find_state_percent_after_federal(decimalized_percent_funding_ignoring_federal)
+  {
     var remainig_percent_after_federal = 1 - get_federal_percent();
     var state_percent_after_federal = remainig_percent_after_federal * decimalized_percent_funding_ignoring_federal;
-
+    return state_percent_after_federal;
+  }
+  function update_cash_value_and_percent_funding_for_state_from_match_percent_taking_federal_percent_into_account(decimalized_percent_funding_ignoring_federal){
+    var state_percent_after_federal = find_state_percent_after_federal(decimalized_percent_funding_ignoring_federal);
 
     set_state_percent(state_percent_after_federal);
-
     update_state_cash_from_state_percent();
   }
-  function update_cash_value_and_percent_funding_for_local_from_match_percent_taking_federal_and_state_percent_into_account(decimalized_percent_funding_ignoring_federal_and_local){
+
+  function find_local_percent_after_federal_and_state_using_tool_tips(decimalized_percent_funding_ignoring_federal_and_local)
+  {
+    var percent_remaining = 1 - (get_federal_match_percent_tooltip() + get_state_match_percent_tooltip());
+    var local_percent_after_federal_and_state = percent_remaining * decimalized_percent_funding_ignoring_federal_and_local;
+    return local_percent_after_federal_and_state;
+  }
+  function find_local_percent_after_federal_and_state(decimalized_percent_funding_ignoring_federal_and_local)
+  {
     var percent_remaining = 1 - (get_federal_percent() + get_state_percent());
     var local_percent_after_federal_and_state = percent_remaining * decimalized_percent_funding_ignoring_federal_and_local;
+    return local_percent_after_federal_and_state;
+  }
+  function update_cash_value_and_percent_funding_for_local_from_match_percent_taking_federal_and_state_percent_into_account(decimalized_percent_funding_ignoring_federal_and_local){
+    var local_percent_after_federal_and_state = find_local_percent_after_federal_and_state(decimalized_percent_funding_ignoring_federal_and_local);
 
     set_local_percent(local_percent_after_federal_and_state);
-
     update_local_cash_from_local_percent();
   }
 
@@ -520,11 +554,69 @@
       }
     }
 
-    get_bucket_amount_remaining($('#funding_request_federal_funding_line_item_id option:selected').text(), 'federal', get_federal_cash());
-    get_bucket_amount_remaining($('#funding_request_state_funding_line_item_id option:selected').text(), 'state', get_state_cash());
-    get_bucket_amount_remaining($('#funding_request_local_funding_line_item_id option:selected').text(), 'local', get_local_cash());
+    get_bucket_amount_remaining_and_template_match_percent_for_tool_tip($('#funding_request_federal_funding_line_item_id option:selected').text(), 'federal', get_federal_cash());
+    get_bucket_amount_remaining_and_template_match_percent_for_tool_tip($('#funding_request_state_funding_line_item_id option:selected').text(), 'state', get_state_cash());
+    get_bucket_amount_remaining_and_template_match_percent_for_tool_tip($('#funding_request_local_funding_line_item_id option:selected').text(), 'local', get_local_cash());
   }
 
+  function get_federal_match_percent_tooltip(match)
+  {
+    var federa_percent = find_percent_down_to_three_decimal_places(convert_non_decimal_percent_to_decimal(parseFloat($('#federal_percent').prop('title'))));
+    if(isNaN(federa_percent)){
+      federa_percent = 0;
+    }
+
+    return federa_percent;
+  }
+  function set_federal_match_percent_tooltip(match)
+  {
+    $('#federal_percent').prop('title', (match*100).toFixed(3)+'%');
+  }
+  function get_state_match_percent_tooltip(match)
+  {
+    var state_percent = find_percent_down_to_three_decimal_places(convert_non_decimal_percent_to_decimal(parseFloat($('#state_percent').prop('title'))));
+    if(isNaN(state_percent)){
+      state_percent = 0;
+    }
+
+    return state_percent;
+  }
+  function set_state_match_percent_tooltip(match)
+  {
+    $('#state_percent').prop('title', (match*100).toFixed(3)+'%');
+  }
+  function get_local_match_percent_tooltip(match)
+  {
+    var local_percent = find_percent_down_to_three_decimal_places(convert_non_decimal_percent_to_decimal(parseFloat($('#local_percent').prop('title'))));
+    if(isNaN(local_percent)){
+      local_percent = 0;
+    }
+
+    return local_percent;
+  }
+  function set_local_match_percent_tooltip(match)
+  {
+    $('#local_percent').prop('title', (match*100).toFixed(3)+'%');
+  }
+
+  function update_state_and_local_percent_match()
+  {
+    var state_bucket_name = get_state_bucket_name();
+    if(state_bucket_name != "")
+    {
+      get_bucket_amount_remaining_and_template_match_percent_for_tool_tip(state_bucket_name, 'state', 0)
+    }
+    update_local_percent_match()
+  }
+
+  function update_local_percent_match()
+  {
+    var local_bucket_name = get_local_bucket_name();
+    if(local_bucket_name != "")
+    {
+      get_bucket_amount_remaining_and_template_match_percent_for_tool_tip(local_bucket_name, 'local', 0)
+    }
+  }
 
   $('#locking_option').click(function(){
     var total_percent = $('#funding_request_total_percent').val();
@@ -596,6 +688,7 @@
       }
       else{
         get_bucket_percent(bucket_name, 'federal');
+        update_state_and_local_percent_match();
         if(!is_locked()){
           unlock_federal_funds_and_percent();
         }
@@ -613,7 +706,8 @@
         if(!is_locked()){
           unlock_federal_funds_and_percent();
         }
-        get_bucket_amount_remaining(bucket_name, 'federal', 0);
+        get_bucket_amount_remaining_and_template_match_percent_for_tool_tip(bucket_name, 'federal', 0);
+        update_state_and_local_percent_match();
       }
     }
   });
@@ -632,6 +726,7 @@
       }
       else{
         get_bucket_percent($('#funding_request_state_funding_line_item_id option:selected').text(), 'state');
+        update_local_percent_match();
         if(!is_locked()){
           unlock_state_funds_and_percent();
         }
@@ -651,7 +746,8 @@
         if(!is_locked()){
           unlock_state_funds_and_percent();
         }
-        get_bucket_amount_remaining(bucket_name, 'state', 0);
+        get_bucket_amount_remaining_and_template_match_percent_for_tool_tip(bucket_name, 'state', 0);
+        update_local_percent_match();
       }
     }
   });
@@ -687,7 +783,7 @@
         if(!is_locked()){
           unlock_local_funds_and_percent();
         }
-        get_bucket_amount_remaining(bucket_name, 'local', 0);
+        get_bucket_amount_remaining_and_template_match_percent_for_tool_tip(bucket_name, 'local', 0);
       }
     }
   });
@@ -708,16 +804,20 @@
           cash_value = get_value_from_percent_funding(percent);
           set_federal_percent(percent);
           set_federal_cash(cash_value);
+          set_federal_match_percent_tooltip(percent);
         }else if(source == 'state')
         {
           state_bucket_budget_remaining = result.bucket_budget_remaining;
-          var state_percent_ignoring_federal = find_percent_down_to_three_decimal_places(convert_non_decimal_percent_to_decimal(result.bucket_percent))
-          update_cash_value_and_percent_funding_for_state_from_match_percent_taking_federal_percent_into_account(state_percent_ignoring_federal);
+
+          var decimalized_state_percent = find_percent_down_to_three_decimal_places(convert_non_decimal_percent_to_decimal(result.bucket_percent));
+          set_state_match_percent_tooltip(find_state_percent_after_federal_using_tool_tips(decimalized_state_percent));
+          update_cash_value_and_percent_funding_for_state_from_match_percent_taking_federal_percent_into_account(decimalized_state_percent);
         }else if(source == 'local')
         {
           local_bucket_budget_remaining = result.bucket_budget_remaining;
-          var local_percent_ignoring_federal_and_state = find_percent_down_to_three_decimal_places(convert_non_decimal_percent_to_decimal(result.bucket_percent));
-          update_cash_value_and_percent_funding_for_local_from_match_percent_taking_federal_and_state_percent_into_account(local_percent_ignoring_federal_and_state);
+          var decimalized_local_percent = find_percent_down_to_three_decimal_places(convert_non_decimal_percent_to_decimal(result.bucket_percent));
+          set_local_match_percent_tooltip(find_local_percent_after_federal_and_state_using_tool_tips(decimalized_local_percent));
+          update_cash_value_and_percent_funding_for_local_from_match_percent_taking_federal_and_state_percent_into_account(decimalized_local_percent);
         }
         update_totals();
       },
@@ -729,7 +829,7 @@
    update_totals();
   }
 
-  function get_bucket_amount_remaining(bucket_name, source, add_funds_on_load)
+  function get_bucket_amount_remaining_and_template_match_percent_for_tool_tip(bucket_name, source, add_funds_on_load)
   {
     var url = '#{find_expected_match_percent_funding_buckets_path}';
     $.ajax({
@@ -738,12 +838,18 @@
       success: function(result){
         if(source == 'federal')
         {
+          var decimalized_federal_percent = find_percent_down_to_three_decimal_places(convert_non_decimal_percent_to_decimal(result.bucket_percent));
+          set_federal_match_percent_tooltip(decimalized_federal_percent);
           federal_bucket_budget_remaining = parseInt(result.bucket_budget_remaining) + add_funds_on_load;
         }else if(source == 'state')
         {
+          var decimalized_state_percent = find_percent_down_to_three_decimal_places(convert_non_decimal_percent_to_decimal(result.bucket_percent));
+          set_state_match_percent_tooltip(find_state_percent_after_federal_using_tool_tips(decimalized_state_percent));
           state_bucket_budget_remaining = parseInt(result.bucket_budget_remaining) + add_funds_on_load;
         }else if(source == 'local')
         {
+          var decimalized_local_percent = find_percent_down_to_three_decimal_places(convert_non_decimal_percent_to_decimal(result.bucket_percent));
+          set_local_match_percent_tooltip(find_local_percent_after_federal_and_state_using_tool_tips(decimalized_local_percent));
           local_bucket_budget_remaining = parseInt(result.bucket_budget_remaining) + add_funds_on_load;
         }
         update_totals();
