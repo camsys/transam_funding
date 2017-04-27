@@ -512,8 +512,12 @@
     if(requested_amount == 0)
     {
       line_item_total = parseInt('#{@activity_line_item.funds_required}');
-      $('#funding_request_funding_request_amount').val(line_item_total);
-
+      if(line_item_total > 0)
+      {
+        $('#funding_request_funding_request_amount').val(line_item_total);
+      }else{
+        $('#funding_request_funding_request_amount').val(1);
+      }
     }
 
     get_bucket_amount_remaining($('#funding_request_federal_funding_line_item_id option:selected').text(), 'federal', get_federal_cash());

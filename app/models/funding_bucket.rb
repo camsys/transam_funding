@@ -185,7 +185,16 @@ class FundingBucket< ActiveRecord::Base
   end
 
   def fiscal_year_for_name(year)
-    yr = year - 2000
+
+    # Do some basic work to make sure the year is in an acceptable range
+    # Check if the year is in a 2 or 4 digit format. If it is in 2 digits
+    # we are all set. if it is in 4 then ignore the first two digits.
+    if year < 100 && year > 0
+      yr = year
+    elsif year > 999 && year < 10000
+      yr = year.to_s[2..4].to_i
+    end
+
     first = "%.2d" % yr
     if yr == 99 # when yr == 99, yr + 1 would be 100, which causes: "FY 99-100"
       next_yr = 00

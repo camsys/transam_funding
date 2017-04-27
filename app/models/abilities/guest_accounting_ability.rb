@@ -8,7 +8,7 @@ module Abilities
       # Funding
       #-------------------------------------------------------------------------
 
-      if user.organization.organization_type == OrganizationType.find_by(class_name: 'TransitOperator')
+      unless user.organization.organization_type == OrganizationType.find_by(class_name: 'Grantor')
         cannot :read, FundingTemplate
         cannot :read, FundingBucket do |b|
           !(user.organization_ids.include? b.owner_id)
