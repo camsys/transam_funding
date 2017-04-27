@@ -14,7 +14,10 @@ module Abilities
       end
       can :my_funds, FundingBucket
 
-      can :manage, FundingRequest
+      can [:create, :read, :update], FundingRequest
+      can :delete, FundingRequest do |fr|
+        user.organization_ids.include? b.creator.id
+      end
 
 
     end
