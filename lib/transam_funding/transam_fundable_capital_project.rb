@@ -63,10 +63,10 @@ module TransamFundableCapitalProject
   # Render the project as a JSON object -- overrides the default json encoding
   def fundable_as_json(options={})
     {
-        state_funds: state_funds,
-        local_funds: local_funds,
-        federal_funds: federal_funds,
-        total_funds: total_funds
+        "state_funds": state_funds,
+        "local_funds": local_funds,
+        "federal_funds": federal_funds,
+        "total_funds": total_funds
     }
   end
 
