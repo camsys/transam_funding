@@ -1,6 +1,27 @@
 :ruby
   is_state_user = (current_user.organization.organization_type == OrganizationType.find_by(class_name: 'Grantor'))
+
+  state_owned_federal_buckets = FundingBucket.federal.current(@activity_line_item.fy_year).state_owned(@organization_list)
+  state_owned_state_buckets = FundingBucket.state.current(@activity_line_item.fy_year).state_owned(@organization_list)
+  state_owned_local_buckets = FundingBucket.local.current(@activity_line_item.fy_year).state_owned(@organization_list)
+
   agency_buckets = FundingBucket.current(@activity_line_item.fy_year).agency_owned(@organization_list)
+
+  can_edit_federal = true
+  can_edit_state = true
+  can_edit_local = true
+
+  unless @funding_request.nil?
+    unless @funding_request.federal_funding_line_item.nil?
+      can_edit_federal = (is_state_user || !state_owned_federal_buckets.include?(@funding_request.federal_funding_line_item) )
+    end
+    unless @funding_request.state_funding_line_item.nil?
+      can_edit_state = (is_state_user || !state_owned_state_buckets.include?(@funding_request.state_funding_line_item) )
+    end
+    unless @funding_request.local_funding_line_item.nil?
+      can_edit_local = (is_state_user || !state_owned_local_buckets.include?(@funding_request.local_funding_line_item) )
+    end
+  end
 
 = dialog_tag('Funding Request', {:icon => 'fa fa-usd', :class => "form-part"}) do
 
@@ -16,21 +37,24 @@
             = f.input :funding_request_amount, :wrapper=> :horizontal_prepend, :label => 'Line Amount' do
               %span.input-group-addon
                 %i.fa.fa-usd
-              = f.input_field :funding_request_amount, :class => "form-control", :required=> true, :digits => true, :min => 1, :max => 1000000000000
+              = f.input_field :funding_request_amount, :class => "form-control", :required=> true, :digits => true, :min => 1, :max => 1000000000000, :disabled => !(can_edit_federal && can_edit_state && can_edit_local)
 
           .col-xs-2
           .col-xs-2
-            %i.fa.fa-unlock-alt.fa-2x{:id => "locking_option"}
+            -if (can_edit_federal && can_edit_state && can_edit_local)
+              %i.fa.fa-unlock-alt.fa-2x{:id => "locking_option"}
           .col-xs-3
+
         .row
           .col-xs-7
-            -#TODO The fisal year check isn't right. It should actuall be @activity_line_item.fy_year <= bucket.fiscal_year+funding_source.life_in_years AND  @activity_line_item.fy_year >= bucket
-
-            = f.input :federal_funding_line_item_id, :collection => agency_buckets.federal + (is_state_user ? FundingBucket.federal.current(@activity_line_item.fy_year).state_owned(@organization_list) : []), :label => 'Federal Funds'
+            -if can_edit_federal
+              = f.input :federal_funding_line_item_id, :collection => agency_buckets.federal + (is_state_user ? state_owned_federal_buckets : []), :label => 'Federal Funds', :disabled => !(can_edit_federal)
+            -else
+              = f.input :federal_funding_line_item_id, :collection => [@funding_request.federal_funding_line_item], :label => 'Federal Funds', :disabled => !(can_edit_federal)
 
           .col-xs-2
             = f.input :federal_percent, :wrapper=> :horizontal_prepend, :label => false do
-              = f.input_field :federal_percent, :class => "form-control", :value => 0, :decimal => true, :min => 0, :max => 100
+              = f.input_field :federal_percent, :class => "form-control", :value => 0, :decimal => true, :min => 0, :max => 100, :disabled => !(can_edit_federal)
               %span.input-group-addon{:id => "federal_percent", :title => "federal_match_percent"}
                 %i.fa.fa-percent
 
@@ -38,15 +62,19 @@
             = f.input :federal_amount, :wrapper=> :horizontal_prepend, :label => false do
               %span.input-group-addon
                 %i.fa.fa-usd{id: 'federal_amount_usd_symbol'}
-              = f.input_field :federal_amount, :class => "form-control", :digits => true, :min => 0, :max => 1000000000000
+              = f.input_field :federal_amount, :class => "form-control", :digits => true, :min => 0, :max => 1000000000000, :disabled => !(can_edit_federal)
 
         .row
           .col-xs-7
-            = f.input :state_funding_line_item_id, :collection => agency_buckets.state + (is_state_user ? FundingBucket.state.current(@activity_line_item.fy_year).state_owned(@organization_list) : []), :label => 'State Funds'
+            -if can_edit_state
+              = f.input :state_funding_line_item_id, :collection => agency_buckets.state + (is_state_user ? state_owned_state_buckets : []), :label => 'State Funds', :disabled => !(can_edit_state)
+            -else
+              = f.input :state_funding_line_item_id, :collection => [@funding_request.state_funding_line_item], :label => 'Federal Funds', :disabled => !(can_edit_federal)
+
 
           .col-xs-2
             = f.input :state_percent, :wrapper=> :horizontal_prepend, :label => false do
-              = f.input_field :state_percent, :class => "form-control", :value => 0, :decimal => true, :min => 0, :max => 100
+              = f.input_field :state_percent, :class => "form-control", :value => 0, :decimal => true, :min => 0, :max => 100, :disabled => !(can_edit_state)
               %span.input-group-addon{:id => "state_percent", :title => "state_match_percent"}
                 %i.fa.fa-percent
 
@@ -54,15 +82,19 @@
             = f.input :state_amount, :wrapper=> :horizontal_prepend, :label => false do
               %span.input-group-addon
                 %i.fa.fa-usd{id: 'state_amount_usd_symbol'}
-              = f.input_field :state_amount, :class => "form-control", :digits => true, :min => 0, :max => 1000000000000
+              = f.input_field :state_amount, :class => "form-control", :digits => true, :min => 0, :max => 1000000000000, :disabled => !(can_edit_state)
 
         .row
           .col-xs-7
-            = f.input :local_funding_line_item_id, :collection => agency_buckets.local + (is_state_user ? FundingBucket.local.current(@activity_line_item.fy_year).state_owned(@organization_list) : []), :label => 'Local Funds'
+            -if can_edit_local
+              = f.input :local_funding_line_item_id, :collection => agency_buckets.local + (is_state_user ? state_owned_local_buckets : []), :label => 'Local Funds', :disabled => !(can_edit_local)
+            -else
+              = f.input :state_funding_line_item_id, :collection => [@funding_request.local_funding_line_item], :label => 'Federal Funds', :disabled => !(can_edit_local)
+
 
           .col-xs-2
             = f.input :local_percent, :wrapper=> :horizontal_prepend, :label => false do
-              = f.input_field :local_percent, :class => "form-control", :value => 0, :decimal => true, :min => 0, :max => 100
+              = f.input_field :local_percent, :class => "form-control", :value => 0, :decimal => true, :min => 0, :max => 100, :disabled => !(can_edit_local)
               %span.input-group-addon{:id => "local_percent", :title => "local_match_percent"}
                 %i.fa.fa-percent
 
@@ -70,7 +102,8 @@
             = f.input :local_amount, :wrapper=> :horizontal_prepend, :label => false do
               %span.input-group-addon
                 %i.fa.fa-usd{id: 'local_amount_usd_symbol'}
-              = f.input_field :local_amount, :class => "form-control", :number => true, :min => 0, :max => 1000000000000
+              = f.input_field :local_amount, :class => "form-control", :number => true, :min => 0, :max => 1000000000000, :disabled => !(can_edit_local)
+
         .row
           .col-xs-6.left
           .col-xs-1.left{:id => "total_amount_label"}
