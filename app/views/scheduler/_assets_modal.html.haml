@@ -15,7 +15,7 @@
                 %span.sr-only Toggle Dropdown
               %ul.dropdown-menu
                 - get_fiscal_years.each do |fy|
-                  - unless fy[1] <= @project.fy_year
+                  - unless fy[1] == @project.fy_year
                     %li
                       = link_to fy[0], scheduler_ali_action_scheduler_index_path(:ali => @activity_line_item.object_key, :invoke => SchedulerController::ALI_MOVE_YEAR_ACTION, :year => fy[1]), :remote => true, :class => 'move-assets-action', :data => { :year => fy[1] }
             .btn-group
