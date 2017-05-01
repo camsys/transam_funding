@@ -25,6 +25,7 @@ class FundingTemplate < ActiveRecord::Base
 
   has_many :funding_buckets, :dependent => :destroy
 
+  has_many :grant_purchases, :as => :sourceable, :dependent => :destroy
 
   #------------------------------------------------------------------------------
   # Validations
