@@ -10,8 +10,12 @@ module Abilities
       end
 
       can [:create, :read, :update], FundingRequest
-      can :delete, FundingRequest do |fr|
-        user.organization_ids.include? b.creator.id
+      can :destroy, FundingRequest do |fr|
+        grantor_org_id = Organization.type_of?(Grantor).id
+        (
+        (fr.creator.organization_ids.include?(grantor_org_id) && user.organization_ids.include?(grantor_org_id)) ||
+            (!fr.creator.organization_ids.include?(grantor_org_id) && user.organization_ids.include?(fr.activity_line_item.organization.id))
+        )
       end
       
     end
