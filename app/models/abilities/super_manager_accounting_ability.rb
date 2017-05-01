@@ -6,6 +6,8 @@ module Abilities
 
       can :manage, FundingTemplate
       can :manage, FundingBucket
+      can :manage, FundingRequest
+
 
     end
   end

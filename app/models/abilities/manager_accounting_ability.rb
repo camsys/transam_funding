@@ -11,6 +11,8 @@ module Abilities
 
       can :read, FundingTemplate
       can [:read, :my_funds], FundingBucket
+      can :manage, FundingRequest
+
     end
   end
 end
