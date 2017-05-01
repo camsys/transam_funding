@@ -50,10 +50,7 @@
         %th.right{data: {field: 'scheduled_cost', :sortable => 'true', formatter: 'currency_formatter'}} Sch. Cost
         - if popup == '1'
           %th.center{data: {formatter: 'popup_formatter'}}
-        - if ali.has_early_replacement_assets?
-          %th.center{data: {field: 'is_early_replacement', formatter: 'early_replacement_flag_formatter'}}
-        %th.center{data: {field: 'replace_with_subtype', formatter: 'replace_with_subtype_formatter'}}
-        %th.center{data: {field: 'replace_with_fuel_type', formatter: 'replace_with_fuel_type_formatter'}}
+        %th.center{data: {formatter: 'special_icons_formatter'}}
 
       %tfoot
         %tr
@@ -61,9 +58,6 @@
           %td.right= format_as_currency(ali.rehabilitation_ali? ? ali.assets.sum(:scheduled_rehabilitation_cost) : ali.assets.sum(:scheduled_replacement_cost))
           - if popup == '1'
             %td
-          - if ali.has_early_replacement_assets?
-            %td
-          %td
           %td
 
 :javascript
@@ -167,16 +161,37 @@
       return fiscal_years[year] || year;
     }
 
-    $(".move-assets-action").on('click', function(e) {
+  $(".move-assets-action").on('click', function(e) {
       var href = $(this).attr('href');
       href += ('&targets=' + selected_assets.join(','));
 
 
       var move_year = $(this).data('year');
 
+      var is_early = is_early_replacement(move_year);
+      if(is_early) {
+        var msg = "You are moving assets from " + getFiscalYear(#{ali.fy_year}) + " to " + getFiscalYear(move_year) + ". This action will put some assets in early replacement. Please provide an explanation <span style='color: red;'>(*-required)</span>:";
+        transam.bootbox_comment_dialog(msg, function(reason) {
+          if(reason == null) {
+              return true;
+          } else if (reason.trim() == "") {
+            return false;
+          } else {
+            href += ('&early_replacement_reason=' + encodeURIComponent(reason));
+            $('#form-modal').modal('hide');
+            //$('<div class="modal-backdrop"></div>').appendTo(document.body).hide().fadeIn();
+            $("#spinner").show();
+            //$.ajax({url: href});
+            document.location.href = href;
+          }
+        });
+
+        return false;
+      }
+
       $(this).attr('href', href);
       //console.log($(this).attr('href'));
-      //$('#form-modal').modal('hide');
+      $('#form-modal').modal('hide');
       //$('<div class="modal-backdrop"></div>').appendTo(document.body).hide().fadeIn();
       $("#spinner").show();
       return true;
@@ -297,26 +312,23 @@
     return '<a class="transam-popover" id="' + data.object_key + '" data-container="body" data-content="" data-html="true" data-placement="left" data-title="' + data.name + '" data-toggle="popover" tabindex="0"><i class="fa fa-info-circle fa-1-25x text-info"></i></a>';
   }
 
-  function early_replacement_flag_formatter(value, data) {
-    if((value) && (data)) {
-      return '<a class="transam-popover" data-placement="left" data-toggle="popover" tabindex="0" data-html="true" data-container="body" title="Early Replacement" data-content="<p>' + data.formatted_early_replacement_reason + '</p>"><i class="fa fa-exclamation-triangle" style="color: red !important;"></i></a>';
-    } else {
-      return "";
+  function special_icons_formatter(value, data) {
+    var special_icons = '';
+    if (data.is_rehabilitated) {
+      special_icons = special_icons + '<a class="transam-tooltip" data-placement="top" data-title="Rehabilitated" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-wrench" style="color: maroon !important;"></i></a>';
     }
-  }
 
-  function replace_with_subtype_formatter(value, data) {
-    if((value) && (value != data.asset_subtype_id) && (data)) {
-      return '<a class="transam-tooltip" data-placement="top" data-title="Replaced Asset Subtype" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-retweet" style="color: green !important;"></i></a>';
-    } else {
-      return "";
+    if (data.is_early_replacement) {
+      special_icons = special_icons + '<a class="transam-popover" data-placement="left" data-toggle="popover" tabindex="0" data-html="true" data-container="body" title="Early Replacement" data-content="<p>' + data.formatted_early_replacement_reason + '</p>"><i class="fa fa-exclamation-triangle" style="color: red !important;"></i></a>';
     }
-  }
 
-  function replace_with_fuel_type_formatter(value, data) {
-    if((value) && (value != data.fuel_type) && (data)) {
-      return '<a class="transam-tooltip" data-placement="top" data-title="Replaced Fuel Type" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-car" style="color: orange !important;"></i></a>';
-    } else {
-      return "";
+    if((data.replace_with_subtype) && (data.replace_with_subtype != data.asset_subtype_id)) {
+      special_icons = special_icons + '<a class="transam-tooltip" data-placement="top" data-title="Replaced Asset Subtype" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-retweet" style="color: green !important;"></i></a>';
     }
+
+    if((data.replace_with_fuel_type) && (data.replace_with_fuel_type != data.fuel_type)) {
+      special_icons = special_icons + '<a class="transam-tooltip" data-placement="top" data-title="Replaced Fuel Type" data-toggle="tooltip" tabindex="0" data-original-title="" title=""><i class="fa fa-car" style="color: orange !important;"></i></a>';
+    }
+
+    return special_icons;
   }
