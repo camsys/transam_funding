@@ -13,7 +13,6 @@ module Abilities
         cannot :read, FundingBucket do |b|
           !(user.organization_ids.include? b.owner_id)
         end
-        cannot :read, FundingRequest
       end
       can :my_funds, FundingBucket
     end
