@@ -69,7 +69,7 @@
             -if can_edit_state
               = f.input :state_funding_line_item_id, :collection => agency_buckets.state + (is_state_user ? state_owned_state_buckets : []), :label => 'State Funds', :disabled => !(can_edit_state)
             -else
-              = f.input :state_funding_line_item_id, :collection => [@funding_request.state_funding_line_item], :label => 'Federal Funds', :disabled => !(can_edit_federal)
+              = f.input :state_funding_line_item_id, :collection => [@funding_request.state_funding_line_item], :label => 'State Funds', :disabled => !(can_edit_state)
 
 
           .col-xs-2
