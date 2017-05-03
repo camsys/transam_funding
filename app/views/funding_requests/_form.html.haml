@@ -89,7 +89,7 @@
             -if can_edit_local
               = f.input :local_funding_line_item_id, :collection => agency_buckets.local + (is_state_user ? state_owned_local_buckets : []), :label => 'Local Funds', :disabled => !(can_edit_local)
             -else
-              = f.input :state_funding_line_item_id, :collection => [@funding_request.local_funding_line_item], :label => 'Federal Funds', :disabled => !(can_edit_local)
+              = f.input :local_funding_line_item_id, :collection => [@funding_request.local_funding_line_item], :label => 'Local Funds', :disabled => !(can_edit_local)
 
 
           .col-xs-2
