@@ -4,6 +4,8 @@ class SchedulerController < AbstractCapitalProjectsController
 
   before_filter :set_view_vars,  :only =>    [:index, :loader, :scheduler_ali_action, :scheduler_swimlane_action]
 
+  before_action :get_activity_line_item, :only => [:scheduler_ali_action, :scheduler_swimlane_action]
+
   add_breadcrumb "Home", :root_path
 
   # Include the fiscal year mixin
@@ -143,9 +145,6 @@ class SchedulerController < AbstractCapitalProjectsController
     add_breadcrumb "Scheduler", scheduler_index_path(:start_year => @start_year)
 
     @active_year = @start_year
-
-    @activity_line_item = ActivityLineItem.find_by_object_key(params[:ali])
-    @project = @activity_line_item.capital_project
     @action = params[:invoke]
 
     case @action
@@ -240,8 +239,10 @@ class SchedulerController < AbstractCapitalProjectsController
   def scheduler_swimlane_action
 
     add_breadcrumb "Scheduler", scheduler_index_path(:start_year => @start_year)
-
     add_breadcrumb format_as_fiscal_year(@start_year), scheduler_swimlane_action_scheduler_index_path(start_year: @start_year)
+    if @activity_line_item
+      add_breadcrumb @activity_line_item.to_s, scheduler_swimlane_action_scheduler_index_path(start_year: @start_year, ali: @activity_line_item.object_key)
+    end
 
     @active_year = @start_year
 
@@ -259,12 +260,6 @@ class SchedulerController < AbstractCapitalProjectsController
 
     # Get the ALIs for each year
     @year_1_alis = get_alis(@year_1) if @year_1
-
-    @activity_line_item = ActivityLineItem.find_by(object_key: params[:ali])
-    if @activity_line_item
-      @project = @activity_line_item.capital_project
-      add_breadcrumb @activity_line_item.to_s, scheduler_swimlane_action_scheduler_index_path(start_year: @start_year, ali: @activity_line_item.object_key)
-    end
 
   end
 
@@ -303,6 +298,22 @@ class SchedulerController < AbstractCapitalProjectsController
         alis.sort_by{|a| a.assets.count}.reverse!
       else
         alis
+    end
+  end
+
+  def get_activity_line_item
+    if params[:ali]
+      @activity_line_item = ActivityLineItem.joins(capital_project: :organization).find_by(capital_projects: {organization_id: @organization_list}, activity_line_items: {object_key: params[:ali]})
+      if @activity_line_item
+        @project = @activity_line_item.capital_project
+      else
+        if ActivityLineItem.joins(capital_project: :organization).find_by(capital_projects: {organization_id: current_user.user_organization_filters.system_filters.first.get_organizations.map{|x| x.id}}, activity_line_items: {object_key: params[:ali]}).nil?
+          redirect_to '/404'
+        else
+          notify_user(:warning, 'This record is outside your filter. Change your filter if you want to access it.')
+          redirect_to scheduler_index_path
+        end
+      end
     end
   end
 
