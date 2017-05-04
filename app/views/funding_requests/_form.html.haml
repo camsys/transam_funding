@@ -1,11 +1,11 @@
 :ruby
   is_state_user = (current_user.organization.organization_type == OrganizationType.find_by(class_name: 'Grantor'))
 
-  state_owned_federal_buckets = FundingBucket.federal.current(@activity_line_item.fy_year).state_owned(@organization_list)
-  state_owned_state_buckets = FundingBucket.state.current(@activity_line_item.fy_year).state_owned(@organization_list)
-  state_owned_local_buckets = FundingBucket.local.current(@activity_line_item.fy_year).state_owned(@organization_list)
+  state_owned_federal_buckets = FundingBucket.federal.current(@activity_line_item.fy_year).state_owned([@project.organization_id])
+  state_owned_state_buckets = FundingBucket.state.current(@activity_line_item.fy_year).state_owned([@project.organization_id])
+  state_owned_local_buckets = FundingBucket.local.current(@activity_line_item.fy_year).state_owned([@project.organization_id])
 
-  agency_buckets = FundingBucket.current(@activity_line_item.fy_year).agency_owned(@organization_list)
+  agency_buckets = FundingBucket.current(@activity_line_item.fy_year).agency_owned([@project.organization_id])
 
   can_edit_federal = true
   can_edit_state = true
