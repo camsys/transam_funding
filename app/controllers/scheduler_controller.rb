@@ -311,7 +311,6 @@ class SchedulerController < AbstractCapitalProjectsController
           redirect_to '/404'
         else
           notify_user(:warning, 'This record is outside your filter. Change your filter if you want to access it.')
-          redirect_to scheduler_index_path
         end
       end
     end
