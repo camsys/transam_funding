@@ -1,7 +1,7 @@
 .panel-heading.ali-heading{data: {:action_path => scheduler_swimlane_action_scheduler_index_path(start_year: year, ali: ali.object_key, sort: params[:sort])}}
   %span.pull-right.ali_cost
     = ali.team_ali_code.to_s
-    - if can? :update, ali
+    - if can?(:update, ali) || can?(:update_cost, ali)
       .btn-group{:style => 'margin-left: 5px;'}
         %button.btn.btn-default.btn-xs.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
           %i.fa.fa-edit
