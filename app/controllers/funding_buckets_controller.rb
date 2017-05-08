@@ -10,8 +10,14 @@ class FundingBucketsController < OrganizationAwareController
 
 
   def get_dashboard_summary
+    if @organization.type_of? Grantor
+      view = 'dashboards/grantor_funding_widget_table'
+    else
+      view = 'dashboards/transit_operator_funding_widget_table'
+    end
+
     respond_to do |format|
-      format.js { render partial: 'dashboards/funding_widget_table', locals: {fy_year: params[:fy_year] }  }
+      format.js { render partial: view, locals: {fy_year: params[:fy_year] }  }
     end
   end
 

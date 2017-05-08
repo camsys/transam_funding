@@ -1,0 +1,19 @@
+- buckets = FundingBucket.where(funding_buckets: {owner_id: @organization_list, fy_year: fy_year})
+- projects = CapitalProject.where(organization_id: @organization_list, fy_year: fy_year)
+- alis = ActivityLineItem.where(capital_project_id: projects.ids)
+
+%table.table.table-hover.table-condensed
+  %tbody
+    - FundingBucket.where(owner_id: @organization_list, fy_year: fy_year).each do |b|
+      %tr
+        %td.left Pcnt Federal Funds Used
+        %td.right= format_as_percentage(buckets.joins(:funding_template).where(funding_templates: {owner_id: FundingSourceType.find_by(name: 'Federal').id}).count * 100.0 / buckets.count)
+      %tr
+        %td.left Pcnt State Funds Used
+        %td.right= format_as_percentage(buckets.joins(:funding_template).where(funding_templates: {owner_id: FundingSourceType.find_by(name: 'State').id}).count * 100.0 / buckets.count)
+      %tr
+        %td.left Pcnt Projects Fully Funded
+        %td.right= format_as_percentage(projects.count{|cp| cp.total_cost == cp.total_funds} * 100.0 / projects.count)
+      %tr
+        %td.left Pcnt ALIs Fully Funded
+        %td.right= format_as_percentage(alis.count{|ali| ali.cost == ali.total_funds} * 100.0 / alis.count)
