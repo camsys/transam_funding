@@ -36,19 +36,19 @@ module TransamFundableCapitalProject
 
   module ClassMethods
 
-    def self.total_funds
+    def total_funds
       self.total_federal_funds + self.total_state_funds + self.total_local_funds
     end
 
-    def self.total_federal_funds
+    def total_federal_funds
       self.joins(activity_line_items: :funding_requests).sum("funding_requests.federal_amount")
     end
 
-    def self.total_state_funds
+    def total_state_funds
       self.joins(activity_line_items: :funding_requests).sum("funding_requests.state_amount")
     end
 
-    def self.total_local_funds
+    def total_local_funds
       self.joins(activity_line_items: :funding_requests).sum("funding_requests.local_amount")
     end
 
