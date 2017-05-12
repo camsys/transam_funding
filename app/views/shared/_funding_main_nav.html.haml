@@ -52,6 +52,6 @@
           %i.fa.fa-fw.fa-list
           Status
       - else
-        = link_to capital_plan_path(CapitalPlan.find_by(fy_year: current_planning_year_year, organization_id: @organization_list.first)) do
+        = link_to capital_plan_path(CapitalPlan.current_plan(@organization_list.first)) do
           %i.fa.fa-fw.fa-list
           Status
