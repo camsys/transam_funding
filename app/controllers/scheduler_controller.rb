@@ -287,7 +287,7 @@ class SchedulerController < AbstractCapitalProjectsController
   end
 
   def get_alis(year)
-    alis = @alis.where(:fy_year => year)
+    alis = @alis.joins(:capital_project).where(:fy_year => year, :capital_projects => {:notional => false})
 
     case params[:sort]
       when 'cost'
