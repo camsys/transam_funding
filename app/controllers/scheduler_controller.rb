@@ -178,21 +178,33 @@ class SchedulerController < AbstractCapitalProjectsController
             a.reload
           end
 
+          notify_user :notice, "Moved #{assets_count} assets to #{fiscal_year(@fy_year)}"
+
           # update the original ALI's estimated cost for its assets
           updated_ali = ActivityLineItem.find_by(id: @activity_line_item.id)
           if updated_ali.present?
             updated_ali.update_estimated_cost
             Rails.logger.debug("NEW COST::: #{updated_ali.estimated_cost}")
+          else
+            new_redirect = URI(request.referer)
+            new_redirect.query = Rack::Utils.parse_nested_query(new_redirect.query).
+                # referrer_url.query returns the existing query string => "f=b"
+                # Rack::Utils.parse_nested_query converts query string to hash => {f: "b"}
+                except('ali').
+                # merge appends or overwrites the new parameter  => {f: "b", cp: :foo'}
+                to_query
           end
 
-          notify_user :notice, "Moved #{assets_count} assets to #{fiscal_year(@fy_year)}"
         end
-
       else
         notify_user :alert,  "Missing ALI or fy_year. Can't perform update."
       end
 
-      redirect_to :back
+      if new_redirect
+        redirect_to new_redirect.to_s
+      else
+        redirect_to :back
+      end
 
     when ALI_UPDATE_COST_ACTION
       @activity_line_item.anticipated_cost = params[:activity_line_item][:anticipated_cost]

@@ -44,14 +44,3 @@
       = link_to scheduler_index_path do
         %i.fa.fa-fw.fa-calendar
         Fund Projects
-
-    %li.divider
-    %li.text-left
-      - if can? :read_all, CapitalPlan
-        = link_to capital_plans_path do
-          %i.fa.fa-fw.fa-list
-          Status
-      - else
-        = link_to capital_plan_path(CapitalPlan.current_plan(@organization_list.first)) do
-          %i.fa.fa-fw.fa-list
-          Status
