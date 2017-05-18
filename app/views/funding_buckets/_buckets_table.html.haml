@@ -63,6 +63,8 @@
 
           - if compact_columns == 0
             %td.center.nowrap{:data => {:field => 'action-cell'}}
+              %a.transam-popover{data: {placement: 'left', toggle: 'popover', html: 'true', content: b.description}, title: 'Description', tabindex: '0'}
+                %i.fa.fa-info-circle
               - if (can? :edit_bucket_app, b) && b.is_bucket_app?
                 = link_to edit_bucket_app_funding_bucket_path(b) do
                   %i.fa.fa-edit.fa-1-5x.text-success
@@ -80,6 +82,15 @@
 = render 'shared/table_formatters'
 
 :javascript
+
+  $('#' + '#{table_dom_id}').on('post-body.bs.table', function () {
+    $('.transam-popover').popover({
+      trigger: 'hover'
+    });
+
+    $('.transam-tooltip').tooltip();
+  });
+
   function percentage_formatter(value) {
     if (value == "") {
       return value;
