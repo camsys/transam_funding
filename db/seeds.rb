@@ -14,23 +14,6 @@ is_sqlite =  (ActiveRecord::Base.configurations[Rails.env]['adapter'] == 'sqlite
 
 puts "======= Processing TransAM Funding Lookup Tables  ======="
 
-funding_source_types = [
-    {:active => 1, :name => 'Federal',  :description => 'Federal Funding Source'},
-    {:active => 1, :name => 'State',    :description => 'State Funding Source'},
-    {:active => 1, :name => 'Local',    :description => 'Local Funding Source'},
-    {:active => 1, :name => 'Agency',    :description => 'Agency Funding Source'},
-]
-
-
-general_ledger_account_types = [
-    {:active => 1, :name => 'Asset Account',      :description => 'Accounts representing different types of resources owned or controlled by the business.'},
-    {:active => 1, :name => 'Liability Account',  :description => 'Accounts representing different types of obligations for the business.'},
-    {:active => 1, :name => 'Equity Account',     :description => 'Accounts representing the residual equity the business.'},
-    {:active => 1, :name => 'Revenue Account',    :description => 'Accounts representing the businesses gross earnings.'},
-    {:active => 1, :name => 'Expense Account',    :description => 'Accounts representing the expenditures for the business.'},
-    {:active => 1, :name => 'Contra Account',     :description => 'Accounts representing negative balances due to accu,ulated depreciation etc.'}
-]
-
 funding_template_types = [
     {:active => 1, :name => 'Capital', :description => 'Capital Funding Template'},
     {:active => 1, :name => 'Operating', :description => 'Operating Funding Template'},
