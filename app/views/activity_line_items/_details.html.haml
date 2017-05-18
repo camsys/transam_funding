@@ -7,6 +7,10 @@
     %a{:href => "#cost", :data =>{:toggle => 'tab'}}
       = "Cost Justification"
   %li
+    %a{:href => "#mile", :data =>{:toggle => 'tab'}}
+      %span.badge.pull-right= @activity_line_item.milestones.count
+      = "Milestones"
+  %li
     %a{:href => "#fund", :data =>{:toggle => 'tab'}}
       %span.badge.pull-right= @activity_line_item.funding_requests.count
       = "Funding"
@@ -27,6 +31,9 @@
     .tab-content
       #cost_justification
         = render 'cost_justification'
+  .tab-pane.fade#mile
+    .tab-content
+      = render 'milestones'
   .tab-pane.fade#fund
     .tab-content
       = render 'funding_requests/index_table'
