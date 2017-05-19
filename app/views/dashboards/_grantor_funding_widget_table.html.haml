@@ -12,7 +12,7 @@
       %td.right= format_as_percentage(buckets.joins(:funding_template).where(funding_templates: {owner_id: FundingSourceType.find_by(name: 'State').id}).count * 100.0 / buckets.count)
     %tr
       %td.left Pcnt Projects Fully Funded
-      %td.right= format_as_percentage(projects.count{|cp| cp.total_cost == cp.total_funds} * 100.0 / projects.count)
+      %td.right= format_as_percentage(projects.select{|cp| cp.total_cost == cp.total_funds}.count * 100.0 / projects.count)
     %tr
       %td.left Pcnt ALIs Fully Funded
-      %td.right= format_as_percentage(alis.count{|ali| ali.cost == ali.total_funds} * 100.0 / alis.count)
+      %td.right= format_as_percentage(alis.select{|ali| ali.cost == ali.total_funds}.count * 100.0 / alis.count)
