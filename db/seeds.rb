@@ -26,7 +26,7 @@ funding_bucket_types = [
     {:active => 1, :name => 'Formula', :description => 'Formula Bucket'},
     {:active => 1, :name => 'Grant Application', :description => 'Grant Application Bucket'},
 ]
-lookup_tables = %w{ funding_source_types general_ledger_account_types funding_template_types funding_bucket_types}
+lookup_tables = %w{ funding_template_types funding_bucket_types}
 
 lookup_tables.each do |table_name|
   puts "  Loading #{table_name}"
