@@ -4,15 +4,31 @@
 
 %table.table.table-hover.table-condensed
   %tbody
-    %tr
-      %td.left Pcnt Federal Funds Used
-      %td.right= format_as_percentage(buckets.joins(:funding_template).where(funding_templates: {owner_id: FundingSourceType.find_by(name: 'Federal').id}).count * 100.0 / buckets.count)
-    %tr
-      %td.left Pcnt State Funds Used
-      %td.right= format_as_percentage(buckets.joins(:funding_template).where(funding_templates: {owner_id: FundingSourceType.find_by(name: 'State').id}).count * 100.0 / buckets.count)
-    %tr
-      %td.left Pcnt Projects Fully Funded
-      %td.right= format_as_percentage(projects.select{|cp| cp.total_cost == cp.total_funds}.count * 100.0 / projects.count)
-    %tr
-      %td.left Pcnt ALIs Fully Funded
-      %td.right= format_as_percentage(alis.select{|ali| ali.cost == ali.total_funds}.count * 100.0 / alis.count)
+    - if buckets.count == 0
+      %tr
+        %td.left Pcnt Federal Funds Used
+        %td.right= format_as_percentage(0)
+      %tr
+        %td.left Pcnt State Funds Used
+        %td.right= format_as_percentage(0)
+    - else
+      %tr
+        %td.left Pcnt Federal Funds Used
+        %td.right= format_as_percentage(buckets.joins(:funding_template).where(funding_templates: {owner_id: FundingSourceType.find_by(name: 'Federal').id}).count * 100.0 / buckets.count)
+      %tr
+        %td.left Pcnt State Funds Used
+        %td.right= format_as_percentage(buckets.joins(:funding_template).where(funding_templates: {owner_id: FundingSourceType.find_by(name: 'State').id}).count * 100.0 / buckets.count)
+    - if projects.count == 0
+      %tr
+        %td.left Pcnt Projects Fully Funded
+        %td.right= format_as_percentage(0)
+      %tr
+        %td.left Pcnt ALIs Fully Funded
+        %td.right= format_as_percentage(0)
+    - else
+      %tr
+        %td.left Pcnt Projects Fully Funded
+        %td.right= format_as_percentage(projects.select{|cp| cp.total_cost == cp.total_funds}.count * 100.0 / projects.count)
+      %tr
+        %td.left Pcnt ALIs Fully Funded
+        %td.right= format_as_percentage(alis.select{|ali| ali.cost == ali.total_funds}.count * 100.0 / alis.count)
