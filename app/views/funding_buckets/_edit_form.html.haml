@@ -14,6 +14,23 @@
           %i.fa.fa-usd
         = f.input_field :budget_amount, :required => true, :min => 1, :integer => true, :value => @funding_bucket.budget_amount.to_i, :class => "form-control"
 
+  - if @funding_bucket.funding_template.funding_source.name == '1514 Bond'
+    .row
+      .col-sm-4
+        = f.input :line_num
+      .col-sm-4
+        = f.input :act_num
+      .col-sm-4
+        = f.input :pt_num
+
+    .row
+      .col-sm-4
+        = f.input :grantee_code
+      .col-sm-4
+        = f.input :page_num
+      .col-sm-4
+        = f.input :item_num
+
   = f.button :submit, 'Save', :class => "btn btn-primary"
 
 :javascript
