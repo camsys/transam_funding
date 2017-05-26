@@ -14,7 +14,7 @@
         %li
           = link_to edit_funding_bucket_path(@funding_bucket), :remote => true do
             %i.fa.fa-edit.fa-fw
-            = " Update this bucket's budget"
+            = " Update this bucket"
 
       - if (can? :destroy, @funding_bucket) && @funding_bucket.deleteable?
         %li

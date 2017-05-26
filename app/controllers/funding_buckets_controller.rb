@@ -75,7 +75,7 @@ class FundingBucketsController < OrganizationAwareController
 
     conditions << 'funding_buckets.active = true'
 
-    @buckets = FundingBucket.where(conditions.join(' AND '), *values)
+    @buckets = FundingBucket.active.where(conditions.join(' AND '), *values)
 
 
     # cache the set of object keys in case we need them later
@@ -157,7 +157,7 @@ class FundingBucketsController < OrganizationAwareController
 
     conditions << 'funding_buckets.active = true'
 
-    @buckets = FundingBucket.joins(:funding_source).where(conditions.join(' AND '), *values)
+    @buckets = FundingBucket.active.joins(:funding_source).where(conditions.join(' AND '), *values)
 
 
     # cache the set of object keys in case we need them later
