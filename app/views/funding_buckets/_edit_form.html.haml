@@ -5,7 +5,7 @@
 
   .row
     .col-sm-12
-      = f.input :description
+      = f.input :description, :as => :text, :input_html => {:rows => 4, :maxlength => 254}
 
   .row
     .col-sm-6
