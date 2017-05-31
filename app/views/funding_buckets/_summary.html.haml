@@ -4,7 +4,7 @@
 = format_field("Budget Amount", format_as_currency(@funding_bucket.budget_amount))
 = format_field("Budget Committed", format_as_currency(@funding_bucket.budget_committed))
 = format_field("Budget Available", format_as_currency(@funding_bucket.budget_remaining))
-- if @funding_bucket.line_num.present?
+- if @funding_bucket.funding_template.funding_source.name == '1514 Bond'
   %hr
   = format_field("Line Number", @funding_bucket.line_num)
   = format_field("Act Number", @funding_bucket.act_num)
