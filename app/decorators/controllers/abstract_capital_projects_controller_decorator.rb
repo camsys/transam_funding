@@ -36,6 +36,7 @@ AbstractCapitalProjectsController.class_eval do
 
     # Use ALI as the base relation to deal with asset & ALI filters
     @alis = ActivityLineItem.active.distinct
+    no_ali_or_asset_params_exist = true
 
     #-----------------------------------------------------------------------------
     # Asset parameters
@@ -48,21 +49,25 @@ AbstractCapitalProjectsController.class_eval do
       @asset_subtype_filter = @user_activity_line_item_filter.asset_subtypes.split(',')
       asset_conditions << 'assets.asset_subtype_id IN (?)'
       asset_values << @asset_subtype_filter
+      no_ali_or_asset_params_exist = false
     elsif @user_activity_line_item_filter.try(:asset_types).present?
       @asset_subtype_filter = AssetSubtype.where(asset_type_id: @user_activity_line_item_filter.asset_types.split(',')).pluck(:id)
       asset_conditions << 'assets.asset_subtype_id IN (?)'
       asset_values << @asset_subtype_filter
+      no_ali_or_asset_params_exist = false
     end
 
     # filter by backlog
     if @user_activity_line_item_filter.try(:in_backlog)
       asset_conditions << 'assets.in_backlog = ?'
       asset_values << true
+      no_ali_or_asset_params_exist = false
     end
 
     if @user_activity_line_item_filter.try(:asset_query_string)
       asset_conditions << 'assets.object_key IN (?)'
       asset_values << Asset.find_by_sql(@user_activity_line_item_filter.asset_query_string).map{|x| x.object_key}
+      no_ali_or_asset_params_exist = false
     end
 
     unless asset_conditions.empty?
@@ -90,6 +95,7 @@ AbstractCapitalProjectsController.class_eval do
 
     if funding_buckets.any?
       @alis = @alis.joins(:funding_requests).where('funding_requests.federal_funding_line_item_id IN (?) OR funding_requests.state_funding_line_item_id IN (?) OR funding_requests.local_funding_line_item_id IN (?)', funding_buckets, funding_buckets, funding_buckets)
+      no_ali_or_asset_params_exist = false
     end
 
     if @user_activity_line_item_filter.try(:not_fully_funded)
@@ -100,6 +106,7 @@ AbstractCapitalProjectsController.class_eval do
           ) AS sum_table
           ON sum_table.activity_line_item_id = activity_line_items.id'
       ).where("sum_table.total_amount IS NULL OR sum_table.total_amount < (#{ActivityLineItem::COST_SUM_SQL_CLAUSE})")
+      no_ali_or_asset_params_exist = false
     end
 
 
@@ -110,11 +117,8 @@ AbstractCapitalProjectsController.class_eval do
     # CapitalProject specific
     #-----------------------------------------------------------------------------
     # get the projects based on filtered ALIs
-
-    # dont impose ALI/asset conditions unless they were in the params
-    no_ali_or_asset_params_exist = (@user_activity_line_item_filter.attributes.slice('asset_subtypes', 'asset_types', 'in_backlog', 'funding_buckets', 'not_fully_funded', 'asset_query_string', 'funding_bucket_query_string').values.uniq == [nil])
     @projects = CapitalProject.includes(:capital_project_type,:team_ali_code).active
-    unless no_ali_or_asset_params_exist
+    unless no_ali_or_asset_params_exist  # dont impose ALI/asset conditions unless they were in the params
       @projects = CapitalProject.includes(:capital_project_type,:team_ali_code).where(id: @alis.uniq(:capital_project_id).pluck(:capital_project_id))
     end
 
