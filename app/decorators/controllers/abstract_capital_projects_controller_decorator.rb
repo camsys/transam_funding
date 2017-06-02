@@ -186,6 +186,6 @@ AbstractCapitalProjectsController.class_eval do
     # final results
     @projects = @projects.where(conditions.join(' AND '), *values).order(:fy_year, :project_number)
 
-    @alis = ActivityLineItem.where(capital_project_id: @projects.ids) if no_ali_or_asset_params_exist
+    @alis = ActivityLineItem.where(capital_project_id: @projects.ids)
   end
 end
