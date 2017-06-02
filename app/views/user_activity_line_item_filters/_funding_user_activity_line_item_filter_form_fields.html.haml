@@ -4,7 +4,7 @@
       %label.control-label
         Owner
       %div
-        = select_tag(:owner_id, options_for_select(Organization.where(id: @organization_list).map{|o| [o.coded_name, o.id]}), {include_blank: true, class: 'form-control'})
+        = select_tag(:owner_id, options_for_select(TransitOperator.where(id: @organization_list).map{|o| [o.coded_name, o.id]}), {include_blank: true, class: 'form-control'})
 
   .col-sm-6
     = f.input :funding_buckets, :collection => FundingBucket.active.map{ |f| [f.to_s, f.id, {:style => 'display:none;', :data => {owner_id: f.owner_id} } ] }, :label => 'Funding'

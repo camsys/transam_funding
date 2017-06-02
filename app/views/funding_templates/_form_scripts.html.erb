@@ -33,7 +33,7 @@
      });
     var filter_orgs = [];
     var selected = [];
-    <% Organization.where(id: @organization_list).each do |org| %>
+    <% Organization.where('id IN (?) AND organization_type_id != ?', @organization_list, OrganizationType.find_by(class_name: 'PlanningPartner').id).each do |org| %>
       filter_orgs.push({value: '<%= org.id %>', content: '<%= org.coded_name %>'});
     <% end %>
 
