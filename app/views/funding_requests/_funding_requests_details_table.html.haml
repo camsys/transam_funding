@@ -70,7 +70,7 @@
             %td.right=format_as_currency(f.total_amount)
             %td
 
-- if (can? :create, FundingRequest) && activity_line_item.funding_requests.count > 0
+- if ali_updatable && (can? :create, FundingRequest) && activity_line_item.funding_requests.count > 0
   .row
     .col-md-12
       = link_to scheduler_ali_action_scheduler_index_path(:ali => activity_line_item.object_key, :funding_request => nil,
