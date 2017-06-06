@@ -74,3 +74,31 @@ lookup_tables.each do |table_name|
     x.save!
   end
 end
+
+reports = [
+  {
+    :active => 1,
+    :belongs_to => 'report_type',
+    :type => "Capital Needs Report",
+    :name => 'Needs Versus Funding Report',
+    :class_name => "NeedsFundingReport"
+    :view_name => "generic_formatted_table",
+    :show_in_nav => 1,
+    :show_in_dashboard => 1,
+    :printable => true,
+    :exportable => true,
+    :roles => 'guest,user,manager',
+    :description => 'Displays a report showing the total needs by fiscal year versus available funding, broken out by source of funds.',
+    :chart_type => '',
+    :chart_options => ""
+  }
+]
+
+table_name = 'reports'
+puts "  Merging #{table_name}"
+data = eval(table_name)
+data.each do |row|
+  x = Report.new(row.except(:belongs_to, :type))
+  x.report_type = ReportType.where(:name => row[:type]).first
+  x.save!
+end
