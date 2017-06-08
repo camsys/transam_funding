@@ -26,7 +26,7 @@ class NeedsFundingReport < AbstractReport
 
     labels = ['Fiscal Year', 'Total Needs ($M)', 'Total Federal Funds ($M)', 'Total State Funds ($M)',
               'Total Local Funds ($M)', 'Balance/(Shortfall) ($M)']
-    formats = [nil, :currency, :currency, :currency, :currency, :currency]
+    formats = [nil, :currencyM, :currencyM, :currencyM, :currencyM, :currencyM]
 
     data = []
     fiscal_years.each do |fy|

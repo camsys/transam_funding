@@ -22,3 +22,5 @@ pickle-email-*.html
 rerun.txt
 .DS_Store
 *.idea
+
+*.rb~
