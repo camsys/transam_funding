@@ -1,0 +1,106 @@
+%li{:class => get_nav_link_class(['funding'])}
+  = link_to "#", :class => "dropdown-toggle", :data => {"toggle" => "dropdown"}, :title => 'Funding' do
+    %i.fa.fa-usd.fa-2x
+    %b.caret
+  %ul.dropdown-menu.multi-level{:role => 'menu'}
+    %li.text-left.dropdown-submenu
+      = link_to funding_sources_path do
+        %i.fa.fa-book.fa-fw
+        Programs
+
+      %ul.dropdown-menu
+        - FundingSource.all.each do |program|
+          %li.text-left
+            = link_to funding_source_path(program) do
+              %i.fa.fa-fw.fa-book
+              = program
+
+        - if can? :create, FundingSource
+          %li.divider
+          %li
+            = link_to new_funding_source_path do
+              %i.fa.fa-plus.fa-fw
+              = "Add Funding Program";
+
+    - if can? :read, FundingTemplate
+      %li.text-left
+        = link_to funding_templates_path do
+          %i.fa.fa-fw.fa-tag
+          = ' Templates'
+
+      %li.text-left
+        = link_to funding_buckets_path do
+          %i.fa.fa-fw.fa-legal
+          = ' Buckets'
+
+    %li.text-left.dropdown-submenu
+      = link_to grants_path do
+        %i.fa.fa-fw.fa-legal
+        = ' Grants'
+
+      %ul.dropdown-menu
+        - Grant.where(organization_id: @organization_list).each do |grant|
+          %li.text-left
+            = link_to grant_path(grant) do
+              %i.fa.fa-fw.fa-legal
+              = grant
+        %li.divider
+        %li
+          = link_to new_grant_path do
+            %i.fa.fa-plus.fa-fw
+            = "Add Grant";
+
+    %li.divider
+    %li.text-left
+      = link_to my_funds_funding_buckets_path do
+        %i.fa.fa-fw.fa-usd
+        = 'My Funds'
+
+    %li.divider
+    - if @organization_list.count == 1
+      %li.text-left
+        = link_to general_ledger_accounts_path do
+          %i.fa.fa-book.fa-fw
+          Chart of Accounts
+    - else
+      %li.text-left.dropdown-submenu
+        = link_to '#' do
+          %i.fa.fa-book.fa-fw
+          Chart of Accounts
+
+        %ul.dropdown-menu
+          - @organization_list.each do |org_id|
+            %li.text-left
+              = link_to general_ledger_accounts_path(:organization_id => org_id) do
+                %i.fa.fa-fw.fa-book
+                = ChartOfAccount.find_by(organization_id: org_id)
+
+    %li.divider
+    %li.text-left
+      = link_to scheduler_index_path do
+        %i.fa.fa-fw.fa-calendar
+        Status
+
+    %li.divider
+    %li.text-left.dropdown-submenu
+      = link_to expenditures_path do
+        %i.fa.fa-fw.fa-usd
+        = 'CapEx'
+
+      %ul.dropdown-menu
+        - @organization.expense_types.active.each do |type|
+          %li.text-left
+            = link_to expenditures_path(:type => type) do
+              %i.fa.fa-fw.fa-usd
+              = type
+        %li.divider
+        %li
+          = link_to new_expenditure_path do
+            %i.fa.fa-plus.fa-fw
+            = "Add CapEx";
+
+    %li.divider
+    %li.text-left
+      = link_to vendors_path do
+        %i.fa.fa-fw.fa-tag
+        = ' Vendors'
