@@ -4,6 +4,12 @@ class AliFundingReport < AbstractReport
     super(attributes)
   end    
   
+  def get_actions
+    @actions = [{type: :check_box_collection,
+                 group: :group_by,
+                 values: [:by_year, :by_agency, :by_scope, :split_sogr]}]
+  end
+  
   def get_data(organization_id_list, params)
 
     common_labels = ['# ALIs', '# Assets', 'Cost', 'Funded', 'Balance']
@@ -18,23 +24,21 @@ class AliFundingReport < AbstractReport
 
     # Add clauses based on params
     # For initial static report
-    params[:group_by] = [:year, :agency]
     (params[:group_by] || []).each do |group|
-      labels << group.to_s.titleize
-      case group
-      when :year
+      labels << group.to_s.titleize.split[1]
+      case group.to_sym
+      when :by_year
         formats << :fiscal_year
         group_by = order_by = 'activity_line_items.fy_year'
-      when :agency
+      when :by_agency
         formats << :string
-        #group_by = 'capital_projects.organization_id'
         group_by = order_by = 'organizations.short_name'
-      when :scope
+      when :by_scope
         formats << :string
-        group_by = order_by = 'substr(code, 1, 4)'
-      when :sogr
-        formats << :checkbox
-        order_by = group_by = :sogr
+        group_by = order_by = 'concat(substr(code, 1, 2), substr(code, 4, 1))'
+      when :split_sogr
+        formats << :boolean
+        order_by = group_by = 'capital_projects.sogr'
       end
       query = query.group(group_by).order(order_by)
     end
