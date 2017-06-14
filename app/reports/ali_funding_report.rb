@@ -88,4 +88,8 @@ class AliFundingReport < AbstractReport
     ext = opts[:format] ? ".#{opts[:format]}" : ''
     "reports/details#{ext}?key=#{key}"
   end
+
+  def get_detail_view
+    "report_alis"
+  end
 end
