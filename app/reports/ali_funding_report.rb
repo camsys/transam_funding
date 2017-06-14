@@ -83,4 +83,9 @@ class AliFundingReport < AbstractReport
   def get_key(row)
     row.slice(0, @clauses.count).join('-')
   end
+
+  def get_detail_path(key, opts={})
+    ext = opts[:format] ? ".#{opts[:format]}" : ''
+    "reports/details#{ext}?key=#{key}"
+  end
 end
