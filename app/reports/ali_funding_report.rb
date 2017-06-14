@@ -86,7 +86,7 @@ class AliFundingReport < AbstractReport
 
   def get_detail_path(key, opts={})
     ext = opts[:format] ? ".#{opts[:format]}" : ''
-    "reports/details#{ext}?key=#{key}"
+    "details#{ext}?key=#{key}"
   end
 
   def get_detail_view
