@@ -23,29 +23,30 @@ class AliFundingReport < AbstractReport
             .where(capital_projects: {organization_id: organization_id_list})
 
     # Add clauses based on params
-    # For initial static report
+    @clauses = []
     (params[:group_by] || []).each do |group|
       labels << group.to_s.titleize.split[1]
       case group.to_sym
       when :by_year
         formats << :fiscal_year
-        group_by = order_by = 'activity_line_items.fy_year'
+        clause = 'activity_line_items.fy_year'
       when :by_agency
         formats << :string
-        group_by = order_by = 'organizations.short_name'
+        clause = 'organizations.short_name'
       when :by_scope
         formats << :string
-        group_by = order_by = 'concat(substr(code, 1, 2), substr(code, 4, 1))'
+        clause = 'concat(substr(code, 1, 2), substr(code, 4, 1))'
       when :split_sogr
         formats << :boolean
-        order_by = group_by = 'capital_projects.sogr'
+        clause = 'capital_projects.sogr'
       end
-      query = query.group(group_by).order(order_by)
+      @clauses << clause
+      query = query.group(clause).order(clause)
     end
 
     # Generate queries for each column
     ali_counts = query.count
-    asset_counts = query.joins(:assets).count
+    asset_counts = query.joins(:assets).count(:asset_id)
     costs = query.sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
     # eager_load implicitly performs left join
     funded = query.eager_load(:funding_requests).sum('funding_requests.federal_amount + funding_requests.state_amount + funding_requests.local_amount')
@@ -75,7 +76,11 @@ class AliFundingReport < AbstractReport
     data.each do |row|
       row << row[-2] - row[-1]
     end
-    
+
     return {labels: labels + common_labels, data: data, formats: formats + common_formats}
+  end
+
+  def get_key(row)
+    row.slice(0, @clauses.count).join('-')
   end
 end
