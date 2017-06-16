@@ -11,7 +11,7 @@
 
   .row
     .col-sm-6
-      = f.input :fy_year, :required => true, :collection => get_fiscal_years
+      = f.input :fy_year, :required => true, :collection => get_fiscal_years, :label => 'Fiscal Year'
     .col-sm-6
       = f.input :budget_amount, :wrapper => :vertical_append, :label => "Budget" do
         %span.input-group-addon
