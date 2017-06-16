@@ -9,7 +9,7 @@
         %li
           = link_to edit_bucket_app_funding_bucket_path(@funding_bucket), :remote => true do
             %i.fa.fa-edit.fa-fw
-            = " Update this grant application"
+            = " Update this fund"
       - if (can? :update, @funding_bucket)
         %li
           = link_to edit_funding_bucket_path(@funding_bucket), :remote => true do
@@ -18,7 +18,7 @@
 
       - if (can? :destroy, @funding_bucket) && @funding_bucket.deleteable?
         %li
-          = link_to funding_bucket_path(@funding_bucket), :method => :delete, :data => {:confirm => "Are you sure you want to remove this #{@funding_bucket.is_bucket_app? ? 'grant application' : 'bucket'}? The action can't be undone."} do
+          = link_to funding_bucket_path(@funding_bucket), :method => :delete, :data => {:confirm => "Are you sure you want to remove this #{@funding_bucket.is_bucket_app? ? 'fund' : 'bucket'}? The action can't be undone."} do
             %i.fa.fa-trash-o.fa-fw
-            = " Remove this #{@funding_bucket.is_bucket_app? ? 'grant application' : 'bucket'}"
+            = " Remove this #{@funding_bucket.is_bucket_app? ? 'fund' : 'bucket'}"
 

@@ -157,6 +157,7 @@ class FundingBucketsController < OrganizationAwareController
 
     conditions << 'funding_buckets.active = true'
 
+    @my_funds = true
     @buckets = FundingBucket.active.joins(:funding_source).where(conditions.join(' AND '), *values)
 
 
@@ -247,7 +248,7 @@ class FundingBucketsController < OrganizationAwareController
 
     add_breadcrumb 'Funding Programs', funding_sources_path
     add_breadcrumb 'My Funds', my_funds_funding_buckets_path
-    add_breadcrumb 'New Grant Application', new_bucket_app_funding_buckets_path
+    add_breadcrumb 'New Fund', new_bucket_app_funding_buckets_path
 
     @funding_bucket = FundingBucket.new
   end
@@ -265,7 +266,7 @@ class FundingBucketsController < OrganizationAwareController
     add_breadcrumb 'Funding Programs', funding_sources_path
     add_breadcrumb 'My Funds', my_funds_funding_buckets_path
     add_breadcrumb @funding_bucket.to_s, funding_bucket_path(@funding_bucket)
-    add_breadcrumb 'Edit Grant Application', edit_bucket_app_funding_bucket_path(@funding_bucket)
+    add_breadcrumb 'Edit Fund', edit_bucket_app_funding_bucket_path(@funding_bucket)
 
   end
 
@@ -326,7 +327,7 @@ class FundingBucketsController < OrganizationAwareController
 
     respond_to do |format|
       if @funding_bucket.save
-        notify_user(:notice, "The grant application was successfully saved.")
+        notify_user(:notice, "The fund was successfully saved.")
         format.html { redirect_to my_funds_funding_buckets_path }
         format.json { render action: 'show', status: :created, location: @funding_bucket }
       else
@@ -358,7 +359,7 @@ class FundingBucketsController < OrganizationAwareController
 
     respond_to do |format|
       if @funding_bucket.update(bucket_params)
-        notify_user(:notice, "The grant application was successfully updated.")
+        notify_user(:notice, "The fund was successfully updated.")
         format.html { redirect_to my_funds_funding_buckets_path }
         format.json { head :no_content }
       else
@@ -372,7 +373,7 @@ class FundingBucketsController < OrganizationAwareController
   def destroy
     if @funding_bucket.deleteable?
       if @funding_bucket.destroy
-        notify_user(:notice, "The grant application was successfully removed.")
+        notify_user(:notice, "The fund was successfully removed.")
         respond_to do |format|
           format.html {
             # check where to redirect to

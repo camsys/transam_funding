@@ -24,7 +24,7 @@ funding_template_types = [
 funding_bucket_types = [
     {:active => 1, :name => 'Existing Grant', :description => 'Existing Grant'},
     {:active => 1, :name => 'Formula', :description => 'Formula Bucket'},
-    {:active => 1, :name => 'Grant Application', :description => 'Grant Application Bucket'},
+    {:active => 1, :name => 'Fund', :description => 'Fund'},
 ]
 capital_plan_types = [
     {name: 'Transit Capital Plan', description: 'Transit Capital Plan', active: true}
