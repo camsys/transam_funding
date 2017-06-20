@@ -41,7 +41,7 @@
 
   = f.association :funding_template_types, :as => :check_boxes, :label => "For"
 
-  = f.button :submit, 'Save', :class => "btn btn-primary"
+  = f.button :submit, 'Save', :class => "btn btn-primary", :id => 'funding_template_submit', :disabled => f.object.query_string.blank? || f.object.organizations.count == 0
 
 = render 'form_scripts'
 
@@ -74,8 +74,18 @@
     if (parseInt(val) > 0) { // if query
       $('#org_select').data().bootstrapTransfer.move_all(true, false); // clear out all selected values
       $('#org_select').hide();
+      $('#funding_template_submit').attr('disabled', false);
     }  else {
       $('#org_select').show();
+      $('#funding_template_submit').attr('disabled', true);
+    }
+  });
+  
+  $('.selector .selector-chooseall .selector-clearall').on('click', function() {
+    if ($('#selected_grantees option').length > 0) {
+      $('#funding_template_submit').attr('disabled', false);
+    } else {
+      $('#funding_template_submit').attr('disabled', true);
     }
   });
 
