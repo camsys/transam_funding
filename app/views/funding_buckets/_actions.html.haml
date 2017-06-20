@@ -7,10 +7,10 @@
     %ul.dropdown-menu{:role => 'menu'}
       - if (can? :edit_bucket_app, @funding_bucket) && @funding_bucket.is_bucket_app?
         %li
-          = link_to edit_bucket_app_funding_bucket_path(@funding_bucket), :remote => true do
+          = link_to edit_bucket_app_funding_bucket_path(@funding_bucket) do
             %i.fa.fa-edit.fa-fw
             = " Update this fund"
-      - if (can? :update, @funding_bucket)
+      - elsif (can? :update, @funding_bucket)
         %li
           = link_to edit_funding_bucket_path(@funding_bucket), :remote => true do
             %i.fa.fa-edit.fa-fw
