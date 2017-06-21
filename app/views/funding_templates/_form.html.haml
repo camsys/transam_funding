@@ -81,7 +81,7 @@
     }
   });
   
-  $('.selector .selector-chooseall .selector-clearall').on('click', function() {
+  $('body').on('click', '.selector, .selector-chooseall, .selector-clearall', function() {
     if ($('#selected_grantees option').length > 0) {
       $('#funding_template_submit').attr('disabled', false);
     } else {
