@@ -110,7 +110,7 @@
             Total Funded:
           .col-xs-2
             = f.input :total_percent, :wrapper=> :horizontal_prepend, :label => false do
-              = f.input_field :total_percent, :class => "form-control", :decimal => true, :min => 0, :max => 100
+              = f.input_field :total_percent, :class => "form-control", :decimal => true, :min => 0
               %span.input-group-addon
                 %i.fa.fa-percent
           .col-xs-3
@@ -153,6 +153,26 @@
 
       return this.optional(element) || results ;
   }, "Please enter a fund.");
+
+  $( "#funding_request_total_amount" ).rules( "add", {
+    CannotExceedTotalFundingRequestAmount: true
+  });
+
+  $.validator.addMethod('CannotExceedTotalFundingRequestAmount', function(value, element) {
+      var results;
+      var funding_request_total_amount =  parseFloat($('#funding_request_total_amount').val());
+      var funding_request_amount =  parseFloat($('#funding_request_funding_request_amount').val());
+
+      if (funding_request_total_amount > funding_request_amount) {
+         console.log('CannotExceedTotalFundinRequestAmount VALIDATION FALSE');
+        results = false;
+      } else {
+        console.log('CannotExceedTotalFundinRequestAmount VALIDATION TRUE');
+        results = true;
+      }
+
+      return this.optional(element) || results ;
+  }, "The Total Funded cannot be greater than the Line Amount.");
 
   var line_item_total = parseFloat($('#funding_request_funding_request_amount').val());
 
