@@ -574,7 +574,7 @@
     var requested_amount = parseFloat($('#funding_request_funding_request_amount').val());
     if(requested_amount == 0)
     {
-      line_item_total = parseInt('#{@activity_line_item.funds_required}');
+      line_item_total = parseInt('#{@calculated_line_item_total}');
       if(line_item_total > 0)
       {
         $('#funding_request_funding_request_amount').val(line_item_total);
