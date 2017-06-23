@@ -227,7 +227,16 @@ class SchedulerController < AbstractCapitalProjectsController
 
 
     when ALI_EDIT_FUND_ACTION
-      unless params[:funding_request].blank?
+      if params[:funding_request].blank?
+        @calculated_line_item_total = 0
+        total_funded_if_funding_requests_are_fully_funded = 0
+
+        @activity_line_item.funding_requests.each { |fr|
+          total_funded_if_funding_requests_are_fully_funded += fr.funding_request_amount
+        }
+
+        @calculated_line_item_total = @activity_line_item.cost - total_funded_if_funding_requests_are_fully_funded
+      else
         @funding_request = FundingRequest.find_by(object_key: params[:funding_request])
         @msg = "The ALI was successfully updated."
       end
