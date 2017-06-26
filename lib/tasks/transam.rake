@@ -81,7 +81,7 @@ namespace :transam do
             :active => 1,
             :belongs_to => 'report_type',
             :type => "Capital Needs Report",
-            :name => 'Needs Versus Funding Report',
+            :name => 'Needs Versus Funding Statewide Report',
             :class_name => "NeedsFundingReport",
             :view_name => "generic_formatted_table",
             :show_in_nav => 1,
