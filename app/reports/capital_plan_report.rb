@@ -68,9 +68,9 @@ class CapitalPlanReport < AbstractReport
     row
   end
 
-  def get_detail_path(key, opts={})
+  def get_detail_path(id, key, opts={})
     ext = opts[:format] ? ".#{opts[:format]}" : ''
-    "details#{ext}?key=#{key}"
+    ""
   end
 
   def get_detail_view
