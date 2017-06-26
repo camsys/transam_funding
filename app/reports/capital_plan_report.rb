@@ -32,9 +32,6 @@ class CapitalPlanReport < AbstractReport
     
     # Default scope orders by project_id
     query = CapitalProject.where(organization_id: organization_id_list)
-    query = ActivityLineItem.unscoped.joins(:team_ali_code, :capital_project)
-            .includes(:team_ali_code, capital_project: :organization)
-            .where(capital_projects: {organization_id: organization_id_list})
 
     # Add clauses based on params
     conditions = []
@@ -53,12 +50,12 @@ class CapitalPlanReport < AbstractReport
     
     data = []
     query.each do |cp|
-      data = [
+      data << [
         cp.fy_year,
         cp.project_number,
         cp.title,
-        cp.scope,
-        cp.cost,
+        cp.team_ali_code.scope,
+        cp.total_cost,
         cp.federal_funds,
         cp.state_funds,
         cp.local_funds
@@ -68,7 +65,7 @@ class CapitalPlanReport < AbstractReport
   end
 
   def get_key(row)
-    row.slice(0, @clauses.count).join('-')
+    row
   end
 
   def get_detail_path(key, opts={})
