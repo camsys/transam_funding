@@ -7,10 +7,6 @@ class CapitalPlanReport < AbstractReport
   end    
   
   def get_actions
-    @actions = [{type: :check_box_collection,
-                 group: :group_by,
-                 values: [:by_year, :by_agency, :by_scope, :split_sogr]}]
-
     @actions = [
       {
         type: :select,
@@ -37,12 +33,12 @@ class CapitalPlanReport < AbstractReport
     conditions = []
     values = []
     if params[:start_fy_year].present?
-      conditions << 'fy_year >= ?'
+      conditions << 'capital_projects.fy_year >= ?'
       values << params[:start_fy_year].to_i 
     end
 
     if params[:end_fy_year].present?
-      conditions << 'fy_year <= ?'
+      conditions << 'capital_projects.fy_year <= ?'
       values << params[:end_fy_year].to_i 
     end
 
