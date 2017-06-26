@@ -17,10 +17,10 @@
       %table.table.table-hover{id: "funding_request_table_#{f.object_key}"}
         %thead
           %tr
-            %th.left
-            %th.left
             %th.right Line Amount
-            %th.right=format_as_currency(f.funding_request_amount)
+            %th.left=format_as_currency(f.funding_request_amount)
+            %th.left
+            %th.left
             - if can? :update, FundingRequest
               %th &nbsp;
           %tr
@@ -44,19 +44,19 @@
         %tbody
           %tr
             %td.left Federal
-            %td.center= f.federal_funding_line_item
+            %td.left= f.federal_funding_line_item
             %td.right= format_as_percentage(f.federal_percentage, 3)
             %td.right= format_as_currency(f.federal_amount)
             %td
           %tr
             %td.left State
-            %td.center= f.state_funding_line_item
+            %td.left= f.state_funding_line_item
             %td.right= format_as_percentage(f.state_percentage, 3)
             %td.right= format_as_currency(f.state_amount)
             %td
           %tr
             %td.left Local
-            %td.center= f.local_funding_line_item
+            %td.left= f.local_funding_line_item
             %td.right= format_as_percentage(f.local_percentage, 3)
             %td.right= format_as_currency(f.local_amount)
             %td
@@ -65,7 +65,7 @@
         %tfoot
           %tr
             %td
-            %td.right Total:
+            %td.right Total Funded:
             %td.right=format_as_percentage(f.funding_request_amount > 0 ? (f.total_amount.to_f/f.funding_request_amount*100) : 0,3)
             %td.right=format_as_currency(f.total_amount)
             %td
