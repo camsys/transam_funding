@@ -2,9 +2,40 @@ class CapitalPlanReport < AbstractReport
 
   include FiscalYear
 
+  KEY_INDEX = 2
+  DETAIL_LABELS = ['NAME', 'FY', 'Sub Category', '# Assets', 'Cost', 'Federal', 'State', 'Local']
+  DETAIL_FORMATS = [:string, :fiscal_year, :string, :integer, :currency, :currency, :currency, :currency]
+  
   def initialize(attributes = {})
     super(attributes)
   end    
+  
+  def self.get_detail_data(organization_id_list, params)
+    query = ActivityLineItem.joins(:capital_project).includes(:team_ali_code)
+            .where(capital_projects: {object_key: params[:key]})
+
+    data = query.pluck(:id, :name, :fy_year, 'team_ali_codes.code').to_a
+    query = query.group('activity_line_items.id')
+    asset_counts = query.joins(:assets).count(:asset_id)
+    costs = query.sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
+    # eager_load implicitly performs left join
+    query = query.eager_load(:funding_requests)
+    federal = query.sum('funding_requests.federal_amount')
+    state = query.sum('funding_requests.state_amount')
+    local = query.sum('funding_requests.local_amount')
+
+    data.each do |row|
+      id = row[0]
+      row << asset_counts[id]
+      row << costs[id]
+      row << federal[id]
+      row << state[id]
+      row << local[id]
+      row.shift                 # remove initial id
+    end
+
+    {labels: DETAIL_LABELS, data: data, formats: DETAIL_FORMATS}
+  end
   
   def get_actions
     @actions = [
@@ -24,9 +55,8 @@ class CapitalPlanReport < AbstractReport
   end
   
   def get_data(organization_id_list, params)
-
-    labels = ['FY', 'Project', 'Title', 'Scope', '# ALIs', 'Cost', 'Fed $', 'State $', 'Local $']
-    formats = [:fiscal_year, :string, :string, :string, :integer, :currency, :currency, :currency, :currency]
+    labels = ['FY', 'Project', 'object_key', 'Title', 'Scope', '# ALIs', 'Cost', 'Fed $', 'State $', 'Local $']
+    formats = [:fiscal_year, :string, :hidden, :string, :string, :integer, :currency, :currency, :currency, :currency]
     
     # Order by org name, then by FY
     query = CapitalProject.where(organization_id: organization_id_list).joins(:organization).order('organizations.name', :fy_year)
@@ -55,6 +85,7 @@ class CapitalPlanReport < AbstractReport
       row = [
         cp.fy_year,
         cp.project_number,
+        cp.object_key,
         cp.title,
         cp.team_ali_code.scope,
         cp.activity_line_items.count,
@@ -108,15 +139,15 @@ class CapitalPlanReport < AbstractReport
   end
 
   def get_key(row)
-    row
+    row[KEY_INDEX]
   end
 
   def get_detail_path(id, key, opts={})
     ext = opts[:format] ? ".#{opts[:format]}" : ''
-    ""
+    "#{id}/details#{ext}?key=#{key}"
   end
 
   def get_detail_view
-    "report_alis"
+    "generic_report_detail"
   end
 end
