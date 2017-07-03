@@ -48,6 +48,9 @@ class CapitalPlanReport < AbstractReport
     data = []
     org_data = []
     current_org = nil
+    current_fy = nil
+    total_ali_count = total_cost = total_federal_funds = total_state_funds = total_local_funds = 0
+    
     query.each do |cp|
       row = [
         cp.fy_year,
@@ -61,13 +64,44 @@ class CapitalPlanReport < AbstractReport
         cp.local_funds
       ]
       if current_org != cp.organization
-        data << [current_org.name, org_data] if current_org
+        if current_org
+          org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, total_ali_count,
+                       total_cost, total_federal_funds, total_state_funds, total_local_funds]
+          data << [current_org.name, org_data]
+        end
+        current_fy = cp.fy_year
+        total_ali_count = cp.activity_line_items.count
+        total_cost = cp.total_cost
+        total_federal_funds = cp.federal_funds
+        total_state_funds = cp.state_funds
+        total_local_funds = cp.local_funds
+
         org_data = [row]
         current_org = cp.organization
       else
+        if current_fy == cp.fy_year
+          total_ali_count += cp.activity_line_items.count
+          total_cost += cp.total_cost
+          total_federal_funds += cp.federal_funds
+          total_state_funds += cp.state_funds
+          total_local_funds += cp.local_funds
+        else
+          if current_fy
+            org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, total_ali_count,
+                         total_cost, total_federal_funds, total_state_funds, total_local_funds]
+          end
+          current_fy = cp.fy_year
+          total_ali_count = cp.activity_line_items.count
+          total_cost = cp.total_cost
+          total_federal_funds = cp.federal_funds
+          total_state_funds = cp.state_funds
+          total_local_funds = cp.local_funds
+        end
         org_data << row
       end
     end
+    org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, total_ali_count,
+                 total_cost, total_federal_funds, total_state_funds, total_local_funds]
     data << [current_org.name, org_data]
     
     return {labels: labels, data: data, formats: formats}
