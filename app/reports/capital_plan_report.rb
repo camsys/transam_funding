@@ -67,12 +67,19 @@ class CapitalPlanReport < AbstractReport
 
     value = params[:start_fy_year] || current_planning_year_year
     conditions << 'capital_projects.fy_year >= ?'
-    values << value.to_i 
+    start_year = value.to_i 
+    values << start_year
     
     value = params[:end_fy_year] || current_planning_year_year
     conditions << 'capital_projects.fy_year <= ?'
-    values << value.to_i 
+    end_year = value.to_i 
+    values << end_year
 
+    # Validation
+    if end_year < start_year
+      return "From Year cannot be before To Year."
+    end
+    
     query = query.where(conditions.join(' AND '), *values).eager_load(:activity_line_items, :funding_requests)
     
     data = []
