@@ -37,8 +37,8 @@ class AliFundingReport < AbstractReport
       row << asset_counts[row[0]]
       row << costs[row[0]]
       row << funded[row[0]]
-      row << row[-2] - row[-1]
-      row.shift
+      row << row[-2] - row[-1] # balance
+      row.shift                # remove initial id
     end
 
     {labels: DETAIL_LABELS, data: data, formats: DETAIL_FORMATS}
