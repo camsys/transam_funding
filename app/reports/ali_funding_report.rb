@@ -64,6 +64,7 @@ class AliFundingReport < AbstractReport
             .includes(:team_ali_code, capital_project: :organization)
             .where(capital_projects: {organization_id: organization_id_list})
 
+    params[:group_by] = ['by_year', 'by_agency'] if params[:group_by].nil? && params[:button].nil?
     # Add clauses based on params
     @clauses = []
     @group_by = {group_by: params[:group_by]}
