@@ -67,7 +67,7 @@ class AliFundingReport < AbstractReport
     params[:group_by] = ['by_year', 'by_agency'] if params[:group_by].nil? && params[:button].nil?
     # Add clauses based on params
     @clauses = []
-    @group_by = {group_by: params[:group_by]}
+    @group_by = params[:group_by] ? {group_by: params[:group_by]} : {}
     (params[:group_by] || []).each do |group|
       labels << group.to_s.titleize.split[1]
       case group.to_sym
