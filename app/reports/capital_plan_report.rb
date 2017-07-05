@@ -55,7 +55,7 @@ class CapitalPlanReport < AbstractReport
   end
   
   def get_data(organization_id_list, params)
-    labels = ['FY', 'Project', 'object_key', 'Title', 'Scope', '# ALIs', 'Cost', 'Fed $', 'State $', 'Local $']
+    labels = ['FY', 'Project', 'object_key', 'Title', 'Scope', '#&nbsp;ALIs', 'Cost', 'Fed&nbsp;$', 'State&nbsp;$', 'Local&nbsp;$']
     formats = [:fiscal_year, :string, :hidden, :string, :string, :integer, :currency, :currency, :currency, :currency]
     
     # Order by org name, then by FY
