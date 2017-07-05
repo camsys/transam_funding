@@ -96,7 +96,7 @@ class CapitalPlanReport < AbstractReport
       ]
       if current_org != cp.organization
         if current_org
-          org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, total_ali_count,
+          org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, nil, total_ali_count,
                        total_cost, total_federal_funds, total_state_funds, total_local_funds]
           data << [current_org.name, org_data]
         end
@@ -118,7 +118,7 @@ class CapitalPlanReport < AbstractReport
           total_local_funds += cp.local_funds
         else
           if current_fy
-            org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, total_ali_count,
+            org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, nil, total_ali_count,
                          total_cost, total_federal_funds, total_state_funds, total_local_funds]
           end
           current_fy = cp.fy_year
@@ -131,7 +131,7 @@ class CapitalPlanReport < AbstractReport
         org_data << row
       end
     end
-    org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, total_ali_count,
+    org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, nil, total_ali_count,
                  total_cost, total_federal_funds, total_state_funds, total_local_funds]
     data << [current_org.name, org_data]
     
