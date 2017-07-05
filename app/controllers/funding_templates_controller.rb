@@ -68,8 +68,6 @@ class FundingTemplatesController < OrganizationAwareController
   def new
 
     add_breadcrumb 'Funding Programs', funding_sources_path
-    add_breadcrumb 'Templates', funding_templates_path
-    add_breadcrumb 'New', new_funding_template_path
 
     @funding_template = FundingTemplate.new(:funding_source_id => params[:funding_source_id])
 
