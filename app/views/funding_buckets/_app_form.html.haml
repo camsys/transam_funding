@@ -9,6 +9,8 @@
   - if @organization_list.count > 1
     = f.association :owner, :required => true, :collection => @funding_bucket.new_record? ? [] : [[Organization.find_by(id: @funding_bucket.owner_id).name, @funding_bucket.owner_id]], :selected => @funding_bucket.new_record? ? '' : @funding_bucket.owner_id, :label_method => "first", :include_blank => true, :label => "Owner", :disabled => !@funding_bucket.new_record?
 
+  = f.input :description
+
   .row
     .col-sm-6
       = f.input :fy_year, :required => true, :collection => get_fiscal_years, :label => 'Fiscal Year'
