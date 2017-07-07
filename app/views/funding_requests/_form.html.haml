@@ -166,7 +166,7 @@
       var funding_request_total_amount =  parseFloat($('#funding_request_total_amount').val());
       var funding_request_amount =  parseFloat($('#funding_request_funding_request_amount').val());
 
-      if (funding_request_total_amount > funding_request_amount) {
+      if (funding_request_total_amount > (funding_request_amount+3)) {
         results = false;
       } else {
         results = true;

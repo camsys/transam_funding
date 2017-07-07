@@ -15,6 +15,7 @@ class FundingRequest < ActiveRecord::Base
   # Callbacks
   #------------------------------------------------------------------------------
   after_initialize                  :set_defaults
+  before_validation                 :fit_buckets
   before_save                       :update_buckets
   before_destroy                    :update_buckets_on_destroy
 
@@ -148,9 +149,6 @@ class FundingRequest < ActiveRecord::Base
   end
 
   def update_buckets
-
-    fit_buckets
-
     Rails.logger.info "Update bucket sums"
 
     self.changes.each do |field, changes|
@@ -203,6 +201,8 @@ class FundingRequest < ActiveRecord::Base
         self.local_amount = self.local_amount - difference_between_actual_and_requested
       end
     end
+
+    return true # always return true so can continue to validations
   end
 
 end
