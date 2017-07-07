@@ -55,7 +55,7 @@ class CapitalPlanReport < AbstractReport
   end
   
   def get_data(organization_id_list, params)
-    labels = ['FY', 'Project', 'object_key', 'Title', 'Scope', '# ALIs', 'Cost', 'Fed $', 'State $', 'Local $']
+    labels = ['FY', 'Project', 'object_key', 'Title', 'Scope', '#&nbsp;ALIs', 'Cost', 'Fed&nbsp;$', 'State&nbsp;$', 'Local&nbsp;$']
     formats = [:fiscal_year, :string, :hidden, :string, :string, :integer, :currency, :currency, :currency, :currency]
     
     # Order by org name, then by FY
@@ -67,12 +67,19 @@ class CapitalPlanReport < AbstractReport
 
     value = params[:start_fy_year] || current_planning_year_year
     conditions << 'capital_projects.fy_year >= ?'
-    values << value.to_i 
+    start_year = value.to_i 
+    values << start_year
     
     value = params[:end_fy_year] || current_planning_year_year
     conditions << 'capital_projects.fy_year <= ?'
-    values << value.to_i 
+    end_year = value.to_i 
+    values << end_year
 
+    # Validation
+    if end_year < start_year
+      return "From Year cannot be before To Year."
+    end
+    
     query = query.where(conditions.join(' AND '), *values).eager_load(:activity_line_items, :funding_requests)
     
     data = []
@@ -96,7 +103,7 @@ class CapitalPlanReport < AbstractReport
       ]
       if current_org != cp.organization
         if current_org
-          org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, total_ali_count,
+          org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, nil, total_ali_count,
                        total_cost, total_federal_funds, total_state_funds, total_local_funds]
           data << [current_org.name, org_data]
         end
@@ -118,7 +125,7 @@ class CapitalPlanReport < AbstractReport
           total_local_funds += cp.local_funds
         else
           if current_fy
-            org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, total_ali_count,
+            org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, nil, total_ali_count,
                          total_cost, total_federal_funds, total_state_funds, total_local_funds]
           end
           current_fy = cp.fy_year
@@ -131,7 +138,7 @@ class CapitalPlanReport < AbstractReport
         org_data << row
       end
     end
-    org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, total_ali_count,
+    org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, nil, total_ali_count,
                  total_cost, total_federal_funds, total_state_funds, total_local_funds]
     data << [current_org.name, org_data]
     
