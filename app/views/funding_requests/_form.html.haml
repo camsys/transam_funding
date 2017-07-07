@@ -110,7 +110,7 @@
             Total Funded:
           .col-xs-2
             = f.input :total_percent, :wrapper=> :horizontal_prepend, :label => false do
-              = f.input_field :total_percent, :class => "form-control", :decimal => true, :min => 0, :max => 100
+              = f.input_field :total_percent, :class => "form-control", :decimal => true, :min => 0
               %span.input-group-addon
                 %i.fa.fa-percent
           .col-xs-3
@@ -153,6 +153,26 @@
 
       return this.optional(element) || results ;
   }, "Please enter a fund.");
+
+  $( "#funding_request_total_amount" ).rules( "add", {
+    CannotExceedTotalFundingRequestAmount: true
+  });
+
+  $.validator.addMethod('CannotExceedTotalFundingRequestAmount', function(value, element) {
+      var results;
+      var funding_request_total_amount =  parseFloat($('#funding_request_total_amount').val());
+      var funding_request_amount =  parseFloat($('#funding_request_funding_request_amount').val());
+
+      if (funding_request_total_amount > funding_request_amount) {
+         console.log('CannotExceedTotalFundinRequestAmount VALIDATION FALSE');
+        results = false;
+      } else {
+        console.log('CannotExceedTotalFundinRequestAmount VALIDATION TRUE');
+        results = true;
+      }
+
+      return this.optional(element) || results ;
+  }, "The Total Funded cannot be greater than the Line Amount.");
 
   var line_item_total = parseFloat($('#funding_request_funding_request_amount').val());
 
@@ -334,6 +354,7 @@
   function update_cash_value_and_percent_funding_for_state_from_match_percent_taking_federal_percent_into_account(decimalized_percent_funding_ignoring_federal){
     var state_percent_after_federal = find_state_percent_after_federal(decimalized_percent_funding_ignoring_federal);
 
+
     set_state_percent(state_percent_after_federal);
     update_state_cash_from_state_percent();
   }
@@ -381,19 +402,17 @@
     $('#funding_request_total_amount').attr('readonly', true);
   }
   function update_total_percents(){
-  //   var amount_requested = parseFloat($('#funding_request_funding_request_amount').val());
-  //   var federal_cash = get_federal_cash();
-  //   var state_cash = get_state_cash();
-  //   var local_cash = get_local_cash();
+    var amount_requested = parseFloat($('#funding_request_funding_request_amount').val());
+    var federal_cash = get_federal_cash();
+    var state_cash = get_state_cash();
+    var local_cash = get_local_cash();
 
-    var federal_percent = get_federal_percent();
-    var state_percent = get_state_percent();
-    var local_percent = get_local_percent();
-    var total = federal_percent + state_percent + local_percent;
+    var total = (federal_cash + state_cash + local_cash)/amount_requested;
 
     $('#funding_request_total_percent').val((total*100).toFixed(3));
     $('#funding_request_total_percent').attr('readonly', true);
   }
+
   function update_bucket_budget_remaining_totals()
   {
     if(get_federal_cash() > federal_bucket_budget_remaining)
@@ -428,26 +447,6 @@
     update_total_percents();
     update_bucket_budget_remaining_totals();
   }
-
-  function round_amounts_and_percentages(amount_requested, federal_cash, state_cash, local_cash, federal_percent){
-    //Compare Total to the Sum of State, Federal, and Local Amounts
-    //If amounts do not match, adjust in Fed first, Local second
-    var actual_total = federal_cash+state_cash+local_cash
-    if(amount_requested != actual_total)
-    {
-      var difference_between_actual_and_requested = actual_total - amount_requested;
-      if(federal_percent > 0){
-        set_federal_cash(federal_cash - difference_between_actual_and_requested);
-        update_federal_percent_from_federal_cash();
-      }else
-      {
-        set_local_cash(local_cash - difference_between_actual_and_requested);
-        update_local_percent_from_local_cash
-      }
-    }
-
-  }
-
 
   function lock_form(){
     lock_federal_percent();
@@ -595,7 +594,7 @@
     var requested_amount = parseFloat($('#funding_request_funding_request_amount').val());
     if(requested_amount == 0)
     {
-      line_item_total = parseInt('#{@activity_line_item.funds_required}');
+      line_item_total = parseInt('#{@calculated_line_item_total}');
       if(line_item_total > 0)
       {
         $('#funding_request_funding_request_amount').val(line_item_total);

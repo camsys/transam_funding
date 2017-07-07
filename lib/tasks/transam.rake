@@ -23,8 +23,8 @@ namespace :transam do
     ]
     capital_plan_action_types = [
         {id: 1, capital_plan_type_id: 1, capital_plan_module_type_id: 1, name: 'Assets Updated', class_name: 'AssetPreparationCapitalPlanAction', roles: 'transit_manager,manager', sequence: 1, active: true},
-        {id: 2, capital_plan_type_id: 1, capital_plan_module_type_id: 1, name: 'OK', class_name: 'AssetOverridePreparationCapitalPlanAction', roles: 'manager', sequence: 2, active: true},
-        {id: 3, capital_plan_type_id: 1, capital_plan_module_type_id: 1, name: 'Funding Verified', class_name: 'BaseCapitalPlanAction', roles: 'transit_manager,manager', sequence: 2, active: true},
+        {id: 2, capital_plan_type_id: 1, capital_plan_module_type_id: 1, name: 'Updates OK', class_name: 'AssetOverridePreparationCapitalPlanAction', roles: 'manager', sequence: 2, active: true},
+        {id: 3, capital_plan_type_id: 1, capital_plan_module_type_id: 1, name: 'Funds Verified', class_name: 'BaseCapitalPlanAction', roles: 'transit_manager,manager', sequence: 2, active: true},
 
         {id: 4, capital_plan_type_id: 1, capital_plan_module_type_id: 2, name: 'Agency Approval', class_name: 'BaseCapitalPlanAction', roles: 'transit_manager,manager', sequence: 1, active: true},
         {id: 5, capital_plan_type_id: 1, capital_plan_module_type_id: 2, name: 'State Approval', class_name: 'BaseCapitalPlanAction', roles: 'manager', sequence: 2, active: true},
@@ -38,7 +38,7 @@ namespace :transam do
         {id: 10, capital_plan_type_id: 1, capital_plan_module_type_id: 5, name: 'Approver 2', class_name: 'BaseCapitalPlanAction', roles: 'approver_two', sequence: 2, active: true},
         {id: 11, capital_plan_type_id: 1, capital_plan_module_type_id: 5, name: 'Approver 3', class_name: 'BaseCapitalPlanAction', roles: 'approver_three', sequence: 3, active: true},
         {id: 12, capital_plan_type_id: 1, capital_plan_module_type_id: 5, name: 'Approver 4', class_name: 'BaseCapitalPlanAction', roles: 'approver_four', sequence: 4, active: true},
-        {id: 13, capital_plan_type_id: 1, capital_plan_module_type_id: 5, name: 'Archive', class_name: 'BaseCapitalPlanAction', roles: 'admin', sequence: 4, active: true}
+        {id: 13, capital_plan_type_id: 1, capital_plan_module_type_id: 5, name: 'Archive', class_name: 'BaseCapitalPlanAction', roles: 'admin', sequence: 5, active: true}
     ]
 
     CapitalPlanType.destroy_all
@@ -81,7 +81,7 @@ namespace :transam do
             :active => 1,
             :belongs_to => 'report_type',
             :type => "Capital Needs Report",
-            :name => 'Needs Versus Funding Report',
+            :name => 'Needs Versus Funding Statewide Report',
             :class_name => "NeedsFundingReport",
             :view_name => "generic_formatted_table",
             :show_in_nav => 1,
@@ -108,6 +108,22 @@ namespace :transam do
           :description => 'Displays a report showing needs and available funding for ALIs grouped by Year/Agency/Scope/SOGR. Drilldown to ALI detail.',
           :chart_type => '',
           :chart_options => ""
+        },
+        {
+          :active => 1,
+          :belongs_to => 'report_type',
+          :type => "Capital Needs Report",
+          :name => 'Capital Plan Report',
+          :class_name => "CapitalPlanReport",
+          :view_name => "generic_table_with_subreports",
+          :show_in_nav => 1,
+          :show_in_dashboard => 1,
+          :printable => true,
+          :exportable => true,
+          :roles => 'guest,user,manager',
+          :description => 'Displays a report showing capital projects with costs and funds. Drilldown to ALI detail.',
+          :chart_type => '',
+          :chart_options => ""
         }
     ]
 
@@ -116,6 +132,9 @@ namespace :transam do
         x = Report.new(row.except(:belongs_to, :type))
         x.report_type = ReportType.where(:name => row[:type]).first
         x.save!
+      else
+        x = Report.find_by(class_name: row[:class_name])
+        x.update!(row.except(:belongs_to, :type))
       end
     end
   end

@@ -1,5 +1,49 @@
 class AliFundingReport < AbstractReport
 
+  COMMON_LABELS = ['# ALIs', '# Assets', 'Cost', 'Funded', 'Balance']
+  COMMON_FORMATS = [:integer, :integer, :currency, :currency, :currency]
+  DETAIL_LABELS = ['NAME', 'FY', 'Sub Category', '# Assets', 'Cost', 'Funded', 'Balance']
+  DETAIL_FORMATS = [:string, :fiscal_year, :string, :integer, :currency, :currency, :currency]
+
+  def self.get_detail_data(organization_id_list, params)
+    # Default scope orders by project_id
+    query = ActivityLineItem.unscoped.joins(:team_ali_code, :capital_project)
+            .includes(:team_ali_code, capital_project: :organization)
+            .where(capital_projects: {organization_id: organization_id_list})
+
+    key = params[:key].split('-')
+    
+    (params[:group_by] || []).each_with_index do |group, i|
+      case group.to_sym
+      when :by_year
+        clause = 'activity_line_items.fy_year = ?'
+      when :by_agency
+        clause = 'organizations.short_name = ?'
+      when :by_scope
+        clause = 'concat(substr(code, 1, 2), substr(code, 4, 1)) = ?'
+      when :split_sogr
+        clause = 'capital_projects.sogr = ?'
+      end
+      query = query.where(clause, key[i])
+    end
+    
+    data = query.pluck(:id, :name, :fy_year, 'team_ali_codes.code').to_a
+    query = query.group('activity_line_items.id')
+    asset_counts = query.joins(:assets).count(:asset_id)
+    costs = query.sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
+    # eager_load implicitly performs left join
+    funded = query.eager_load(:funding_requests).sum('funding_requests.federal_amount + funding_requests.state_amount + funding_requests.local_amount')
+    data.each do |row|
+      row << asset_counts[row[0]]
+      row << costs[row[0]]
+      row << funded[row[0]]
+      row << row[-2] - row[-1]
+      row.shift
+    end
+
+    {labels: DETAIL_LABELS, data: data, formats: DETAIL_FORMATS}
+  end
+  
   def initialize(attributes = {})
     super(attributes)
   end    
@@ -12,8 +56,6 @@ class AliFundingReport < AbstractReport
   
   def get_data(organization_id_list, params)
 
-    common_labels = ['# ALIs', '# Assets', 'Cost', 'Funded', 'Balance']
-    common_formats = [:integer, :integer, :currency, :currency, :currency]
     labels = []
     formats = []
     
@@ -24,6 +66,7 @@ class AliFundingReport < AbstractReport
 
     # Add clauses based on params
     @clauses = []
+    @group_by = {group_by: params[:group_by]}
     (params[:group_by] || []).each do |group|
       labels << group.to_s.titleize.split[1]
       case group.to_sym
@@ -77,19 +120,20 @@ class AliFundingReport < AbstractReport
       row << row[-2] - row[-1]
     end
 
-    return {labels: labels + common_labels, data: data, formats: formats + common_formats}
+    return {labels: labels + COMMON_LABELS, data: data, formats: formats + COMMON_FORMATS}
   end
 
   def get_key(row)
     row.slice(0, @clauses.count).join('-')
   end
 
-  def get_detail_path(key, opts={})
+  def get_detail_path(id, key, opts={})
     ext = opts[:format] ? ".#{opts[:format]}" : ''
-    "details#{ext}?key=#{key}"
+    "#{id}/details#{ext}?key=#{key}&#{@group_by.to_query}"
   end
 
   def get_detail_view
-    "report_alis"
+    "generic_report_detail"
   end
+
 end

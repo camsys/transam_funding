@@ -1,6 +1,13 @@
 - activity_line_item = @activity_line_item
 - ali_updatable = (can? :update, @activity_line_item or can? :update_cost, @activity_line_item)
-- if ali_updatable && (can? :create, FundingRequest)
+
+- if @activity_line_item.milestones.find_by(milestone_type: MilestoneType.find_by(name: "Contract Completed")).try(:milestone_date).nil?
+  .row
+    .col-md-12
+      .alert.alert-warning
+        = "You cannot fund an ALI without a Contract Complete date. Click #{link_to 'HERE', edit_milestones_capital_project_activity_line_item_path(@activity_line_item.capital_project, @activity_line_item), :remote => true} to enter a Contract Complete date.".html_safe
+
+- if ali_updatable && (can? :add_funding_request, @activity_line_item)
   .panel
     .panel.body{id: 'form_panel_body'}
       = render :partial => 'funding_requests/form'
@@ -19,8 +26,8 @@
           %tr
             %th.right Line Amount
             %th.left=format_as_currency(f.funding_request_amount)
-            %th
-            %th
+            %th.left
+            %th.left
             - if can? :update, FundingRequest
               %th &nbsp;
           %tr
@@ -70,7 +77,7 @@
             %td.right=format_as_currency(f.total_amount)
             %td
 
-- if ali_updatable && (can? :create, FundingRequest) && activity_line_item.funding_requests.count > 0
+- if ali_updatable && (can? :add_funding_request, @activity_line_item) && activity_line_item.funding_requests.count > 0
   .row
     .col-md-12
       = link_to scheduler_ali_action_scheduler_index_path(:ali => activity_line_item.object_key, :funding_request => nil,
