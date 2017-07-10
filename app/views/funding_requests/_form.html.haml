@@ -415,12 +415,14 @@
     $('#funding_request_total_amount').val(total);
     $('#funding_request_total_amount').attr('readonly', true);
   }
-  function update_total_percents(){
-    var federal_percent = get_federal_percent();
-    var state_percent = get_state_percent();
-    var local_percent = get_local_percent();
 
-    var total = federal_percent + state_percent + local_percent;
+  function update_total_percents(){
+    var amount_requested = parseFloat($('#funding_request_funding_request_amount').val());
+    var federal_cash = get_federal_cash();
+    var state_cash = get_state_cash();
+    var local_cash = get_local_cash();
+
+    var total = (federal_cash + state_cash + local_cash)/amount_requested;
 
     $('#funding_request_total_percent').val((total*100).toFixed(3));
     $('#funding_request_total_percent').attr('readonly', true);
