@@ -194,7 +194,7 @@ class FundingRequest < ActiveRecord::Base
   # dollars if there is a federal bucket attached, if there isn't adjust the local instead.
   def fit_buckets
     difference_between_actual_and_requested = total_amount - funding_request_amount
-    if(difference_between_actual_and_requested < 3 && difference_between_actual_and_requested > -3)
+    if(difference_between_actual_and_requested <= 3 && difference_between_actual_and_requested >= -3)
       if !federal_funding_line_item_id.nil?
         self.federal_amount = self.federal_amount - difference_between_actual_and_requested
       elsif !local_funding_line_item_id.nil?
