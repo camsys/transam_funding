@@ -11,7 +11,6 @@ Rails.application.routes.draw do
       get 'find_existing_buckets_for_create'
       get 'find_number_of_missing_buckets_for_update'
       get 'find_expected_escalation_percent'
-      get 'find_template_based_fiscal_year_range'
       get 'find_expected_match_percent'
       get 'is_bucket_name_unique'
 
