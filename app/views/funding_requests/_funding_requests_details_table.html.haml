@@ -6,23 +6,24 @@
 
 
 
-- if @activity_line_item.milestones.find_by(milestone_type: MilestoneType.find_by(name: "Contract Completed")).try(:milestone_date).nil?
-  .row
-    .col-md-12
-      .alert.alert-warning
-        = "You cannot fund an ALI without a Contract Complete date. Click #{link_to 'HERE', edit_milestones_capital_project_activity_line_item_path(@activity_line_item.capital_project, @activity_line_item), :remote => true} to enter a Contract Complete date.".html_safe
-
-- if ali_updatable && (can? :add_funding_request, @activity_line_item)
-  .panel
-    .panel.body{id: 'form_panel_body'}
-      = render :partial => 'funding_requests/form'
-  -if total_funded_by_line_amounts < activity_line_item.cost
+- if ali_updatable
+  - if @activity_line_item.milestones.find_by(milestone_type: MilestoneType.find_by(name: "Contract Completed")).try(:milestone_date).nil?
     .row
       .col-md-12
-        = link_to scheduler_ali_action_scheduler_index_path(:ali => activity_line_item.object_key,
-                  :invoke => SchedulerController::ALI_EDIT_FUND_ACTION), :remote => :true, :title => 'Add new funding line item', :class => 'btn btn-xs btn-info funding-request-line-item-edit',
-                  :style => 'margin-left: 1px; margin-right: 1px;' do
-          %i.fa.fa-plus
+        .alert.alert-warning
+          = "You cannot fund an ALI without a Contract Complete date. Click #{link_to 'HERE', edit_milestones_capital_project_activity_line_item_path(@activity_line_item.capital_project, @activity_line_item), :remote => true} to enter a Contract Complete date.".html_safe
+
+  - if can? :add_funding_request, @activity_line_item
+    .panel
+      .panel.body{id: 'form_panel_body'}
+        = render :partial => 'funding_requests/form'
+    -if total_funded_by_line_amounts < activity_line_item.cost
+      .row
+        .col-md-12
+          = link_to scheduler_ali_action_scheduler_index_path(:ali => activity_line_item.object_key,
+                    :invoke => SchedulerController::ALI_EDIT_FUND_ACTION), :remote => :true, :title => 'Add new funding line item', :class => 'btn btn-xs btn-info funding-request-line-item-edit',
+                    :style => 'margin-left: 1px; margin-right: 1px;' do
+            %i.fa.fa-plus
 
 - activity_line_item.funding_requests.each do |f|
   .panel
