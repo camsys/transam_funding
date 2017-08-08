@@ -769,8 +769,8 @@
   {
     var federal_request_amount = get_federal_cash();
     var bucket_name = $('#funding_request_federal_funding_line_item_id option:selected').text()
-    if(federal_request_amount == 0)
-    {
+    // if(federal_request_amount == 0)
+    // {
       if(bucket_name == ""){
         set_federal_cash(0);
         set_federal_percent(0);
@@ -785,23 +785,23 @@
           unlock_federal_funds_and_percent();
         }
       }
-    }else{
-      if(bucket_name == ""){
-        set_federal_cash(0);
-        set_federal_percent(0);
-        update_totals();
-        lock_federal_funds_and_percent();
-        federal_bucket_budget_remaining = 0;
-      }else{
-        var percent_complete = get_percent_from_cash_entered(federal_request_amount);
-        set_federal_percent(percent_complete);
-        if(!is_locked()){
-          unlock_federal_funds_and_percent();
-        }
-        get_bucket_amount_remaining_and_template_match_percent_for_tool_tip(bucket_name, 'federal', 0);
-        update_state_and_local_percent_match();
-      }
-    }
+    // }else{
+    //   if(bucket_name == ""){
+    //     set_federal_cash(0);
+    //     set_federal_percent(0);
+    //     update_totals();
+    //     lock_federal_funds_and_percent();
+    //     federal_bucket_budget_remaining = 0;
+    //   }else{
+    //     var percent_complete = get_percent_from_cash_entered(federal_request_amount);
+    //     set_federal_percent(percent_complete);
+    //     if(!is_locked()){
+    //       unlock_federal_funds_and_percent();
+    //     }
+    //     get_bucket_amount_remaining_and_template_match_percent_for_tool_tip(bucket_name, 'federal', 0);
+    //     update_state_and_local_percent_match();
+    //   }
+    // }
 
     var state_bucket_name = get_state_bucket_name()
     if(state_bucket_name != "")
@@ -809,19 +809,14 @@
       state_request_change();
     }
 
-    var local_bucket_name = get_local_bucket_name()
-    if(local_bucket_name != "")
-    {
-      local_request_change();
-    }
   }
 
   function state_request_change()
   {
     var state_request_amount = get_state_cash();
     var bucket_name = $('#funding_request_state_funding_line_item_id option:selected').text()
-    if(state_request_amount == 0)
-    {
+    // if(state_request_amount == 0)
+    // {
       if(bucket_name == ""){
         set_state_cash(0);
         set_state_percent(0);
@@ -837,24 +832,24 @@
         }
 
       }
-    }else{
-      var percent_complete = get_percent_from_cash_entered(state_request_amount);
-      set_state_percent(percent_complete);
-      if(bucket_name == ""){
-        set_state_cash(0);
-        set_state_percent(0);
-        update_totals();
-        lock_state_funds_and_percent();
-        state_bucket_budget_remaining = 0;
-      }else
-      {
-        if(!is_locked()){
-          unlock_state_funds_and_percent();
-        }
-        get_bucket_amount_remaining_and_template_match_percent_for_tool_tip(bucket_name, 'state', 0);
-        update_local_percent_match();
-      }
-    }
+    // }else{
+    //   var percent_complete = get_percent_from_cash_entered(state_request_amount);
+    //   set_state_percent(percent_complete);
+    //   if(bucket_name == ""){
+    //     set_state_cash(0);
+    //     set_state_percent(0);
+    //     update_totals();
+    //     lock_state_funds_and_percent();
+    //     state_bucket_budget_remaining = 0;
+    //   }else
+    //   {
+    //     if(!is_locked()){
+    //       unlock_state_funds_and_percent();
+    //     }
+    //     get_bucket_amount_remaining_and_template_match_percent_for_tool_tip(bucket_name, 'state', 0);
+    //     update_local_percent_match();
+    //   }
+    // }
 
     var local_bucket_name = get_local_bucket_name()
     if(local_bucket_name != "")
@@ -867,8 +862,8 @@
   {
     var local_request_amount = get_local_cash();
     var bucket_name = $('#funding_request_local_funding_line_item_id option:selected').text()
-    if(local_request_amount == 0)
-    {
+    // if(local_request_amount == 0)
+    // {
       if(bucket_name == ""){
         set_local_cash(0);
         set_local_percent(0);
@@ -882,22 +877,22 @@
           unlock_local_funds_and_percent();
         }
       }
-    }else{
-      var percent_complete = get_percent_from_cash_entered(local_request_amount);
-      set_local_percent(percent_complete);
-      if(bucket_name == ""){
-        set_local_cash(0);
-        set_local_percent(0);
-        update_totals();
-        lock_local_funds_and_percent();
-        local_bucket_budget_remaining = 0;
-      }else{
-        if(!is_locked()){
-          unlock_local_funds_and_percent();
-        }
-        get_bucket_amount_remaining_and_template_match_percent_for_tool_tip(bucket_name, 'local', 0);
-      }
-    }
+    // }else{
+    //   var percent_complete = get_percent_from_cash_entered(local_request_amount);
+    //   set_local_percent(percent_complete);
+    //   if(bucket_name == ""){
+    //     set_local_cash(0);
+    //     set_local_percent(0);
+    //     update_totals();
+    //     lock_local_funds_and_percent();
+    //     local_bucket_budget_remaining = 0;
+    //   }else{
+    //     if(!is_locked()){
+    //       unlock_local_funds_and_percent();
+    //     }
+    //     get_bucket_amount_remaining_and_template_match_percent_for_tool_tip(bucket_name, 'local', 0);
+    //   }
+    // }
   }
 
   $('#funding_request_federal_funding_line_item_id').change(function(){
