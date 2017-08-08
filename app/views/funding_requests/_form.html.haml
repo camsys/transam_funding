@@ -802,6 +802,18 @@
         update_state_and_local_percent_match();
       }
     }
+
+    var state_bucket_name = get_state_bucket_name()
+    if(state_bucket_name != "")
+    {
+      state_request_change();
+    }
+
+    var local_bucket_name = get_local_bucket_name()
+    if(local_bucket_name != "")
+    {
+      local_request_change();
+    }
   }
 
   function state_request_change()
@@ -842,6 +854,12 @@
         get_bucket_amount_remaining_and_template_match_percent_for_tool_tip(bucket_name, 'state', 0);
         update_local_percent_match();
       }
+    }
+
+    var local_bucket_name = get_local_bucket_name()
+    if(local_bucket_name != "")
+    {
+      local_request_change();
     }
   }
 
