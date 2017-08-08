@@ -56,7 +56,7 @@
             = f.input :federal_percent, :wrapper=> :horizontal_prepend, :label => false do
               = f.input_field :federal_percent, :class => "form-control", :value => 0, :decimal => true, :min => 0, :max => 100, :disabled => !(can_edit_federal)
               %span.input-group-addon{:id => "federal_percent", :title => "federal_match_percent"}
-                %i.fa.fa-percent
+                %i.fa.fa-percent{id: 'federal_percent_symbol'}
 
           .col-xs-3
             = f.input :federal_amount, :wrapper=> :horizontal_prepend, :label => false do
@@ -76,7 +76,7 @@
             = f.input :state_percent, :wrapper=> :horizontal_prepend, :label => false do
               = f.input_field :state_percent, :class => "form-control", :value => 0, :decimal => true, :min => 0, :max => 100, :disabled => !(can_edit_state)
               %span.input-group-addon{:id => "state_percent", :title => "state_match_percent"}
-                %i.fa.fa-percent
+                %i.fa.fa-percent{id: 'state_percent_symbol'}
 
           .col-xs-3
             = f.input :state_amount, :wrapper=> :horizontal_prepend, :label => false do
@@ -96,7 +96,7 @@
             = f.input :local_percent, :wrapper=> :horizontal_prepend, :label => false do
               = f.input_field :local_percent, :class => "form-control", :value => 0, :decimal => true, :min => 0, :max => 100, :disabled => !(can_edit_local)
               %span.input-group-addon{:id => "local_percent", :title => "local_match_percent"}
-                %i.fa.fa-percent
+                %i.fa.fa-percent{id: 'local_percent_symbol'}
 
           .col-xs-3
             = f.input :local_amount, :wrapper=> :horizontal_prepend, :label => false do
@@ -127,6 +127,8 @@
   var federal_bucket_budget_remaining = 0;
   var state_bucket_budget_remaining = 0;
   var local_bucket_budget_remaining = 0;
+  var federal_percent_from_template = 0;
+  var state_percent_from_template = 0;
 
   // jquery validations
   $('.funding_request_form').validate();
@@ -263,6 +265,16 @@
   function set_federal_percent(federal_percentage)
   {
     $('#funding_request_federal_percent').val((federal_percentage*100).toFixed(3));
+
+    if(federal_percentage > federal_percent_from_template)
+    {
+      $( "#federal_percent_symbol" ).removeClass("fa fa-percent").addClass("fa fa-percent text-danger");
+      $('#federal_percent_symbol').prop('title', 'This percent is larger than the amount prescribed by the template.');
+    } else {
+      $( "#federal_percent_symbol" ).removeClass( "fa fa-percent text-danger" ).addClass( "fa fa-percent" );
+      $('#federal_percent_symbol').prop('title', 'This percent is within the prescribed boundary.');
+    }
+
   }
   function get_state_percent()
   {
@@ -275,7 +287,18 @@
   }
   function set_state_percent(state_percentage)
   {
-    $('#funding_request_state_percent').val((state_percentage*100).toFixed(3));
+    set_percent = (state_percentage*100).toFixed(3)
+
+    $('#funding_request_state_percent').val(set_percent);
+
+    if(set_percent > state_percent_from_template)
+    {
+      $( "#state_percent_symbol" ).removeClass("fa fa-percent").addClass("fa fa-percent text-danger");
+      $('#state_percent_symbol').prop('title', 'This percent is larger than the amount prescribed by the template.');
+    } else {
+      $( "#state_percent_symbol" ).removeClass( "fa fa-percent text-danger" ).addClass( "fa fa-percent" );
+      $('#state_percent_symbol').prop('title', 'This percent is within the prescribed boundary.');
+    }
   }
   function get_local_percent()
   {
@@ -635,6 +658,8 @@
   function set_federal_match_percent_tooltip(match)
   {
     $('#federal_percent').prop('title', (match*100).toFixed(3)+'%');
+    federal_percent_from_template = match;
+    console.log('federal_percent_from_template ==' + match);
   }
   function get_state_match_percent_tooltip(match)
   {
@@ -648,6 +673,8 @@
   function set_state_match_percent_tooltip(match)
   {
     $('#state_percent').prop('title', (match*100).toFixed(3)+'%');
+    state_percent_from_template = match;
+    console.log('state_percent_from_template ==' + match);
   }
   function get_local_match_percent_tooltip(match)
   {
@@ -738,7 +765,8 @@
     update_totals();
   });
 
-  $('#funding_request_federal_funding_line_item_id').change(function(){
+  function federal_request_change()
+  {
     var federal_request_amount = get_federal_cash();
     var bucket_name = $('#funding_request_federal_funding_line_item_id option:selected').text()
     if(federal_request_amount == 0)
@@ -774,9 +802,10 @@
         update_state_and_local_percent_match();
       }
     }
-  });
+  }
 
-  $('#funding_request_state_funding_line_item_id').change(function(){
+  function state_request_change()
+  {
     var state_request_amount = get_state_cash();
     var bucket_name = $('#funding_request_state_funding_line_item_id option:selected').text()
     if(state_request_amount == 0)
@@ -814,9 +843,10 @@
         update_local_percent_match();
       }
     }
-  });
+  }
 
-  $('#funding_request_local_funding_line_item_id').change(function(){
+  function local_request_change()
+  {
     var local_request_amount = get_local_cash();
     var bucket_name = $('#funding_request_local_funding_line_item_id option:selected').text()
     if(local_request_amount == 0)
@@ -850,6 +880,18 @@
         get_bucket_amount_remaining_and_template_match_percent_for_tool_tip(bucket_name, 'local', 0);
       }
     }
+  }
+
+  $('#funding_request_federal_funding_line_item_id').change(function(){
+    federal_request_change();
+  });
+
+  $('#funding_request_state_funding_line_item_id').change(function(){
+    state_request_change();
+  });
+
+  $('#funding_request_local_funding_line_item_id').change(function(){
+    local_request_change();
   });
 
 
