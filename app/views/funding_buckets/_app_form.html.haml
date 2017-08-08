@@ -18,7 +18,7 @@
       = f.input :budget_amount, :wrapper => :vertical_append, :label => "Budget" do
         %span.input-group-addon
           %i.fa.fa-usd
-        = f.input_field :budget_amount, :class => "form-control", :required => true, :min => 1, :integer => true
+        = f.input_field :budget_amount, :class => "form-control", :required => true, :min => 1, :integer => true, :value => @funding_bucket.new_record? ? nil : @funding_bucket.budget_amount.to_i
 
   = f.button :submit, 'Save', :class => "btn btn-primary"
 

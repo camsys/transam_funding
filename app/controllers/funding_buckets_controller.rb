@@ -459,17 +459,6 @@ class FundingBucketsController < OrganizationAwareController
     end
   end
 
-  def find_template_based_fiscal_year_range
-    program_id = params[:program_id]
-    program = FundingSource.find_by(id: program_id)
-
-    result = program.find_all_valid_fiscal_years
-
-    respond_to do |format|
-      format.json { render json: result.to_json }
-    end
-  end
-
   def is_bucket_name_unique
     bucket_name = params[:bucket_name]
     bucket = FundingBucket.find_by(name: bucket_name)

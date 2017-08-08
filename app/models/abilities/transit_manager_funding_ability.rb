@@ -1,5 +1,5 @@
 module Abilities
-  class TransitManagerAccountingAbility
+  class TransitManagerFundingAbility
     include CanCan::Ability
 
     def initialize(user)

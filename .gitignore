@@ -24,3 +24,5 @@ rerun.txt
 *.idea
 
 *.rb~
+
+*.haml~

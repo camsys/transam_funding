@@ -15,6 +15,7 @@ class FundingRequest < ActiveRecord::Base
   # Callbacks
   #------------------------------------------------------------------------------
   after_initialize                  :set_defaults
+  before_validation                 :fit_buckets
   before_save                       :update_buckets
   before_destroy                    :update_buckets_on_destroy
 
@@ -49,7 +50,7 @@ class FundingRequest < ActiveRecord::Base
   validates :local_amount,                      :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}, :allow_nil => true
   validates :created_by_id,                     :presence => :true
   validates :updated_by_id,                     :presence => :true
-  validates :total_amount,                      :numericality => {:only_integer => :true, :less_than_or_equal_to => :funding_request_amount}
+  validates :total_amount,                      :numericality => {:only_integer => :true, :less_than_or_equal_to => :funding_request_amount, greater_than: 0}
 
   #-----------------------------------------------------------------------------
   # Attributes
@@ -148,9 +149,6 @@ class FundingRequest < ActiveRecord::Base
   end
 
   def update_buckets
-
-    fit_buckets
-
     Rails.logger.info "Update bucket sums"
 
     self.changes.each do |field, changes|
@@ -196,13 +194,15 @@ class FundingRequest < ActiveRecord::Base
   # dollars if there is a federal bucket attached, if there isn't adjust the local instead.
   def fit_buckets
     difference_between_actual_and_requested = total_amount - funding_request_amount
-    if(difference_between_actual_and_requested < 3 && difference_between_actual_and_requested > -3)
+    if(difference_between_actual_and_requested <= 3 && difference_between_actual_and_requested >= -3)
       if !federal_funding_line_item_id.nil?
         self.federal_amount = self.federal_amount - difference_between_actual_and_requested
       elsif !local_funding_line_item_id.nil?
         self.local_amount = self.local_amount - difference_between_actual_and_requested
       end
     end
+
+    return true # always return true so can continue to validations
   end
 
 end

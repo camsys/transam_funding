@@ -1,5 +1,5 @@
 module Abilities
-  class AuthorizedAccountingAbility
+  class AuthorizedFundingAbility
     include CanCan::Ability
 
     def initialize(user)

@@ -1,0 +1,79 @@
+:css
+  .modal-backdrop {
+    display: none;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  .ajax-loader-message {
+    font-size: 20px;
+  }
+  .ajax-loader {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    //width: 100%;
+    margin-left: -50px;
+    margin-top: -50px;
+    padding: 20px;
+    z-index: 1099;
+    background-color: #FFF;
+    border: 1px solid #EEE;
+    border-radius:5px;
+  }
+
+#spinner= loader_panel_tag({:message => "Loading...", :size => 3, :spinner => "cog"})
+
+#wrapper
+  .col-md-12#projects_report
+    - @data[:data].each do |org_group|
+      - org = org_group.first
+      - rows = org_group.second
+      - data = {labels: @data[:labels], data: rows, formats: @data[:formats]}
+      .report
+        %fieldset
+          %legend= org
+          = render partial: 'reports/generic_subtable_with_subreports.html', locals: {data: data}
+
+:javascript
+
+  var report_detail_path = '#{@report_instance.get_detail_path(@report.id, "xxx", format: :js)}';
+
+  $(document).ready(function() {
+
+    // Hide the processing div
+    $('#spinner').hide();
+
+    // Click handler that loads the report detail via AJAX into a project ALI project-alis-panel
+    // when a row in the summary table is clicked
+    $(".row-action").on("click", function() {
+      // Toggle the selected class on the table
+      $(this).toggleClass("selected");
+      // Get the selected project and target panel
+      var target_key = $(this).data('target');
+      var target_panel_id = "#row-detail-" + target_key;
+      // Check to see if the row is selected -- if it is we load the ALIs into
+      // the corresponding panel
+      if ($(this).hasClass('selected')) {
+        var url = report_detail_path.replace('xxx', target_key);
+        // AJAX load the panel
+        $.ajax({
+            url: url,
+            data: {
+              view: "reports/#{@report_instance.get_detail_view}"
+            },
+            beforeSend: function() {
+              $('<div class="modal-backdrop"></div>').appendTo(document.body).hide().fadeIn();
+              $("#spinner").show();
+            },
+            complete: function (response) {
+              $('#spinner').hide();
+              $(".modal-backdrop").remove();
+            },
+            error: function () {
+              transam.show_popup_message("Warning", "Something went wrong. Please try again!", "warning");
+            }
+        });
+      }
+      // Show or hide the panel
+      $(target_panel_id).toggleClass("hidden");
+    });
+  });

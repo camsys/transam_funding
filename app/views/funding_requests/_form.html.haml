@@ -157,22 +157,36 @@
   $( "#funding_request_total_amount" ).rules( "add", {
     CannotExceedTotalFundingRequestAmount: true
   });
+  $( "#funding_request_total_amount" ).rules( "add", {
+    CannotHaveNoFunding: true
+  });
 
   $.validator.addMethod('CannotExceedTotalFundingRequestAmount', function(value, element) {
       var results;
       var funding_request_total_amount =  parseFloat($('#funding_request_total_amount').val());
       var funding_request_amount =  parseFloat($('#funding_request_funding_request_amount').val());
 
-      if (funding_request_total_amount > funding_request_amount) {
-         console.log('CannotExceedTotalFundinRequestAmount VALIDATION FALSE');
+      if (funding_request_total_amount > (funding_request_amount+3)) {
         results = false;
       } else {
-        console.log('CannotExceedTotalFundinRequestAmount VALIDATION TRUE');
         results = true;
       }
 
       return this.optional(element) || results ;
   }, "The Total Funded cannot be greater than the Line Amount.");
+
+  $.validator.addMethod('CannotHaveNoFunding', function(value, element) {
+    var results;
+    var funding_request_total_amount =  parseFloat($('#funding_request_total_amount').val());
+
+    if (funding_request_total_amount <= 0) {
+      results = false;
+    } else {
+      results = true;
+    }
+
+    return this.optional(element) || results ;
+    }, "Please allocate some money to this request before saving.");
 
   var line_item_total = parseFloat($('#funding_request_funding_request_amount').val());
 
@@ -401,6 +415,7 @@
     $('#funding_request_total_amount').val(total);
     $('#funding_request_total_amount').attr('readonly', true);
   }
+
   function update_total_percents(){
     var amount_requested = parseFloat($('#funding_request_funding_request_amount').val());
     var federal_cash = get_federal_cash();

@@ -1,5 +1,5 @@
 module Abilities
-  class GuestAccountingAbility
+  class GuestFundingAbility
     include CanCan::Ability
 
     def initialize(user)

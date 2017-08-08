@@ -37,8 +37,8 @@ class AliFundingReport < AbstractReport
       row << asset_counts[row[0]]
       row << costs[row[0]]
       row << funded[row[0]]
-      row << row[-2] - row[-1]
-      row.shift
+      row << row[-2] - row[-1] # balance
+      row.shift                # remove initial id
     end
 
     {labels: DETAIL_LABELS, data: data, formats: DETAIL_FORMATS}
@@ -64,9 +64,10 @@ class AliFundingReport < AbstractReport
             .includes(:team_ali_code, capital_project: :organization)
             .where(capital_projects: {organization_id: organization_id_list})
 
+    params[:group_by] = ['by_year', 'by_agency'] if params[:group_by].nil? && params[:button].nil?
     # Add clauses based on params
     @clauses = []
-    @group_by = {group_by: params[:group_by]}
+    @group_by = params[:group_by] ? {group_by: params[:group_by]} : {}
     (params[:group_by] || []).each do |group|
       labels << group.to_s.titleize.split[1]
       case group.to_sym
@@ -89,9 +90,9 @@ class AliFundingReport < AbstractReport
 
     # Generate queries for each column
     ali_counts = query.count
-    asset_counts = query.joins(:assets).count(:asset_id)
     costs = query.sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
     # eager_load implicitly performs left join
+    asset_counts = query.eager_load(:assets).count(:asset_id)
     funded = query.eager_load(:funding_requests).sum('funding_requests.federal_amount + funding_requests.state_amount + funding_requests.local_amount')
     
     data = []
