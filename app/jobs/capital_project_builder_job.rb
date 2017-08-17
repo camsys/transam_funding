@@ -26,7 +26,7 @@ class CapitalProjectBuilderJob < Job
 
     # Find all the matching assets for this organization
     asset_type_ids = options[:asset_type_ids].blank? ? organization.asset_type_counts.keys : options[:asset_type_ids]
-    assets = asset_type.class_name.constantize.in_replacement_cycle.where('asset_type_id IN (?) AND organization_id = ? AND scheduled_replacement_year >= ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', asset_type_ids, organization.id, start_fy)
+    assets = Asset.in_replacement_cycle.where('asset_type_id IN (?) AND organization_id = ? AND scheduled_replacement_year >= ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', asset_type_ids, organization.id, start_fy)
 
     FundingRequest.joins('INNER JOIN activity_line_items_assets ON funding_requests.activity_line_item_id = activity_line_items_assets.activity_line_item_id').where('activity_line_items_assets.asset_id IN (?)', assets.ids).destroy_all
 
