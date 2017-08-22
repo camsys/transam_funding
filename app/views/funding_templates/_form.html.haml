@@ -41,7 +41,7 @@
 
   = f.association :funding_template_types, :as => :check_boxes, :label => "For"
 
-  = f.button :submit, 'Save', :class => "btn btn-primary", :id => 'funding_template_submit', :disabled => f.object.query_string.blank? || f.object.organizations.count == 0
+  = f.button :submit, 'Save', :class => "btn btn-primary", :id => 'funding_template_submit', :disabled => f.object.query_string.blank? && f.object.organizations.count == 0
 
 = render 'form_scripts'
 
@@ -49,7 +49,7 @@
 
   function control_template_booleans(){
   if ($('#funding_template_create_multiple_buckets_for_agency_year').is(':checked')) {
-      $('#funding_template_recurring').attr('checked', false);
+      $('#funding_template_recurring').attr(']checked', false);
       $('#funding_template_create_multiple_agencies').attr('checked', false);
       $('#funding_template_recurring').attr("disabled", true);
       $('#funding_template_create_multiple_agencies').attr("disabled", true);
