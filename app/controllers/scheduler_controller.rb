@@ -49,7 +49,7 @@ class SchedulerController < AbstractCapitalProjectsController
   # fiscal years.
   def index
 
-    add_breadcrumb "Scheduler", scheduler_index_path(:start_year => @start_year)
+    add_breadcrumb "Fund Projects", scheduler_index_path(:start_year => @start_year)
 
     current_index = @years.index(@start_year)
     if current_index == 0
@@ -142,7 +142,7 @@ class SchedulerController < AbstractCapitalProjectsController
   # must be called as JS
   def scheduler_ali_action
 
-    add_breadcrumb "Scheduler", scheduler_index_path(:start_year => @start_year)
+    add_breadcrumb "Fund Projects", scheduler_index_path(:start_year => @start_year)
 
     @active_year = @start_year
     @action = params[:invoke]
@@ -259,7 +259,7 @@ class SchedulerController < AbstractCapitalProjectsController
   # must be called as JS
   def scheduler_swimlane_action
 
-    add_breadcrumb "Scheduler", scheduler_index_path(:start_year => @start_year)
+    add_breadcrumb "Fund Projects", scheduler_index_path(:start_year => @start_year)
     add_breadcrumb format_as_fiscal_year(@start_year), scheduler_swimlane_action_scheduler_index_path(start_year: @start_year)
     if @activity_line_item
       add_breadcrumb @activity_line_item.to_s, scheduler_swimlane_action_scheduler_index_path(start_year: @start_year, ali: @activity_line_item.object_key)
