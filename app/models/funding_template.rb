@@ -63,6 +63,10 @@ class FundingTemplate < ActiveRecord::Base
 
   # Allow selection of active instances
   scope :active, -> { where(funding_source_id: FundingSource.active.ids) }
+  scope :federal, -> { joins(:funding_source).where('funding_sources.funding_source_type_id = ?', FundingSourceType.find_by(name: 'Federal')) }
+  scope :state, -> { joins(:funding_source).where('funding_sources.funding_source_type_id = ?', FundingSourceType.find_by(name: 'State')) }
+  scope :local, -> { joins(:funding_source).where('funding_sources.funding_source_type_id = ?', FundingSourceType.find_by(name: 'Local')) }
+
 
   #------------------------------------------------------------------------------
   #

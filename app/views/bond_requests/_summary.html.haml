@@ -1,0 +1,21 @@
+= format_field("Organization", link_to(@bond_request.organization.short_name, organization_path(@bond_request.organization)))
+= format_field("Status", format_as_label(@bond_request.state.humanize))
+%hr
+= format_field("Amount", format_as_currency(@bond_request.amount))
+- if @bond_request.funding_template.present?
+  = format_field("Federal Funds", @bond_request.funding_template)
+  = format_field("Federal Pcnt", format_as_percentage(@bond_request.federal_pcnt))
+  = format_field("Federal Amount", format_as_currency(@bond_request.federal_pcnt * @bond_request.amount / 100.0))
+  = format_field("State Pcnt", format_as_percentage(@bond_request.state_pcnt))
+  = format_field("State Amount", format_as_currency(@bond_request.state_pcnt * @bond_request.amount / 100.0))
+- if @bond_request.authorized?
+  %hr
+  = format_field("Act #", @bond_request.act_num)
+  = format_field("FY", format_as_fiscal_year(@bond_request.fy_year))
+  = format_field("Pt #", @bond_request.pt_num)
+%hr
+= format_field("FY Created", format_as_fiscal_year(fiscal_year_year_on_date(@bond_request.created_at)))
+= format_field("Created On", format_as_date(@bond_request.created_at))
+= format_field("Last Updated", format_as_date(@bond_request.updated_at))
+- if @bond_request.submitted?
+  = format_field("Submitted On", format_as_date(@bond_request.submitted_at))

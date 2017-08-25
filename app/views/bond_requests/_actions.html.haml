@@ -1,0 +1,23 @@
+- if can? :update, @bond_request
+  .btn-group.pull-right.panel-action
+    %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
+      %i.fa.fa-cog
+      = " Actions"
+      %span.caret
+    %ul.dropdown-menu{:role => 'menu'}
+      - if @bond_request.pending?
+        %li
+          = link_to edit_bond_request_path(@bond_request) do
+            %i.fa.fa-edit.fa-fw
+            = " Update this request"
+      - if can? :update_status, @bond_request
+        - @bond_request.allowable_events.each do |evt|
+          %li
+            - if ['reject', 'authorize'].include? evt
+              = link_to new_workflow_event_bond_requests_path(:event => evt, :targets => @bond_request.object_key), :remote => true do
+                %i.fa.fa-fw{:class => get_workflow_event_icon(evt)}
+                = "#{evt.titleize} this request"
+            - else
+              = link_to fire_workflow_event_bond_request_path(@bond_request, :event => evt) do
+                %i.fa.fa-fw{:class => get_workflow_event_icon(evt)}
+                = "#{evt.titleize} this request"

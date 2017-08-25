@@ -1,0 +1,43 @@
+.modal-dialog.modal-lg
+  .modal-content
+    .modal-header
+      %button.close{:data => {:dismiss => "modal"}}
+        x
+      %h3.modal-title
+        = "Update Bond Requests"
+    .modal-body
+
+      = simple_form_for(@workflow_event_proxy,
+        :url => fire_workflow_events_bond_requests_path,
+        :html => {:class => 'form-vertical', :id => 'capital_project_form'},
+        :method => 'get',
+        :wrapper => :vertical_form,
+        :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
+        :radio_buttons => :vertical_radio_and_checkboxes,
+        :file => :vertical_file_input,
+        :boolean => :vertical_boolean}) do |f|
+
+        = f.input :request_object_keys, :as => :hidden
+        = f.input :event_name, :as => :hidden
+
+        - if @event_name == 'reject'
+          .row
+            .col-xs-12
+              = f.input :rejection, :required => true
+        - elsif @event_name == 'authorize'
+          .row
+            .col-xs-12
+              .alert.alert-info{:role => 'alert', :style => 'width: 100%;margin-botton: 5px;'}
+                %p.text-center= "<strong>Pt Num</strong> defaults to first available number.".html_safe
+          .row
+            .col-xs-4
+              = f.input :act_num, :label => 'Act #', :required => true
+            .col-xs-4
+              = f.input :fy_year, :as => :fiscal_year, :label => 'FY Year', :required => true
+            .col-xs-4
+              = f.input :pt_num, :label => 'Pt #', :required => true, :value => FundingBucket.maximum(:pt_num) + 1
+
+        .row
+          .col-xs-12
+            = f.button :submit, 'Save', :class => "btn btn-primary"
+            %button.btn.btn-default{:data => {:dismiss => "modal"}} Cancel

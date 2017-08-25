@@ -1,4 +1,14 @@
 Rails.application.routes.draw do
+
+  resources :bond_requests do
+    member do
+      get 'fire_workflow_event'
+    end
+    collection do
+      get 'new_workflow_event'
+      get 'fire_workflow_events'
+    end
+  end
   resources :funding_buckets do
     collection do
       get 'get_dashboard_summary'

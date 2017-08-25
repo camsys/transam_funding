@@ -1,0 +1,28 @@
+%ul.nav.nav-tabs
+  %li
+    %a{:href => "#desc", :data =>{:toggle => 'tab'}}
+      = "Description"
+  %li
+    %a{:href => "#just", :data =>{:toggle => 'tab'}}
+      %span{:style => 'white-space: nowrap !important;'}
+        Justification
+
+  - if @bond_request.rejected?
+    %li
+      %a{:href => "#reject", :data =>{:toggle => 'tab'}}
+        %span{:style => 'white-space: nowrap !important;'}
+          Rejection
+
+.tab-content{:style => 'max-height:400px;overflow-y: auto;'}
+  .tab-pane.fade#desc
+    .tab-content
+      = format_as_text(@bond_request.description)
+
+  .tab-pane.fade#just
+    .tab-content
+      = format_as_text(@bond_request.justification)
+
+  - if @bond_request.rejected?
+    .tab-pane.fade#reject
+      .tab-content
+        = format_as_text(@bond_request.rejection)
