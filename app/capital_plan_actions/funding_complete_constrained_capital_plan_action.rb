@@ -21,7 +21,14 @@ class FundingCompleteConstrainedCapitalPlanAction < BaseCapitalPlanAction
       url = Rails.application.routes.url_helpers.my_funds_funding_buckets_url(funds_filter: 'funds_overcommitted')
     end
 
-    @capital_plan_action.update(completed_pcnt: pcnt_funded, notes: "<a href='#{url}' style='color:red;'>#{pcnt_funded}%</a>")
+    overcommitted_buckets_count = FundingBucket.where(owner_id: capital_plan.organization_id).where('budget_committed > budget_amount').count
+    if overcommitted_buckets_count > 0
+      notes = "<a href='#{url}' style='color:red;'>#{pcnt_funded}%</a>"
+    else
+      notes = "#{pcnt_funded}%"
+    end
+
+    @capital_plan_action.update(completed_pcnt: pcnt_funded, notes: notes)
 
   end
 
