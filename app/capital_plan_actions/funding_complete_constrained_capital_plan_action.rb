@@ -15,11 +15,18 @@ class FundingCompleteConstrainedCapitalPlanAction < BaseCapitalPlanAction
 
     pcnt_funded = ali_count > 0 ? (funded_ali_count * 100.0 / ali_count).to_i : 100
 
-    @capital_plan_action.update!(notes: "#{pcnt_funded}%")
+    if @user.organization.organization_type.class_name == 'Grantor'
+      url = Rails.application.routes.url_helpers.funding_buckets_url(funds_filter: 'funds_overcommitted')
+    else
+      url = Rails.application.routes.url_helpers.my_funds_funding_buckets_url(funds_filter: 'funds_overcommitted')
+    end
+
+    @capital_plan_action.update(completed_pcnt: pcnt_funded, notes: "<a href='#{url}' style='color:red;'>#{total_pcnt_passed}%</a>")
+
   end
 
   def post_process
-    if @capital_plan_action.notes == '100%'
+    if @capital_plan_action.completed_pcnt == 100
       super
     end
   end

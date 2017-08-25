@@ -1,4 +1,25 @@
+:ruby
+  if current_user.organization.organization_type.class_name == 'Grantor'
+    url = link_to 'overcommitted funds', funding_buckets_path(funds_filter: 'funds_overcommitted')
+    overcommitted_buckets_count = FundingBucket.where('budget_committed > budget_amount').count
+  else
+    url = link_to 'overcommitted funds', my_funds_funding_buckets_path(funds_filter: 'funds_overcommitted')
+    overcommitted_buckets_count = FundingBucket.where(owner_id: @organization_list).where('budget_committed > budget_amount').count
+  end
+
+
 #spinner{style: 'display:none;'}= loader_panel_tag({:message => "Processing...", :size => 3, :spinner => "cog"})
+
+- if overcommitted_buckets_count > 0
+  .row
+    .col-md-12
+      .alert.alert-danger.alert-dismissible{:role=> "alert"}
+        %button.close{:data => {:dismiss => 'alert'}}
+          %span{:aria => {:hidden => true}} &times;
+        %p.text-center
+          %strong
+            Warning!
+          = "Please correct #{url}.".html_safe
 
 .row
   .col-md-12
