@@ -48,7 +48,6 @@ class FundingTemplatesController < OrganizationAwareController
       format.json { render :json => @funding_templates }
     end
 
-    @funding_templates = FundingTemplate.all
   end
 
   # GET /funding_templates/1
