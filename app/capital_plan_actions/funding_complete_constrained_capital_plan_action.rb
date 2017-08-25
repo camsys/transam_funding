@@ -21,7 +21,7 @@ class FundingCompleteConstrainedCapitalPlanAction < BaseCapitalPlanAction
       url = Rails.application.routes.url_helpers.my_funds_funding_buckets_url(funds_filter: 'funds_overcommitted')
     end
 
-    @capital_plan_action.update(completed_pcnt: pcnt_funded, notes: "<a href='#{url}' style='color:red;'>#{total_pcnt_passed}%</a>")
+    @capital_plan_action.update(completed_pcnt: pcnt_funded, notes: "<a href='#{url}' style='color:red;'>#{pcnt_funded}%</a>")
 
   end
 
