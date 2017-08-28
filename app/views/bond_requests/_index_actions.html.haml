@@ -44,10 +44,11 @@
   });
 
   $('#state_filter').on('change', function(e) {
-    if ($(this).val() == 'submitted') {
-      $('#submitted_at').prop('disabled', false);
+    filtered = $('#state_filter').val();
+    if (filtered && filtered.length == 1 && filtered.indexOf('submitted') > -1) {
+      $('#submitted_at_filter').prop('disabled', false);
     } else {
-      $('#submitted_at').prop('disabled', true);
+      $('#submitted_at_filter').prop('disabled', true);
     }
   });
 
