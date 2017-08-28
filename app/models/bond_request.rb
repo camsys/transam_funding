@@ -84,7 +84,7 @@ class BondRequest < ActiveRecord::Base
   validates :title,              :presence => true
   validates :description,        :presence => true
   validates :justification,      :presence => true
-  validates :amount,             :presence => true, :numericality => {:greater_than_or_equal_to => 0}
+  validates :amount,             :presence => true, :numericality => {:greater_than => 0}
   validates :federal_pcnt,       :presence => true, :numericality => {:greater_than_or_equal_to => 0}
   validates :state_pcnt,         :presence => true, :numericality => {:greater_than_or_equal_to => 0}
 

@@ -12,7 +12,7 @@
       = f.input :amount, :wrapper=> :vertical_prepend, :label => "Amount" do
         %span.input-group-addon
           %i.fa.fa-usd
-        = f.input_field :amount, :class => "form-control"
+        = f.input_field :amount, :min => 1, :class => "form-control"
 
       = f.input :funding_template_id, label: 'Federal Funds' do
         = f.select :funding_template_id, FundingTemplate.federal.map{ |l| [l.to_s, l.id, {'data-match-required': l.match_required} ] }, {include_blank: 'None'}, {class: 'form-control'}
