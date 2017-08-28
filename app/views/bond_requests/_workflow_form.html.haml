@@ -9,7 +9,7 @@
 
       = simple_form_for(@workflow_event_proxy,
         :url => fire_workflow_events_bond_requests_path,
-        :html => {:class => 'form-vertical', :id => 'capital_project_form'},
+        :html => {:class => 'form-vertical', :id => 'bond_request_workflow_form'},
         :method => 'get',
         :wrapper => :vertical_form,
         :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes,
@@ -41,3 +41,13 @@
           .col-xs-12
             = f.button :submit, 'Save', :class => "btn btn-primary"
             %button.btn.btn-default{:data => {:dismiss => "modal"}} Cancel
+
+
+:javascript
+  $('#bond_request_workflow_form').validate({
+    submitHandler: function(form) {
+      $( "#bond_request_federal_pcnt" ).prop( "disabled", false );
+      $( "#bond_request_state_pcnt" ).prop( "disabled", false );
+      form.submit();
+    }
+  });

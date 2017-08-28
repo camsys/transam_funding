@@ -1,5 +1,5 @@
 class BondRequestsController < OrganizationAwareController
-  before_action :set_bond_request, only: [:show, :edit, :update, :destroy]
+  before_action :set_bond_request, only: [:show, :edit, :update, :destroy, :fire_workflow_event]
 
   add_breadcrumb "Home", :root_path
   add_breadcrumb "Bond Requests", :bond_requests_path
