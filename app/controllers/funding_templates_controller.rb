@@ -145,7 +145,7 @@ class FundingTemplatesController < OrganizationAwareController
   def destroy
     funding_source = @funding_template.funding_source
     @funding_template.destroy
-    redirect_to funding_source_path(funding_source), notice: 'Template was successfully destroyed.'
+    redirect_to :back, notice: 'Template was successfully destroyed.'
   end
 
   def find_match_required_from_funding_source_id
