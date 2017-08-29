@@ -121,12 +121,8 @@ class FundingRequestsController < OrganizationAwareController
 
   # GET /funding_requests/1/edit
   def edit
-
-    add_breadcrumb @project.project_number, capital_project_path(@project)
-    add_breadcrumb @activity_line_item.name, capital_project_activity_line_item_path(@project, @activity_line_item)
-    add_breadcrumb @funding_request.name, capital_project_funding_request_path(@project, @funding_request)
-    add_breadcrumb "Modify"
-
+    @funding_bucket = FundingBucket.find_by(object_key: params[:funding_bucket])
+    @reduce = true if params[:reduce]
   end
 
   # POST /funding_requests
@@ -160,12 +156,7 @@ class FundingRequestsController < OrganizationAwareController
           notify_user(:notice, "Capital Project #{capital_project.name} is fully funded.")
         end
         format.html {
-          # check where to redirect to
-          if URI(request.referer || '').path.include? 'scheduler'
-            redirect_to :back
-          else
-            redirect_to capital_project_activity_line_item_url(@project, @activity_line_item)
-          end
+          redirect_to :back
         }
         format.json { render action: 'show', status: :created, location: @funding_request }
       else
@@ -186,12 +177,7 @@ class FundingRequestsController < OrganizationAwareController
       if @funding_request.update(form_params)
         notify_user(:notice, "The Funding Request was successfully updated")
         format.html {
-          # check where to redirect to
-          if URI(request.referer || '').path.include? 'scheduler'
-            redirect_to :back
-          else
-            redirect_to capital_project_activity_line_item_url(@project, @activity_line_item)
-          end
+          redirect_to :back
         }
         format.json { head :no_content }
       else

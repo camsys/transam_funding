@@ -1,0 +1,32 @@
+$('#form-modal').html("#{raw escape_javascript(render 'funding_requests/edit_modal')}");
+$('#form-modal').modal('show');
+
+:plain
+  // temporarily lock if not already locked so that percentages wont change
+  if (!is_locked()) {
+    var changed_lock = true
+    $('#locking_option').removeClass('fa-unlock');
+    $('#locking_option').addClass('fa-lock');
+  }
+
+  update_federal_percent_from_federal_cash();
+  update_state_percent_from_state_cash();
+  update_local_percent_from_local_cash();
+  update_total_funds();
+
+- if @reduce
+  - if @funding_request.federal_funding_line_item_id == @funding_bucket.id
+    set_federal_cash(parseInt("#{@funding_request.federal_amount+@funding_bucket.budget_remaining}"));
+    set_new_funding_request_adjusted_from_new_line_item_amount(get_federal_cash(), get_federal_percent());
+  - elsif @funding_request.state_funding_line_item_id == @funding_bucket.id
+    set_state_cash(parseInt("#{@funding_request.state_amount+@funding_bucket.budget_remaining}"));
+    set_new_funding_request_adjusted_from_new_line_item_amount(get_state_cash(), get_state_percent());
+  - elsif @funding_request.local_funding_line_item_id == @funding_bucket.id
+    set_local_cash(parseInt("#{@funding_request.local_amount+@funding_bucket.budget_remaining}"));
+    set_new_funding_request_adjusted_from_new_line_item_amount(get_local_cash(), get_local_percent());
+
+:plain
+  if (changed_lock) {
+    $('#locking_option').removeClass('fa-lock');
+    $('#locking_option').addClass('fa-unlock');
+  }

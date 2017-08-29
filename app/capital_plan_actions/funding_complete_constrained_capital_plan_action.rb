@@ -33,7 +33,7 @@ class FundingCompleteConstrainedCapitalPlanAction < BaseCapitalPlanAction
   end
 
   def post_process
-    if @capital_plan_action.completed_pcnt == 100
+    if @capital_plan_action.completed_pcnt == 100 && FundingBucket.where(owner_id: @capital_plan_action.capital_plan.organization_id).where('budget_committed > budget_amount').count == 0
       super
     end
   end
