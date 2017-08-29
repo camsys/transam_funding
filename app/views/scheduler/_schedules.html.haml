@@ -1,11 +1,10 @@
 :ruby
   if current_user.organization.organization_type.class_name == 'Grantor'
     url = link_to 'overcommitted funds', funding_buckets_path(funds_filter: 'funds_overcommitted')
-    overcommitted_buckets_count = FundingBucket.where('budget_committed > budget_amount').count
   else
     url = link_to 'overcommitted funds', my_funds_funding_buckets_path(funds_filter: 'funds_overcommitted')
-    overcommitted_buckets_count = FundingBucket.where(owner_id: @organization_list).where('budget_committed > budget_amount').count
   end
+  overcommitted_buckets_count = FundingBucket.where(owner_id: @organization_list).where('budget_committed > budget_amount').count
 
 .row
   .col-md-12
