@@ -25,7 +25,7 @@ class BondRequestsController < OrganizationAwareController
     end
 
     @submitted_at = params[:submitted_at_filter]
-    if @submitted_at
+    unless @submitted_at.blank?
       conditions << 'DATE(submitted_at) = ?'
       values << @submitted_at
     end

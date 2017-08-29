@@ -28,14 +28,15 @@
           .row
             .col-xs-12
               .alert.alert-info{:role => 'alert', :style => 'width: 100%;margin-botton: 5px;'}
-                %p.text-center= "<strong>Pt Num</strong> defaults to first available number.".html_safe
+                %p.text-center= "<strong>Pt #</strong> defaults to first available number.".html_safe
+
           .row
             .col-xs-4
               = f.input :act_num, :label => 'Act #', :required => true
-            .col-xs-4
+            .col-xs-2
               = f.input :fy_year, :as => :fiscal_year, :label => 'FY Year', :required => true
-            .col-xs-4
-              = f.input :pt_num, :label => 'Pt #', :required => true, :value => FundingBucket.maximum(:pt_num) + 1
+            .col-xs-6
+              = f.input :pt_num, :label => 'Pt #', :required => true, :input_html => {:value => FundingBucket.maximum(:pt_num).to_i + 1}
 
         .row
           .col-xs-12
