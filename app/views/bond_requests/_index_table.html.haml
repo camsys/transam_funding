@@ -61,10 +61,8 @@
               = link_to edit_bond_request_path(f), :class => "button btn-xs", :title => "Edit request" do
                 %i.fa.fa-edit.fa-1-5x.text-success
               - if can? :update_status, f
-                = link_to new_workflow_event_bond_requests_path(f, :event => 'reject') do
+                = link_to new_workflow_event_bond_requests_path(:event => 'reject', :targets => f.object_key), :remote => true, :title => 'Reject request' do
                   %i.fa.fa-fw{:class => get_workflow_event_icon('reject')}
-
-= render :partial => 'shared/table_scripts', :locals => {:table_id => table_dom_id, :path_pattern => bond_request_path("xxx")}
 
 :javascript
 
@@ -165,6 +163,17 @@
     } else {
       return value;
     }
+  };
+
+  function convertUTCDateToLocalDate(date) {
+      var newDate = new Date(date.getTime()+date.getTimezoneOffset()*60*1000);
+
+      var offset = date.getTimezoneOffset() / 60;
+      var hours = date.getHours();
+
+      newDate.setHours(hours - offset);
+
+      return newDate;
   };
 
   function integer_formatter(value) {
