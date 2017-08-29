@@ -77,7 +77,7 @@ class CapitalPlanReport < AbstractReport
 
     # Validation
     if end_year < start_year
-      return "From Year cannot be before To Year."
+      return "To Year cannot be before From Year."
     end
     
     query = query.where(conditions.join(' AND '), *values).eager_load(:activity_line_items, :funding_requests)

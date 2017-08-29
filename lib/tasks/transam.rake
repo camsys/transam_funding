@@ -124,6 +124,22 @@ namespace :transam do
           :description => 'Displays a report showing capital projects with costs and funds. Drilldown to ALI detail.',
           :chart_type => '',
           :chart_options => ""
+        },
+        {
+            :active => 1,
+            :belongs_to => 'report_type',
+            :type => "Capital Needs Report",
+            :name => 'Bond Request Report',
+            :class_name => "BondRequestReport",
+            :view_name => "generic_formatted_table",
+            :show_in_nav => 1,
+            :show_in_dashboard => 0,
+            :printable => true,
+            :exportable => true,
+            :roles => 'manager',
+            :description => 'Displays a list of bond requests in a date range.',
+            :chart_type => '',
+            :chart_options => ""
         }
     ]
 

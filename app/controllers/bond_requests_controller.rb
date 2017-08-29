@@ -155,6 +155,10 @@ class BondRequestsController < OrganizationAwareController
         event.event_type = event_name
         event.save
 
+        if event_name == 'submit'
+          bond_request.update(submitted_at: DateTime.now)
+        end
+
         if event_proxy
           if event_name == 'reject'
             bond_request.update(rejection: event_proxy.rejection)
