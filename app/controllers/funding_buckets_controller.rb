@@ -112,6 +112,10 @@ class FundingBucketsController < OrganizationAwareController
     if params[:fy_year].present?
       @searched_fiscal_year =  params[:fy_year]
     end
+    if params[:funds_filter].present?
+      @funds_filter =  params[:funds_filter]
+    end
+
     if @funds_filter == 'funds_available'
       conditions << 'budget_amount > budget_committed'
     elsif @funds_filter == 'zero_balance'
