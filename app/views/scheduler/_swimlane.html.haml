@@ -28,7 +28,9 @@
 
   .panel-body.swimlane-container{:id => "year_#{year}_swimlane"}
     - alis.each do |a|
-      .panel.panel-primary.swimlane-draggable{id: "#{a.object_key}_ali_panel", data: {object_type: 'ali', object_key: a.object_key, fy: year}}
+      - ali_panel_params = {id: "#{a.object_key}_ali_panel", data: {object_type: 'ali', object_key: a.object_key, fy: year}}
+      - ali_panel_params[:class] = 'panel-notional' if a.notional?
+      .panel.panel-primary.swimlane-draggable{ali_panel_params}
         = render :partial => 'swimlane_detail', :locals => {:ali => a, :year => year}
 
 

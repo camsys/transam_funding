@@ -1,0 +1,10 @@
+$notional_project_color: #ffaaff;
+
+.panel-notional {
+  background-color: lighten($notional_project_color, 10%) !important;
+  border: 1px solid darken($notional_project_color, 10%)!important;
+}
+.panel-notional > .panel-heading {
+  background-color: darken($notional_project_color, 10%) !important;
+  border-color: darken($notional_project_color, 10%)!important;
+}
