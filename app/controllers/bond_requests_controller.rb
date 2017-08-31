@@ -141,7 +141,7 @@ class BondRequestsController < OrganizationAwareController
     i = 0
     requests.each do |bond_request|
       # use the common controller method to do the work
-      if event_proxy.pt_num.nil?
+      if event_proxy.try(:pt_num).nil?
         perform_workflow_update bond_request, event_name, event_proxy
       else
         perform_workflow_update bond_request, event_name, event_proxy, event_proxy.pt_num.to_i + i
@@ -173,7 +173,7 @@ class BondRequestsController < OrganizationAwareController
           end
         end
       else
-        notify_user(:alert, "Could not #{event_name.humanize} task #{bond_request}")
+        notify_user(:alert, "Could not #{event_name.humanize} bond request #{bond_request}")
       end
     else
       notify_user(:alert, "#{event_name} is not a valid event for a bond request")
