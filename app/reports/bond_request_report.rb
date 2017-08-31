@@ -34,13 +34,13 @@ class BondRequestReport < AbstractReport
 
     unless params[:start_date].blank?
       conditions << 'DATE(bond_requests.updated_at) >= ?'
-      start_date = Chronic.parse(params[:start_date])
+      start_date = Chronic.parse(params[:start_date]).to_date
       values << start_date
     end
 
     unless params[:end_date].blank?
       conditions << 'DATE(bond_requests.updated_at) <= ?'
-      end_date = Chronic.parse(params[:end_date])
+      end_date = Chronic.parse(params[:end_date]).to_date
       values << end_date
     end
 
@@ -50,9 +50,6 @@ class BondRequestReport < AbstractReport
     end
     
     query = query.where(conditions.join(' AND '), *values)
-    Rails.logger.info "===="
-    Rails.logger.info query.to_sql
-    Rails.logger.info "===="
     data = []
     
     query.each do |cp|
