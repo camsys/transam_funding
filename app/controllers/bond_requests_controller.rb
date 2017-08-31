@@ -135,7 +135,7 @@ class BondRequestsController < OrganizationAwareController
     if params[:targets].present?
       requests = BondRequest.where(:object_key => params[:targets].split(','))
     else
-      requests = BondRequest.where(:object_key => event_proxy.request_object_keys)
+      requests = BondRequest.where(:object_key => event_proxy.request_object_keys.split(','))
     end
     # Process each order sequentially
     i = 0
@@ -144,7 +144,8 @@ class BondRequestsController < OrganizationAwareController
       if event_proxy.try(:pt_num).nil?
         perform_workflow_update bond_request, event_name, event_proxy
       else
-        perform_workflow_update bond_request, event_name, event_proxy, event_proxy.pt_num.to_i + i
+        Rails.logger.debug "xxxxxxxxxx"
+        perform_workflow_update bond_request, event_name, event_proxy, (event_proxy.pt_num.to_i + i)
         i += 1
       end
     end
