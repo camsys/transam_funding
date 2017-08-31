@@ -141,8 +141,12 @@ class BondRequestsController < OrganizationAwareController
     i = 0
     requests.each do |bond_request|
       # use the common controller method to do the work
-      perform_workflow_update bond_request, event_name, event_proxy, event_proxy.pt_num + i
-      i += 1
+      if event_proxy.pt_num.nil?
+        perform_workflow_update bond_request, event_name, event_proxy
+      else
+        perform_workflow_update bond_request, event_name, event_proxy, event_proxy.pt_num.to_i + i
+        i += 1
+      end
     end
 
     redirect_to :back
