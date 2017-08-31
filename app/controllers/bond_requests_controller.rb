@@ -138,15 +138,17 @@ class BondRequestsController < OrganizationAwareController
       requests = BondRequest.where(:object_key => event_proxy.request_object_keys)
     end
     # Process each order sequentially
+    i = 0
     requests.each do |bond_request|
       # use the common controller method to do the work
-      perform_workflow_update bond_request, event_name, event_proxy
+      perform_workflow_update bond_request, event_name, event_proxy, event_proxy.pt_num + i
+      i += 1
     end
 
     redirect_to :back
   end
 
-  def perform_workflow_update bond_request, event_name, event_proxy
+  def perform_workflow_update bond_request, event_name, event_proxy, pt_num=nil
     if BondRequest.event_names.include? event_name
       if bond_request.fire_state_event(event_name)
         event = WorkflowEvent.new
@@ -163,7 +165,7 @@ class BondRequestsController < OrganizationAwareController
           if event_name == 'reject'
             bond_request.update(rejection: event_proxy.rejection)
           elsif event_name == 'authorize'
-            bond_request.update(act_num: event_proxy.act_num, fy_year: event_proxy.fy_year, pt_num: event_proxy.pt_num)
+            bond_request.update(act_num: event_proxy.act_num, fy_year: event_proxy.fy_year, pt_num: pt_num || event_proxy.pt_num)
           end
         end
       else
@@ -177,7 +179,18 @@ class BondRequestsController < OrganizationAwareController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_bond_request
-      @bond_request = BondRequest.find_by(object_key: params[:id])
+      @bond_request = BondRequest.find_by(object_key: params[:id], organization_id: @organization_list)
+
+      if @bond_request.nil?
+        if BondRequest.find_by(object_key: params[:id]).nil?
+          redirect_to '/404'
+        else
+          notify_user(:warning, 'This record is outside your filter. Change your filter if you want to access it.')
+          redirect_to bond_requests_path
+        end
+        return
+      end
+
     end
 
     # Only allow a trusted parameter "white list" through.
