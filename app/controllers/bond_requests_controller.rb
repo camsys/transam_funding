@@ -50,8 +50,8 @@ class BondRequestsController < OrganizationAwareController
 
     # get the @prev_record_path and @next_record_path view vars
     get_next_and_prev_object_keys(@bond_request, INDEX_KEY_LIST_VAR)
-    @prev_record_path = @prev_record_key.nil? ? "#" : funding_template_path(@prev_record_key)
-    @next_record_path = @next_record_key.nil? ? "#" : funding_template_path(@next_record_key)
+    @prev_record_path = @prev_record_key.nil? ? "#" : bond_request_path(@prev_record_key)
+    @next_record_path = @next_record_key.nil? ? "#" : bond_request_path(@next_record_key)
 
   end
 
