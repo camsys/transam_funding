@@ -51,8 +51,15 @@
               = link_to edit_capital_project_activity_line_item_funding_request_path(fr.activity_line_item.capital_project, fr.activity_line_item, fr, funding_bucket: @funding_bucket.object_key), :remote => true, :title => 'Edit this funding item' do
                 %i.fa.fa-edit.fa-1-5x.text-success
               - if @funding_bucket.budget_remaining < 0
-                = link_to edit_capital_project_activity_line_item_funding_request_path(fr.activity_line_item.capital_project, fr.activity_line_item, fr, funding_bucket: @funding_bucket.object_key, reduce: 1), :remote => true, :title => 'Reduce this funding item to available budget' do
-                  %i.fa.fa-level-down.fa-1-5x.text-info
+                - if @funding_request.federal_funding_line_item_id == @funding_bucket.id
+                  - can_reduce = @funding_request.federal_amount+@funding_bucket.budget_remaining > 0
+                - elsif @funding_request.state_funding_line_item_id == @funding_bucket.id
+                  - can_reduce = @funding_request.state_amount+@funding_bucket.budget_remaining > 0
+                - elsif @funding_request.local_funding_line_item_id == @funding_bucket.id
+                  - can_reduce = @funding_request.local_amount+@funding_bucket.budget_remaining > 0
+                - if can_reduce
+                  = link_to edit_capital_project_activity_line_item_funding_request_path(fr.activity_line_item.capital_project, fr.activity_line_item, fr, funding_bucket: @funding_bucket.object_key, reduce: 1), :remote => true, :title => 'Reduce this funding item to available budget' do
+                    %i.fa.fa-level-down.fa-1-5x.text-info
             - if ali_updatable && (can? :destroy, fr)
               = link_to scheduler_ali_action_scheduler_index_path(:ali => fr.activity_line_item.object_key, :funding_request => fr.object_key,
                   :invoke => SchedulerController::ALI_REMOVE_FUND_ACTION), :title => 'Remove this funding item',
