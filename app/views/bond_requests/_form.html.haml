@@ -81,20 +81,19 @@
 
   function update_amount_pcnts() {
     var funding_template_id = $('#bond_request_funding_template_id').val();
-    var amount = parseInt($('#bond_request_amount').val());
-
     if (parseInt(funding_template_id) > 0) { // if has funding set
       var funding_template_match_required = parseFloat($('#bond_request_funding_template_id option[value="'+funding_template_id+'"]').data('match-required'));
     }  else {
       var funding_template_match_required = 0;
     }
 
-    $('#bond_request_federal_pcnt').val(funding_template_match_required);
-    $('#bond_request_federal_amount').val((funding_template_match_required * amount / 100.0).toFixed(0));
-
     state_pcnt = (100 - funding_template_match_required) * bond_state_match / 100.0
     $('#bond_request_state_pcnt').val(state_pcnt.toFixed(3));
-    $('#bond_request_state_amount').val((state_pcnt * amount / 100.0).toFixed(0));
+    $('#bond_request_state_amount').val($('#bond_request_amount').val());
+    var amount = parseInt($('#bond_request_amount').val()) * 100.0 / state_pcnt;
+
+    $('#bond_request_federal_pcnt').val(funding_template_match_required);
+    $('#bond_request_federal_amount').val((funding_template_match_required * amount / 100.0).toFixed(0));
 
     local_pcnt = 100 - funding_template_match_required - state_pcnt
     $('#bond_request_local_pcnt').val(local_pcnt.toFixed(3));
