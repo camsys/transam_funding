@@ -22,7 +22,7 @@ class BondRequestReport < AbstractReport
   end
   
   def get_data(organization_id_list, params)
-    labels = ['Agency', 'Project Title', 'Project Description', 'Project Justification', 'Proposed Total Project Costs', 'Amount of Federal Funding', 'Federal Share of Total Project Costs', 'Source of Federal Funding', 'Amount of State Bond Funding Requesting', 'State Share of Total Project Costs', 'Amount of Proposed Local Funding', 'Local Share of Total Project Costs']
+    labels = ['Agency', 'Title', 'Description', 'Justification', 'Total Costs', 'Federal Funding', 'Federal Share', 'Federal Source', 'State Amount Requested', 'State Share', 'Local Funding', 'Local Share']
     formats = [:string, :string, :string, :string, :currency, :currency, :percent, :string, :currency, :percent, :currency, :percent]
     
     # Order by org name, then by FY
