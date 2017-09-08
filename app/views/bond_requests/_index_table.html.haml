@@ -110,7 +110,7 @@
     var path = "#{bond_request_path('xxx')}";
     var row = $(this).parent('tr').attr('id');
 
-    if ($(this).attr('data-field') != 'action-cell') {
+    if ($(this).attr('data-field') != 'action-cell' && !$(this).hasClass('bs-checkbox')) {
       var url = path.replace("xxx", row);
       document.location.href = url;
     }
