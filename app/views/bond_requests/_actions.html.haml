@@ -1,4 +1,4 @@
-- if can? :update, @bond_request
+- if (can? :update, @bond_request) && (@bond_request.pending? || ((can? :update_status, @bond_request) && @bond_request.allowable_events.count > 0))
   .btn-group.pull-right.panel-action
     %button.btn.btn-primary.btn-sm.dropdown-toggle{:data => {:toggle => 'dropdown'}}
       %i.fa.fa-cog
