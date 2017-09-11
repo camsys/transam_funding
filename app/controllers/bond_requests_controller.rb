@@ -169,6 +169,11 @@ class BondRequestsController < OrganizationAwareController
         if event_proxy
           if event_name == 'reject'
             bond_request.update(rejection: event_proxy.rejection)
+            notification = Notification.create(text: "Bond Request #{bond_request} was rejected. Reason: #{bond_request.rejection}", link: bond_request_path(bond_request), notifiable_type: 'Organization', notifiable_id: bond_request.organization_id)
+
+            bond_request.organization.users_with_role('transit_manager').each do |user|
+              UserNotification.create(user: user, notification: notification)
+            end
           elsif event_name == 'authorize'
             bond_request.update(act_num: event_proxy.act_num, fy_year: event_proxy.fy_year, pt_num: pt_num || event_proxy.pt_num)
           end
