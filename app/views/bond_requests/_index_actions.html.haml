@@ -1,13 +1,13 @@
 - if can? :create, BondRequest
-  .btn-group
+  .btn-group{style: 'margin-top:-2px;'}
     = link_to new_bond_request_path, :class => 'btn btn-default' do
       %i.fa.fa-plus.fa-fw
       = "Add Bond Request"
 
 - if @request_state.length == 1 && (can? :update_status, BondRequest)
-  .btn-group{:role => 'group'}
-    - BondRequest.event_names.each do |event|
-      - if (BondRequest.event_predecessors event).include? @request_state[0]
+  - BondRequest.event_names.each do |event|
+    - if (BondRequest.event_predecessors event).include? @request_state[0]
+      .btn-group{style: 'margin-top:-2px;'}
         - if event == 'authorize'
           = link_to new_workflow_event_bond_requests_path(:event => event), :remote => true, :method => :get, :role => 'button', :class => "btn btn-default selected-action", :data => {:precursors => BondRequest.event_predecessors(event)} do
             %i.fa.fa-fw{:class => get_workflow_event_icon(event)}
