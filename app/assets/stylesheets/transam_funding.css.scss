@@ -5,6 +5,7 @@ $notional_project_color: #ffaaff;
   border: 1px solid darken($notional_project_color, 10%)!important;
 }
 .panel-notional > .panel-heading {
-  background-color: darken($notional_project_color, 10%) !important;
+  color: #17406e !important;
+  background-color: lighten($notional_project_color, 10%) !important;
   border-color: darken($notional_project_color, 10%)!important;
 }
