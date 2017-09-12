@@ -9,10 +9,11 @@
           = "#{ast.asset_tag}"
     .col-md-9
       %p.text-primary.text-left
-        - if ast.type_of? :vehicle
-          = "#{ast.vehicle_usage_codes.first}: #{ast.asset_subtype}".upcase
-        - else
-          = "#{ast.asset_subtype}".upcase
+        = link_to inventory_path(ast), style: 'color:#17406e;' do
+          - if ast.type_of? :vehicle
+            = "#{ast.vehicle_usage_codes.first}: #{ast.asset_subtype}".upcase
+          - else
+            = "#{ast.asset_subtype}".upcase
   .row
     .col-md-3
       %h4.bg-default.text-left.text-primary
