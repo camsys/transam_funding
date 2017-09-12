@@ -115,7 +115,7 @@ namespace :transam do
           :type => "Capital Needs Report",
           :name => 'Capital Plan Report',
           :class_name => "CapitalPlanReport",
-          :view_name => "capital_plan_with_alis",
+          :view_name => "grp_header_table_with_subreports",
           :show_in_nav => 1,
           :show_in_dashboard => 1,
           :printable => true,
