@@ -8,7 +8,7 @@
           %span.caret
         %ul.dropdown-menu{:role => 'menu'}
           = render :partial => 'planning/activity_line_item_action_links', :locals => {:project => ali.capital_project, :ali => ali}
-    = render :partial => 'activity_line_items/pin_icon', :locals => {:ali => ali, :pinned => ali.pinned?}
+    = render :partial => 'activity_line_items/pin_icon', :locals => {:ali => ali, :pinned => ali.pinned?, :link_js => 0}
   %i.fa.fa-lg.fa-caret-right.panel-toggle.expand_swimlane{:style => 'font-size:1.25em;margin-right:5px;', :data => {:toggle => "collapse", :target => "##{ali.object_key}_ali_body"}}
   = ali.capital_project.name.upcase
   %br
