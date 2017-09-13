@@ -6,10 +6,10 @@
   = format_field("Federal Funds", @bond_request.funding_template)
   = format_field("Federal Pcnt", format_as_percentage(@bond_request.federal_pcnt, 3))
   = format_field("Federal Amount", format_as_currency(@bond_request.federal_amount))
-  = format_field("State Pcnt", format_as_percentage(@bond_request.state_pcnt, 3))
-  = format_field("State Amount", format_as_currency(@bond_request.state_amount))
-  = format_field("Local Pcnt", format_as_percentage(@bond_request.local_pcnt, 3))
-  = format_field("Local Amount", format_as_currency(@bond_request.local_amount))
+= format_field("State Pcnt", format_as_percentage(@bond_request.state_pcnt, 3))
+= format_field("State Amount", format_as_currency(@bond_request.state_amount))
+= format_field("Local Pcnt", format_as_percentage(@bond_request.local_pcnt, 3))
+= format_field("Local Amount", format_as_currency(@bond_request.local_amount))
 - if @bond_request.authorized?
   %hr
   = format_field("Act #", @bond_request.act_num)

@@ -132,19 +132,19 @@ class BondRequest < ActiveRecord::Base
   end
 
   def local_pcnt
-    funding_template ? 100 - federal_pcnt - state_pcnt : 0
+    100 - federal_pcnt - state_pcnt
   end
 
   def federal_amount
-    federal_pcnt * amount / 100.0
+    amount / state_pcnt * federal_pcnt
   end
 
   def state_amount
-    state_pcnt * amount / 100.0
+    amount
   end
 
   def local_amount
-    local_pcnt * amount / 100.0
+    amount / state_pcnt * local_pcnt
   end
 
   #------------------------------------------------------------------------------
