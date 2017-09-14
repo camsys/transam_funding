@@ -11,7 +11,7 @@
       %a{:href => "#elgby", :data =>{:toggle => 'tab'}}
         %span{:style => 'white-space: nowrap !important;'}
           Eligiblity
-          %span.badge= orgs.count
+          %span.badge= @funding_bucket.target_organization.present? ? 1 : orgs.count
   %li
     %a{:href => "#tagged", :data =>{:toggle => 'tab'}}
       %span{:style => 'white-space: nowrap !important;'}
@@ -30,9 +30,12 @@
   - if @funding_template.owner == FundingSourceType.find_by(name: 'State')
     .tab-pane.fade#elgby
       .tab-content
-        - if @funding_template.query_string.present?
-          = format_field("Agencies", QueryParam.find_by(class_name: 'FundingTemplate', query_string: @funding_template.query_string).to_s)
-        = render :partial => 'organizations/index_table', :locals => {:organizations => orgs, :show_actions => 0}
+        - if @funding_bucket.target_organization.present?
+          = format_field('Agency', @funding_bucket.target_organization)
+        - else
+          - if @funding_template.query_string.present?
+            = format_field("Agencies", QueryParam.find_by(class_name: 'FundingTemplate', query_string: @funding_template.query_string).to_s)
+          = render :partial => 'organizations/index_table', :locals => {:organizations => orgs, :show_actions => 0}
 
   .tab-pane.fade#tagged
     .tab-content

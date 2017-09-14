@@ -23,13 +23,14 @@
   .row
     May create buckets ...
   .row
-    .col-sm-4
+    .col-sm-3
       = f.input :recurring, :label => 'multiple years'
-    .col-sm-4
+    .col-sm-3
       = f.input :create_multiple_agencies, :label => 'multiple agencies'
-    .col-sm-4
+    .col-sm-3
       = f.input :create_multiple_buckets_for_agency_year, :label => 'multiple times for the same agency/year'
-
+    .col-sm-3
+      = f.input :restricted, :label => 'buckets restricted to one agency'
 
 
   .row

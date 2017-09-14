@@ -13,23 +13,32 @@
         %span.input-group-addon
           %i.fa.fa-usd
         = f.input_field :budget_amount, :required => true, :min => 1, :integer => true, :value => @funding_bucket.budget_amount.to_i, :class => "form-control"
+    - if @funding_bucket.funding_template.restricted
+      .col-sm-6
+        = f.input :target_organization_id, :collection => TransitOperator.where(id: @organization_list), :label_method => 'coded_name'
+
 
   - if @funding_bucket.funding_template.funding_source.name == '1514 Bond'
     .row
-      .col-sm-4
-        = f.input :line_num
-      .col-sm-4
-        = f.input :act_num
-      .col-sm-4
-        = f.input :pt_num
+      .col-sm-12
+        = f.select :bond_request_id, BondRequest.where(state: 'authorized').where.not(id: FundingBucket.pluck(:bond_request_id)).map{ |l| [l.to_s, l.id, {'data-bond-fields': "#{l.line_num}-#{l.act_num}-#{l.pt_num}-#{l.page_num}-#{l.item_num}"} ] }, {include_blank: 'None'}, {class: 'form-control'}
 
-    .row
-      .col-sm-4
-        = f.input :grantee_code
-      .col-sm-4
-        = f.input :page_num
-      .col-sm-4
-        = f.input :item_num
+    #bond_fields
+      .row
+        .col-sm-4
+          = f.input :act_num, :disabled => @funding_bucket.bond_request.present?
+        .col-sm-4
+          = f.input :pt_num, :disabled => @funding_bucket.bond_request.present?
+        .col-sm-4
+          = f.input :page_num, :disabled => @funding_bucket.bond_request.present?
+
+      .row
+        .col-sm-4
+          = f.input :grantee_code
+        .col-sm-4
+          = f.input :item_num, :disabled => @funding_bucket.bond_request.present?
+        .col-sm-4
+          = f.input :line_num, :disabled => @funding_bucket.bond_request.present?
 
   = f.button :submit, 'Save', :class => "btn btn-primary"
 
@@ -45,4 +54,24 @@
   $.extend($.validator.messages, {
     integer: 'Please enter a whole number greater than or equal to 1.',
     min: 'Please enter a whole number greater than or equal to 1.'
+  });
+
+  $('#funding_bucket_bond_request_id').change(function() {
+    bond_request_id = $(this).val();
+    if (parseInt(bond_request_id) > 0) {
+      $('#bond_fields input').prop('disabled', true);
+      bond_fields_arr = $('#funding_bucket_bond_request_id option[value="'+bond_request_id+'"]').data('bond-fields').split('-');
+
+      $('#funding_bucket_line_num').val(bond_fields_arr[0]);
+      $('#funding_bucket_act_num').val(bond_fields_arr[1]);
+      $('#funding_bucket_pt_num').val(bond_fields_arr[2]);
+      $('#funding_bucket_page_num').val(bond_fields_arr[3]);
+      $('#funding_bucket_item_num').val(bond_fields_arr[4]);
+
+    } else {
+      $('#bond_fields input').prop('disabled', false);
+    }
+
+    // grantee code is never disable
+    $('#funding_bucket_grantee_code').prop('disabled', false);
   });

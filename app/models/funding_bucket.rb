@@ -26,6 +26,9 @@ class FundingBucket< ActiveRecord::Base
 
   has_many :grant_purchases, :as => :sourceable, :dependent => :destroy
 
+  belongs_to :bond_request
+
+  belongs_to :target_organization, :class_name => "Organization", :foreign_key => :target_organization_id
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
@@ -67,7 +70,9 @@ class FundingBucket< ActiveRecord::Base
       :pt_num,
       :grantee_code,
       :page_num,
-      :item_num
+      :item_num,
+      :bond_request_id,
+      :target_organization_id
   ]
 
   #------------------------------------------------------------------------------
@@ -81,14 +86,16 @@ class FundingBucket< ActiveRecord::Base
   end
 
   def self.state_owned(org_ids)
-    buckets = FundingBucket.joins(:funding_template).where('funding_templates.owner_id = ?', FundingSourceType.find_by(name: 'State'))
+    buckets = FundingBucket.joins(:funding_template).where(funding_templates: {restricted: false}).where('funding_templates.owner_id = ?', FundingSourceType.find_by(name: 'State'))
+
+    restricted_buckets = FundingBucket.where(funding_templates: {restricted: true}, funding_buckets: {target_organization_id: org_ids})
 
     if org_ids.present?
       orgs = Organization.where(id: org_ids)
-      buckets.select{|b| (b.funding_template.get_organizations & orgs).any?}
-    else
-      buckets
+      buckets = buckets.select{|b| (b.funding_template.get_organizations & orgs).any?}
     end
+
+    buckets + restricted_buckets
 
   end
 

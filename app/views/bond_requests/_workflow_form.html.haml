@@ -32,11 +32,22 @@
 
           .row
             .col-xs-4
-              = f.input :act_num, :label => 'Act #', :required => true
-            .col-xs-2
               = f.input :fy_year, :as => :fiscal_year, :label => 'FY Year', :required => true
-            .col-xs-6
-              = f.input :pt_num, :label => 'Pt #', :required => true, :input_html => {:value => FundingBucket.maximum(:pt_num).to_i + 1}
+          .row
+            .col-xs-4
+              = f.input :act_num, :required => true
+            .col-xs-4
+              = f.input :pt_num, :required => true, :input_html => {:value => FundingBucket.maximum(:pt_num).to_i + 1}
+            .col-xs-4
+              = f.input :page_num, :required => true
+
+          .row
+            .col-xs-4
+              = f.input :grantee_code, :required => true
+            .col-xs-4
+              = f.input :item_num, :required => true
+            .col-xs-4
+              = f.input :line_num, :required => true
 
         .row
           .col-xs-12

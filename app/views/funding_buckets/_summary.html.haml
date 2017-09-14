@@ -6,12 +6,12 @@
 = format_field("Budget Available", format_as_currency(@funding_bucket.budget_remaining))
 - if @funding_bucket.funding_template.funding_source.name == '1514 Bond'
   %hr
-  = format_field("Line Number", @funding_bucket.line_num)
   = format_field("Act Number", @funding_bucket.act_num)
   = format_field("PT Number", @funding_bucket.pt_num)
-  = format_field("Grantee Code", @funding_bucket.grantee_code)
   = format_field("Page Number", @funding_bucket.page_num)
+  = format_field("Grantee Code", @funding_bucket.grantee_code)
   = format_field("Item Number", @funding_bucket.item_num)
+  = format_field("Line Number", @funding_bucket.line_num)
 %hr
 = format_field("Created On", format_as_date(@funding_bucket.created_at))
 = format_field("Last Updated", format_as_date(@funding_bucket.updated_at))

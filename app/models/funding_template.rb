@@ -52,6 +52,7 @@ class FundingTemplate < ActiveRecord::Base
       :organization_ids,
       :create_multiple_agencies,
       :create_multiple_buckets_for_agency_year,
+      :restricted,
       {:funding_template_type_ids=>[]}
   ]
 
