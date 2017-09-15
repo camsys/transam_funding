@@ -50,7 +50,7 @@
 
   function control_template_booleans(){
   if ($('#funding_template_create_multiple_buckets_for_agency_year').is(':checked')) {
-      $('#funding_template_recurring').attr(']checked', false);
+      $('#funding_template_recurring').attr('checked', false);
       $('#funding_template_create_multiple_agencies').attr('checked', false);
       $('#funding_template_recurring').attr("disabled", true);
       $('#funding_template_create_multiple_agencies').attr("disabled", true);
@@ -91,7 +91,7 @@
   });
 
   $('#funding_template_create_multiple_buckets_for_agency_year').on('change', function(e) {
-    control_template_booleans()
+    control_template_booleans();
   });
 
   // jquery validations

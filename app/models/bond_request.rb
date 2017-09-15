@@ -136,7 +136,7 @@ class BondRequest < ActiveRecord::Base
   end
 
   def federal_amount
-    amount / state_pcnt * federal_pcnt
+    amount / state_pcnt * federal_pcnt if state_pcnt > 0
   end
 
   def state_amount
@@ -144,7 +144,7 @@ class BondRequest < ActiveRecord::Base
   end
 
   def local_amount
-    amount / state_pcnt * local_pcnt
+    amount / state_pcnt * local_pcnt if state_pcnt > 0
   end
 
   #------------------------------------------------------------------------------

@@ -4,8 +4,6 @@
 - activity_line_item.funding_requests.each do |f|
   -total_funded_by_line_amounts = total_funded_by_line_amounts + f.funding_request_amount
 
-
-
 - if ali_updatable
   - if @activity_line_item.milestones.find_by(milestone_type: MilestoneType.find_by(name: "Contract Completed")).try(:milestone_date).nil?
     .row

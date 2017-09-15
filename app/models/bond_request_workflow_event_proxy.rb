@@ -12,9 +12,14 @@ class BondRequestWorkflowEventProxy < Proxy
   attr_accessor     :request_object_keys
   attr_accessor     :event_name
   attr_accessor     :rejection
-  attr_accessor     :act_num
+
   attr_accessor     :fy_year
+  attr_accessor     :act_num
   attr_accessor     :pt_num
+  attr_accessor     :page_num
+  attr_accessor     :grantee_code
+  attr_accessor     :item_num
+  attr_accessor     :line_num
 
   #-----------------------------------------------------------------------------
   # Validations

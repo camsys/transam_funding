@@ -15,7 +15,7 @@
         = f.input_field :budget_amount, :required => true, :min => 1, :integer => true, :value => @funding_bucket.budget_amount.to_i, :class => "form-control"
     - if @funding_bucket.funding_template.restricted
       .col-sm-6
-        = f.input :target_organization_id, :collection => TransitOperator.where(id: @organization_list), :label_method => 'coded_name'
+        = f.input :target_organization_id, :collection => @funding_bucket.funding_template.get_organizations, :label_method => 'coded_name'
 
 
   - if @funding_bucket.funding_template.funding_source.name == '1514 Bond'

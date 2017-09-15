@@ -1,6 +1,5 @@
 :ruby
   table_dom_id = SecureRandom.hex
-  ali_updatable = (can? :update, @activity_line_item or can? :update_cost, @activity_line_item)
 
 .table-responsive
   %table.table.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
@@ -29,6 +28,7 @@
         %th
     %tbody
       - funding_requests.each do |fr|
+        - ali_updatable = (can? :update, fr.activity_line_item or can? :update_cost, fr.activity_line_item)
         %tr{:data =>{:ali => fr.activity_line_item.object_key, :year => fr.activity_line_item.fy_year}, :class => 'action-path'}
           %td.left= fr.activity_line_item.organization.short_name
           %td.left= fr.activity_line_item.name
