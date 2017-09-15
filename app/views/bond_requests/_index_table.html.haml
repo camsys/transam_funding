@@ -45,7 +45,7 @@
           %td.left= f.organization.short_name
           %td.left= f.created_at
           %td.left= f.title
-          %td.left= f.amount
+          %td.right= f.amount
           %td.right= f.state.humanize
           %td.left{data: {tableexport: {value: f.description}}}
             %a.transam-popover{data: {placement: 'left', toggle: 'popover', html: 'true', content: f.description}, title: 'Description', tabindex: '0'}
