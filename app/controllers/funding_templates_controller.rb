@@ -163,6 +163,9 @@ class FundingTemplatesController < OrganizationAwareController
     # Use callbacks to share common setup or constraints between actions.
     def set_funding_template
       @funding_template = FundingTemplate.find_by(object_key: params[:id])
+      if @funding_template.nil?
+        redirect_to '/404'
+      end
     end
 
     # Only allow a trusted parameter "white list" through.

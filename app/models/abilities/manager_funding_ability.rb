@@ -11,7 +11,6 @@ module Abilities
 
       can :read, FundingTemplate
       can [:read, :my_funds], FundingBucket
-      can :manage, FundingRequest
 
       can :manage, BondRequest
       cannot :update_status, BondRequest

@@ -3,8 +3,9 @@ class FundingBucketsController < OrganizationAwareController
 
   add_breadcrumb "Home", :root_path
 
-  before_action :set_funding_bucket, only: [:show, :edit, :update, :destroy, :edit_bucket_app, :update_bucket_app,]
   before_action :check_filter,      :only => [:index, :new, :edit]
+  before_action :set_funding_bucket, only: [:show, :edit, :update, :destroy, :edit_bucket_app, :update_bucket_app,]
+
 
   INDEX_KEY_LIST_VAR    = "funding_buckets_key_list_cache_var"
 
@@ -583,6 +584,10 @@ class FundingBucketsController < OrganizationAwareController
   # Use callbacks to share common setup or constraints between actions.
   def set_funding_bucket
     @funding_bucket = FundingBucket.find_by(object_key: params[:id])
+
+    if @funding_bucket.nil?
+      redirect_to '/404'
+    end
   end
 
   def bucket_params
