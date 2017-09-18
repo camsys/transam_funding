@@ -49,16 +49,25 @@
 :javascript
 
   function control_template_booleans(){
-  if ($('#funding_template_create_multiple_buckets_for_agency_year').is(':checked')) {
+    if ($('#funding_template_create_multiple_buckets_for_agency_year').is(':checked')) {
       $('#funding_template_recurring').attr('checked', false);
       $('#funding_template_create_multiple_agencies').attr('checked', false);
       $('#funding_template_recurring').attr("disabled", true);
       $('#funding_template_create_multiple_agencies').attr("disabled", true);
-    }
-    else{
+    } else if (parseInt($('#funding_template_owner_id').val()) == parseInt('#{FundingSourceType.find_by(name: "State").id}')) {
+      $('#funding_template_create_multiple_agencies').attr('checked', false);
+      $('#funding_template_create_multiple_agencies').attr("disabled", true);
+    } else{
       $('#funding_template_recurring').removeAttr("disabled");
       $('#funding_template_create_multiple_agencies').removeAttr("disabled");
     };
+
+    if (parseInt($('#funding_template_owner_id').val()) == parseInt('#{FundingSourceType.find_by(name: "Agency").id}')) {
+      $('#funding_template_restricted').attr('checked', false);
+      $('#funding_template_restricted').attr("disabled", true);
+    } else {
+      $('#funding_template_restricted').removeAttr("disabled");
+    }
   }
 
   control_template_booleans();
@@ -91,6 +100,9 @@
   });
 
   $('#funding_template_create_multiple_buckets_for_agency_year').on('change', function(e) {
+    control_template_booleans();
+  });
+  $('#funding_template_owner_id').on('change', function(e) {
     control_template_booleans();
   });
 

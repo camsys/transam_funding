@@ -34,6 +34,7 @@
           %span.input-group-addon
             %i.fa.fa-percent
   .state_or_single_agency_budget{:id => "state_or_single_agency_budget_id"}
+    =f.input :target_organization_id, :collection => @template_organizations, :label_method => 'coded_name', :label=> 'Restricted Organization', :required => true
     .row
       .col-sm-12
         %span.default_funding_bucket_name{:id => "default_funding_bucket_name"}
@@ -65,6 +66,7 @@
   var multiple_years = false;
   var multiple_agencies = false;
   var multiple_buckets_for_agency_year = false;
+  var restricted = false;
 
   var is_name_unique = true;
 
@@ -196,6 +198,12 @@
     }
   }
 
+
+
+  $('#funding_bucket_proxy_target_organization_id').change(function(){
+    update_bucket_name();
+  });
+
   $('#funding_bucket_proxy_owner_id').change(function(){
     if ($('#funding_bucket_proxy_owner_id').val() == -1){
       $("#state_or_single_agency_budget_id").hide();
@@ -209,12 +217,18 @@
       //We don't need all the agencies fields so remove them
       remove_all_agencies_fields();
       $("#state_or_single_agency_budget_id").show();
+      if (restricted) {
+        $('#funding_bucket_proxy_target_organization_id').show();
+      } else {
+        $('#funding_bucket_proxy_target_organization_id').hide();
+        $('#funding_bucket_proxy_target_organization_id').val('');
+      }
       display_budget = true;
       display_all_orgs_budget = false;
       $("#all_agencies_covered_by_template_group_id").hide();
       $('#all_agencies_covered_by_template_id').empty();
     }
-  })
+  });
 
   function show_escalate_by(start_fy, end_fy){
     if(start_fy === end_fy && start_fy > 0)
@@ -222,7 +236,7 @@
       $("#escalate_by_div_id").hide();
       $('#funding_bucket_proxy_inflation_percentage').val(null);
       display_escalate_by = false;
-      if(multiple_buckets_for_agency_year)
+      if(multiple_buckets_for_agency_year || restricted)
       {
         $('#custom_funding_bucket_name').show();
         $('#do_not_return_to_buckets_index_after_create').show();
@@ -284,13 +298,22 @@
       fy = fy.replace("-", "/");
     }
 
-    return template+'-'+owner+'-'+fy;
+    if (restricted) {
+      var target_org = $('#funding_bucket_proxy_target_organization_id option:selected').text();
+      target_org = target_org.substr(0, target_org.indexOf('-'));
+      var text = template+'-'+owner+'-'+fy+'-'+target_org;
+    } else {
+      var text = template+'-'+owner+'-'+fy;
+    }
+
+
+    return text;
   }
 
   function update_bucket_name(){
     bucket_name = build_bucket_name();
 
-    if(multiple_buckets_for_agency_year){
+    if(multiple_buckets_for_agency_year || restricted){
       $('#funding_bucket_proxy_name').text(bucket_name+'-');
     }
     $('#default_funding_bucket_name').text(bucket_name);
@@ -326,6 +349,7 @@
         multiple_years = result.recurring;
         multiple_agencies = result.create_multiple_agencies;
         multiple_buckets_for_agency_year = result.create_multiple_buckets_for_agency_year;
+        restricted = result.restricted;
       },
       error: function (xhr, ajaxOptions, thrownError) {
         alert("We are sorry but something went wrong. " + xhr.status + " " + thrownError);
@@ -461,6 +485,7 @@
       set_bucket_configuration_from_template($('#funding_bucket_proxy_template_id').val());
       update_fiscal_year_range();
 
+      // set owner options
       var url = '#{find_organizations_from_template_id_funding_buckets_path}';
       $.ajax({
         url: url,
@@ -487,6 +512,33 @@
           alert("We are sorry but something went wrong. " + xhr.status + " " + thrownError);
           }
         });
+
+
+        // set restricted org options
+        if (restricted) {
+          // set target organization options
+          var url = '#{find_organizations_from_template_id_funding_buckets_path}';
+          $.ajax({
+            url: url,
+            data: {template_id: $('#funding_bucket_proxy_template_id').val(), target_org: 1},
+            success: function(result){
+              agencies = result
+              $('#funding_bucket_proxy_target_organization_id').empty();
+
+              //Add a blank entry to the list.
+              $("#funding_bucket_proxy_target_organization_id").append( $("<option></option>").attr("value", "").text(''));
+              for(i = 0;i<result.length;i++){
+                //add an option for each organizations available to the tempalte
+                $("#funding_bucket_proxy_target_organization_id").append(
+                    $("<option></option>").attr("value", result[i][0]).text(result[i][1])
+                );
+              }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+              alert("We are sorry but something went wrong. " + xhr.status + " " + thrownError);
+              }
+            });
+        }
     }else{
       $('#funding_bucket_proxy_owner_id').empty();
       $('#owner_id_div_id').hide();

@@ -408,7 +408,11 @@ class FundingBucketsController < OrganizationAwareController
 
   def find_organizations_from_template_id
     template_id = params[:template_id]
-    result = find_organizations(template_id)
+    if params[:target_org]
+      result = find_organizations(template_id, true)
+    else
+      result = find_organizations(template_id)
+    end
 
     @template_organizations = result
     respond_to do |format|
@@ -508,12 +512,14 @@ class FundingBucketsController < OrganizationAwareController
 
   protected
 
-  def find_organizations(template_id)
+  def find_organizations(template_id, target_org = false)
+    # if target org false return possible owners
+    # if target org true, return eligibilty orgs for buckets not yet created
     result = []
     @bucket_agency_allocations = []
 
     template = FundingTemplate.find_by(id: template_id)
-    if template.owner == FundingSourceType.find_by(name: 'State')
+    if template.owner == FundingSourceType.find_by(name: 'State') && !target_org
       grantors = Grantor.where(id: @organization_list)
       grantors.each { |g|
         result << [g.id, g.coded_name]
@@ -528,6 +534,10 @@ class FundingBucketsController < OrganizationAwareController
         }
       else
         organizations =  Organization.find_by_sql(template.query_string).reduce([]) { |a, n| a.push([n.id, n.coded_name]) if @organization_list.include? n.id; a }
+      end
+
+      if target_org
+        organizations.select{|o| !(template.funding_buckets.where('target_organization_id IS NOT NULL').pluck(:target_organization_id).include? o[0])}
       end
 
       result = organizations

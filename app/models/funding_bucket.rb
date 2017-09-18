@@ -187,6 +187,7 @@ class FundingBucket< ActiveRecord::Base
     self.budget_amount = bucket_proxy.total_amount
     self.budget_committed = 0
     self.owner_id = agency_id.nil? ? bucket_proxy.owner_id : agency_id
+    self.target_organization_id = bucket_proxy.target_organization_id.to_i if bucket_proxy.target_organization_id.to_i > 0
     self.active=true
 
     self.funding_template = FundingTemplate.find_by(id: self.funding_template_id)
