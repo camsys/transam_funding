@@ -18,7 +18,8 @@
   - if @funding_bucket.funding_template.funding_source.name == '1514 Bond'
     .row
       .col-sm-12
-        = f.select :bond_request_id, BondRequest.where(organization_id: @funding_bucket.target_organization_id || @funding_bucket.funding_template.get_organizations.map{|x| x.id}, state: 'authorized').where.not(id: FundingBucket.pluck(:bond_request_id)).map{ |l| [l.to_s, l.id, {'data-bond-fields': "#{l.line_num}-#{l.act_num}-#{l.pt_num}-#{l.page_num}-#{l.item_num}"} ] }, {include_blank: 'None'}, {class: 'form-control'}
+        = f.input :bond_request_id, label: 'Bond Request' do
+          = f.select :bond_request_id, BondRequest.where(organization_id: @funding_bucket.target_organization_id || @funding_bucket.funding_template.get_organizations.map{|x| x.id}, state: 'authorized').where.not(id: FundingBucket.pluck(:bond_request_id)).map{ |l| [l.to_s, l.id, {'data-bond-fields': "#{l.line_num}-#{l.act_num}-#{l.pt_num}-#{l.page_num}-#{l.item_num}"} ] }, {include_blank: 'None'}, {class: 'form-control'}
 
     #bond_fields
       .row

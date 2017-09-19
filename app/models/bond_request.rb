@@ -106,9 +106,13 @@ class BondRequest < ActiveRecord::Base
       :federal_pcnt,
       :state_pcnt,
       :rejection,
-      :act_num,
       :fy_year,
-      :pt_num
+      :line_num,
+      :act_num,
+      :pt_num,
+      :grantee_code,
+      :page_num,
+      :item_num
   ]
 
   #------------------------------------------------------------------------------

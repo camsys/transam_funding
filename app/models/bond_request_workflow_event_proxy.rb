@@ -36,9 +36,13 @@ class BondRequestWorkflowEventProxy < Proxy
     :request_object_keys,
     :event_name,
     :rejection,
-    :act_num,
     :fy_year,
-    :pt_num
+    :line_num,
+    :act_num,
+    :pt_num,
+    :grantee_code,
+    :page_num,
+    :item_num
   ]
 
   #-----------------------------------------------------------------------------

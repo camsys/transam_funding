@@ -175,7 +175,15 @@ class BondRequestsController < OrganizationAwareController
               UserNotification.create(user: user, notification: notification)
             end
           elsif event_name == 'authorize'
-            bond_request.update(act_num: event_proxy.act_num, fy_year: event_proxy.fy_year, pt_num: pt_num || event_proxy.pt_num)
+            bond_request.update(
+                fy_year: event_proxy.fy_year,
+                line_num: event_proxy.line_num,
+                act_num: event_proxy.act_num,
+                pt_num: pt_num || event_proxy.pt_num,
+                grantee_code: event_proxy.grantee_code,
+                page_num: event_proxy.page_num,
+                item_num: event_proxy.item_num
+            )
           end
         end
       else
