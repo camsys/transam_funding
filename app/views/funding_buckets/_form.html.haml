@@ -34,7 +34,7 @@
           %span.input-group-addon
             %i.fa.fa-percent
   .state_or_single_agency_budget{:id => "state_or_single_agency_budget_id"}
-    =f.input :target_organization_id, :collection => @template_organizations, :label_method => 'coded_name', :label=> 'Restricted Organization', :required => true
+    =f.input :target_organization_id, :collection => @template_organizations, :label=> 'Restricted Organization', :required => true
     .row
       .col-sm-12
         %span.default_funding_bucket_name{:id => "default_funding_bucket_name"}
