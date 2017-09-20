@@ -1,3 +1,8 @@
+- bond_request_collection = BondRequest.where(organization_id: @funding_bucket.target_organization_id || @funding_bucket.funding_template.get_organizations.map{|x| x.id}, state: 'authorized').where.not(id: FundingBucket.pluck(:bond_request_id)).map{ |l| [l.to_s, l.id, {'data-bond-fields': "#{l.line_num}-#{l.act_num}-#{l.pt_num}-#{l.page_num}-#{l.item_num}-#{l.grantee_code}"} ] }
+- if @funding_bucket.bond_request_id
+  - selected_bond_request = @funding_bucket.bond_request
+  - bond_request_collection << [selected_bond_request.to_s, selected_bond_request.id, {'data-bond-fields': "#{selected_bond_request.line_num}-#{selected_bond_request.act_num}-#{selected_bond_request.pt_num}-#{selected_bond_request.page_num}-#{selected_bond_request.item_num}-#{selected_bond_request.grantee_code}"} ]
+
 = simple_form_for(@funding_bucket,
   :html => {:class => 'form-vertical funding_bucket_form' },
   :wrapper => :vertical_form,
@@ -19,7 +24,7 @@
     .row
       .col-sm-12
         = f.input :bond_request_id, label: 'Bond Request' do
-          = f.select :bond_request_id, BondRequest.where(organization_id: @funding_bucket.target_organization_id || @funding_bucket.funding_template.get_organizations.map{|x| x.id}, state: 'authorized').where.not(id: FundingBucket.pluck(:bond_request_id)).map{ |l| [l.to_s, l.id, {'data-bond-fields': "#{l.line_num}-#{l.act_num}-#{l.pt_num}-#{l.page_num}-#{l.item_num}-#{l.grantee_code}"} ] }, {include_blank: 'None'}, {class: 'form-control'}
+          = f.select :bond_request_id, bond_request_collection, {include_blank: 'None'}, {class: 'form-control'}
 
     #bond_fields
       .row

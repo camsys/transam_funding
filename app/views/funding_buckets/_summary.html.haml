@@ -6,6 +6,7 @@
 = format_field("Budget Available", format_as_currency(@funding_bucket.budget_remaining))
 - if @funding_bucket.funding_template.funding_source.name == '1514 Bond'
   %hr
+  = format_field("Bond Request", @funding_bucket.bond_request) if @funding_bucket.bond_request
   = format_field("Act Number", @funding_bucket.act_num)
   = format_field("PT Number", @funding_bucket.pt_num)
   = format_field("Page Number", @funding_bucket.page_num)
