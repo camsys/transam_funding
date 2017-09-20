@@ -639,7 +639,7 @@ class FundingBucketsController < OrganizationAwareController
         next_year_bucket = new_bucket_from_proxy(bucket_proxy, agency_id)
         next_year_bucket.fy_year = i
         next_year_bucket.name = "#{next_year_bucket.funding_template.name}-#{next_year_bucket.owner.short_name}-#{next_year_bucket.fiscal_year_for_name(i)}"
-        if next_year_bucket.target_organization_id > 0
+        if next_year_bucket.target_organization_id.to_i > 0
          next_year_bucket.name = "#{next_year_bucket.name}-#{next_year_bucket.target_organization.short_name}"
         end
 
