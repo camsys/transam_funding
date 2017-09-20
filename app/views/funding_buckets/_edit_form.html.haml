@@ -19,7 +19,7 @@
     .row
       .col-sm-12
         = f.input :bond_request_id, label: 'Bond Request' do
-          = f.select :bond_request_id, BondRequest.where(organization_id: @funding_bucket.target_organization_id || @funding_bucket.funding_template.get_organizations.map{|x| x.id}, state: 'authorized').where.not(id: FundingBucket.pluck(:bond_request_id)).map{ |l| [l.to_s, l.id, {'data-bond-fields': "#{l.line_num}-#{l.act_num}-#{l.pt_num}-#{l.page_num}-#{l.item_num}"} ] }, {include_blank: 'None'}, {class: 'form-control'}
+          = f.select :bond_request_id, BondRequest.where(organization_id: @funding_bucket.target_organization_id || @funding_bucket.funding_template.get_organizations.map{|x| x.id}, state: 'authorized').where.not(id: FundingBucket.pluck(:bond_request_id)).map{ |l| [l.to_s, l.id, {'data-bond-fields': "#{l.line_num}-#{l.act_num}-#{l.pt_num}-#{l.page_num}-#{l.item_num}-#{l.grantee_code}"} ] }, {include_blank: 'None'}, {class: 'form-control'}
 
     #bond_fields
       .row
@@ -65,9 +65,17 @@
       $('#funding_bucket_pt_num').val(bond_fields_arr[2]);
       $('#funding_bucket_page_num').val(bond_fields_arr[3]);
       $('#funding_bucket_item_num').val(bond_fields_arr[4]);
+      $('#funding_bucket_grantee_code').val(bond_fields_arr[5]);
 
     } else {
       $('#bond_fields input').prop('disabled', false);
+
+      $('#funding_bucket_line_num').val('');
+      $('#funding_bucket_act_num').val('');
+      $('#funding_bucket_pt_num').val('');
+      $('#funding_bucket_page_num').val('');
+      $('#funding_bucket_item_num'.val('');
+      $('#funding_bucket_grantee_code'.val('');
     }
 
     // grantee code is never disable
