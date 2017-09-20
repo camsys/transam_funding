@@ -35,9 +35,11 @@
             %i.fa.fa-percent
   .state_or_single_agency_budget{:id => "state_or_single_agency_budget_id"}
     .target_org
-      = f.input :target_organization_id, :collection => @template_organizations, :label=> 'Restricted To', :required => true
+      .row
+        .col-sm-8
+          = f.input :target_organization_id, :collection => @template_organizations, :label=> 'Restricted To', :required => true
     .row
-      .col-sm-12
+      .col-sm-8
         %span.default_funding_bucket_name{:id => "default_funding_bucket_name"}
         %span.custom_funding_bucket_name{:id => "custom_funding_bucket_name"}
           =f.input :name, :as => :text, :label=> 'Bucket Name', :required => true
