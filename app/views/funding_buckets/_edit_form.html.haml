@@ -45,6 +45,7 @@
   // jquery validations
   $('.funding_bucket_form').validate({
     submitHandler: function(form) {
+      $('#bond_fields input').prop('disabled', false);
       form.submit();
     }
   });
