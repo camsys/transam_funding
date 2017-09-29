@@ -1,13 +1,23 @@
 :ruby
   table_dom_id = SecureRandom.hex
 
+:css
+  #capital_projects_table_div .fixed-table-footer {
+      border-top: none;
+  }
+
+  #capital_projects_table_div .bootstrap-table .fixed-table-footer tbody>tr>td {
+      padding: 0 !important;
+      border: none;
+  }
+
 #projects_table_actions.btn-group
   - if can? :create, CapitalProject
     = link_to new_capital_project_path, :class => 'btn btn-default' do
       %i.fa.fa-plus.fa-fw
       = " New Capital Project"
 
-.table-responsive
+#capital_projects_table_div.table-responsive
   %table.table.table-condensed.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
     :url => capital_projects_path(format: :json),
     :card_view => "false",
@@ -54,8 +64,8 @@
         %th{data: {field: 'local_funds', formatter: 'currency_formatter', footer_formatter: 'total_local_funds_formatter', align: 'right'}} Local
         %th{data: {field: 'total_funds', formatter: 'currency_formatter', footer_formatter: 'total_funds_formatter', align: 'right'}} Total
 
-        %th.center.project-icon-column{data: {field: 'popup_content', formatter: 'popup_formatter',footer_formatter: 'empty_footer_formatter'}}
-        %th.center.project-icon-column{data: {field: 'has_early_replacement_assets', formatter: 'early_replacement_flag_formatter',footer_formatter: 'empty_footer_formatter'}}
+        %th.center.project-icon-column{data: {field: 'popup_content', formatter: 'popup_formatter'}}
+        %th.center.project-icon-column{data: {field: 'has_early_replacement_assets', formatter: 'early_replacement_flag_formatter'}}
 
 
 :javascript
@@ -168,8 +178,5 @@
   }
   function total_funds_formatter(value) {
     return '#{format_as_currency(@projects.total_funds)}';
-  }
-  function empty_footer_formatter(value) {
-    return 'apple';
   }
 
