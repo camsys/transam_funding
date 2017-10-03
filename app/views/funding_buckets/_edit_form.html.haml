@@ -31,7 +31,7 @@
         .col-sm-4
           = f.input :act_num, :disabled => @funding_bucket.bond_request.present?
         .col-sm-4
-          = f.input :pt_num, :disabled => @funding_bucket.bond_request.present?
+          = f.input :pt_num, :disabled => @funding_bucket.bond_request.present?, :label => 'PT Num'
         .col-sm-4
           = f.input :page_num, :disabled => @funding_bucket.bond_request.present?
 

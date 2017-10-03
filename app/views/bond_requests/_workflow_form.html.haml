@@ -37,7 +37,7 @@
             .col-xs-4
               = f.input :act_num, :required => true
             .col-xs-4
-              = f.input :pt_num, :required => true, :input_html => {:value => FundingBucket.maximum(:pt_num).to_i + 1}
+              = f.input :pt_num, :required => true, :input_html => {:value => FundingBucket.maximum(:pt_num).to_i + 1}, :label => 'PT Num'
             .col-xs-4
               = f.input :page_num, :required => true
 
