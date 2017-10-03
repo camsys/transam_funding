@@ -30,6 +30,8 @@
         %th.center{:data => {:sortable => 'true'}} Type
         - if (current_user.organizations.ids & @organization_list).count > 1 || !@my_funds
           %th.center{:data => {:field => 'bucket_owner', :sortable => 'true'}} Owner
+        - unless @my_funds
+          %th.center{:data => {:field => 'bucket_target_org', :sortable => 'true'}} Restricted
         %th.center{:data => {:sortable => 'true', :formatter => 'currency_formatter'}} Total
         %th.center{:data => {:sortable => 'true', :formatter => 'currency_formatter'}} Committed
         %th.center{:data => {:sortable => 'true', :formatter => 'currency_formatter'}} Available
@@ -52,7 +54,9 @@
           - else
             %td.left= b.funding_template.funding_source.funding_source_type.name
           - if (current_user.organizations.ids & @organization_list).count > 1 || !@my_funds
-            %td.left= b.owner.name
+            %td.left= b.owner.short_name
+          - unless @my_funds
+            %td.left= b.target_organization.try(:short_name)
           %td.right= b.budget_amount
           %td.right= b.budget_committed
           %td.right= b.budget_remaining
