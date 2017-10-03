@@ -5,7 +5,7 @@ module Abilities
     def initialize(user)
 
       can [:add_funding_request], ActivityLineItem do |ali|
-        ali.milestones.find_by(milestone_type: MilestoneType.find_by(name: "Contract Completed")).try(:milestone_date).present?
+        !ali.notional? && ali.milestones.find_by(milestone_type: MilestoneType.find_by(name: "Contract Completed")).try(:milestone_date).present?
       end
 
 
