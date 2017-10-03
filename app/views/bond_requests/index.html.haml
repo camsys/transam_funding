@@ -1,5 +1,26 @@
-.row
-  .col-md-12
-    = render :partial => 'index_table', :locals => {:bond_requests => @bond_requests, :show_actions => 1}
+.col-sm-12.col-md-10.col-md-offset-1
+  .page-header
+    %h2 Bond Requests
 
-.modal.fade#form-modal{:tabindex => -1, :role => 'dialog', :aria => {:hidden => true}}
+    .row
+      .col-md-12
+        .pull-right
+          - if @request_state.length == 1 && (can? :update_status, BondRequest)
+            - BondRequest.state_names.each do |state|
+              - if (BondRequest.state_predecessors state).include? @request_state[0]
+                - event = BondRequest.new.state_paths(:from => @request_state[0], :to => state).events.first
+                .btn-group{style: 'margin-top:-2px;'}
+                  - if state == 'authorized'
+                    = link_to new_workflow_event_bond_requests_path(:event => event), :remote => true, :method => :get, :role => 'button', :class => "btn btn-default selected-action", :data => {:precursors => BondRequest.event_predecessors(event)} do
+                      %i.fa.fa-fw{:class => get_workflow_event_icon(event.to_s)}
+                      = "Mark as #{state.titleize}"
+                  - elsif state != 'rejected'
+                    = link_to fire_workflow_events_bond_requests_path(:event => event), :method => :get, :role => 'button', :class => "btn btn-default selected-action", :data => {:precursors => BondRequest.event_predecessors(event)} do
+                      %i.fa.fa-fw{:class => get_workflow_event_icon(event.to_s)}
+                      = "Mark as #{state.titleize}"
+
+    .row
+      .col-md-12
+        = render :partial => 'index_table', :locals => {:bond_requests => @bond_requests, :show_actions => 1}
+
+    .modal.fade#form-modal{:tabindex => -1, :role => 'dialog', :aria => {:hidden => true}}

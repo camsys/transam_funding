@@ -4,19 +4,6 @@
       %i.fa.fa-plus.fa-fw
       = "Add Bond Request"
 
-- if @request_state.length == 1 && (can? :update_status, BondRequest)
-  - BondRequest.event_names.each do |event|
-    - if (BondRequest.event_predecessors event).include? @request_state[0]
-      .btn-group{style: 'margin-top:-2px;'}
-        - if event == 'authorize'
-          = link_to new_workflow_event_bond_requests_path(:event => event), :remote => true, :method => :get, :role => 'button', :class => "btn btn-default selected-action", :data => {:precursors => BondRequest.event_predecessors(event)} do
-            %i.fa.fa-fw{:class => get_workflow_event_icon(event)}
-            = event.titleize
-        - elsif event != 'reject'
-          = link_to fire_workflow_events_bond_requests_path(:event => event), :method => :get, :role => 'button', :class => "btn btn-default selected-action", :data => {:precursors => BondRequest.event_predecessors(event)} do
-            %i.fa.fa-fw{:class => get_workflow_event_icon(event)}
-            = event.titleize
-
 = form_tag bond_requests_path, :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right panel-action', style: 'padding-top: 1px' do
   .form-group
     = select_tag(:state_filter, options_for_select(BondRequest.state_names.collect{|a| [a.titleize, a]}, :selected => @request_state), :class => "form-control", :multiple => true)
@@ -25,6 +12,7 @@
 
   = button_tag :class => 'btn btn-default', :type => 'submit' do
     %i.fa.fa-filter
+
 
 :javascript
 
