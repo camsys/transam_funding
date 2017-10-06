@@ -15,15 +15,18 @@ class FundingCompleteConstrainedCapitalPlanAction < BaseCapitalPlanAction
 
     pcnt_funded = ali_count > 0 ? (funded_ali_count * 100.0 / ali_count).to_i : 100
 
-    if @user.organization.organization_type.class_name == 'Grantor'
-      url = Rails.application.routes.url_helpers.funding_buckets_url(funds_filter: 'funds_overcommitted')
-    else
-      url = Rails.application.routes.url_helpers.my_funds_funding_buckets_url(funds_filter: 'funds_overcommitted')
-    end
-
-    overcommitted_buckets_count = FundingBucket.where(owner_id: capital_plan.organization_id).where('budget_committed > budget_amount').count
+    FundingRequest.where(activity_line_item_id: alis.ids).pluck(:federal_funding_line_item_id, :state_funding_line_item_id, :local_funding_line_item_id).flatten.uniq
+    overcommitted_buckets_count = FundingBucket.where(id: FundingRequest.where(activity_line_item_id: alis.ids).pluck(:federal_funding_line_item_id, :state_funding_line_item_id, :local_funding_line_item_id).flatten.uniq).where('budget_committed > budget_amount').count
     if overcommitted_buckets_count > 0
-      notes = "<a href='#{url}' style='color:red;'>#{pcnt_funded}%</a>"
+      if @user.organization.organization_type.class_name == 'Grantor'
+        url = Rails.application.routes.url_helpers.funding_buckets_url(funds_filter: 'funds_overcommitted')
+        notes = "<a href='#{url}' style='color:red;'>#{pcnt_funded}%</a>"
+      elsif FundingBucket.where(owner_id: capital_plan.organization_id).where('budget_committed > budget_amount').count > 0
+        url = Rails.application.routes.url_helpers.my_funds_funding_buckets_url(funds_filter: 'funds_overcommitted')
+        notes = "<a href='#{url}' style='color:red;'>#{pcnt_funded}%</a>"
+      else
+        notes = "<span style='color:red;'>#{pcnt_funded}%</span>"
+      end
     else
       notes = "#{pcnt_funded}%"
     end
@@ -33,7 +36,8 @@ class FundingCompleteConstrainedCapitalPlanAction < BaseCapitalPlanAction
   end
 
   def post_process
-    if @capital_plan_action.completed_pcnt == 100 && FundingBucket.where(owner_id: @capital_plan_action.capital_plan.organization_id).where('budget_committed > budget_amount').count == 0
+    overcommitted_buckets_count = FundingBucket.where(id: FundingRequest.where(activity_line_item_id: alis.ids).pluck(:federal_funding_line_item_id, :state_funding_line_item_id, :local_funding_line_item_id).flatten.uniq).where('budget_committed > budget_amount').count
+    if @capital_plan_action.completed_pcnt == 100 && overcommitted_buckets_count == 0
       super
     end
   end
