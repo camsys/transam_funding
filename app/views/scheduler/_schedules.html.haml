@@ -1,10 +1,13 @@
 :ruby
   if current_user.organization.organization_type.class_name == 'Grantor'
     url = link_to 'overcommitted funds', funding_buckets_path(funds_filter: 'funds_overcommitted')
-  else
+  elsif FundingBucket.where(owner_id: @organization_list).where('budget_committed > budget_amount').count > 0
     url = link_to 'overcommitted funds', my_funds_funding_buckets_path(funds_filter: 'funds_overcommitted')
+  else
+    url = 'overcommitted funds'
   end
-  overcommitted_buckets_count = FundingBucket.where(owner_id: @organization_list).where('budget_committed > budget_amount').count
+
+  overcommitted_buckets_count = FundingBucket.where(id: FundingRequest.joins(activity_line_item: :capital_project).where('capital_projects.organization_id IN (?)', @organization_list).pluck(:federal_funding_line_item_id, :state_funding_line_item_id, :local_funding_line_item_id).flatten.uniq).where('budget_committed > budget_amount').count
 
 .row
   .col-md-12

@@ -16,7 +16,7 @@ class FundingCompleteConstrainedCapitalPlanAction < BaseCapitalPlanAction
     pcnt_funded = ali_count > 0 ? (funded_ali_count * 100.0 / ali_count).to_i : 100
 
     FundingRequest.where(activity_line_item_id: alis.ids).pluck(:federal_funding_line_item_id, :state_funding_line_item_id, :local_funding_line_item_id).flatten.uniq
-    overcommitted_buckets_count = FundingBucket.where(id: FundingRequest.where(activity_line_item_id: alis.ids).pluck(:federal_funding_line_item_id, :state_funding_line_item_id, :local_funding_line_item_id).flatten.uniq).where('budget_committed > budget_amount').count
+    overcommitted_buckets_count = FundingBucket.where(id: FundingRequest.joins(activity_line_item: :capital_project).where('capital_projects.organization_id IN (?)', @organization_list).pluck(:federal_funding_line_item_id, :state_funding_line_item_id, :local_funding_line_item_id).flatten.uniq).where('budget_committed > budget_amount').count
     if overcommitted_buckets_count > 0
       if @user.organization.organization_type.class_name == 'Grantor'
         url = Rails.application.routes.url_helpers.funding_buckets_url(funds_filter: 'funds_overcommitted')
