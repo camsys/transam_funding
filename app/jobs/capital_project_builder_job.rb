@@ -37,7 +37,7 @@ class CapitalProjectBuilderJob < Job
 
       assets += asset_type.class_name.constantize.replacement_underway.where('asset_type_id = ? AND organization_id = ?', asset_type.id, organization.id)
 
-      FundingRequest.joins('INNER JOIN activity_line_items_assets ON funding_requests.activity_line_item_id = activity_line_items_assets.activity_line_item_id').where('activity_line_items_assets.asset_id IN (?)', assets.ids).destroy_all
+      FundingRequest.distinct.joins('INNER JOIN activity_line_items_assets ON funding_requests.activity_line_item_id = activity_line_items_assets.activity_line_item_id').where('activity_line_items_assets.asset_id IN (?)', assets.map{|x| x.id}).destroy_all
     end
 
 
