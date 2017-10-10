@@ -13,9 +13,11 @@ class FundingCompleteConstrainedCapitalPlanAction < BaseCapitalPlanAction
       funded_ali_count += 1 if ali.pcnt_funded == 100
     end
 
-    pcnt_funded = ali_count > 0 ? (funded_ali_count * 100.0 / ali_count).to_i : 100
+    total_funds = FundingRequest.where(activity_line_item_id: alis.ids).sum('federal_amount + state_amount + local_amount')
+    total_ali_cost = alis.sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
+    pcnt_funded = total_ali_cost > 0 ?  (total_funds / total_ali_cost * 100.0).to_i : 100
 
-    FundingRequest.where(activity_line_item_id: alis.ids).pluck(:federal_funding_line_item_id, :state_funding_line_item_id, :local_funding_line_item_id).flatten.uniq
+
     overcommitted_buckets_count = FundingBucket.where(id: FundingRequest.joins(activity_line_item: :capital_project).where('capital_projects.organization_id = ?', capital_plan.organization_id).pluck(:federal_funding_line_item_id, :state_funding_line_item_id, :local_funding_line_item_id).flatten.uniq).where('budget_committed > budget_amount').count
     if overcommitted_buckets_count > 0
       if @user.organization.organization_type.class_name == 'Grantor'
