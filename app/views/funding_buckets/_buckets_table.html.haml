@@ -31,7 +31,7 @@
         - if (current_user.organizations.ids & @organization_list).count > 1 || !@my_funds
           %th.center{:data => {:field => 'bucket_owner', :sortable => 'true'}} Owner
         - unless @my_funds
-          %th.center{:data => {:field => 'bucket_target_org', :sortable => 'true'}} Restricted
+          %th.center{:data => {:field => 'bucket_target_org', :sortable => 'true'}} Restricted To
         %th.center{:data => {:sortable => 'true', :formatter => 'currency_formatter'}} Total
         %th.center{:data => {:sortable => 'true', :formatter => 'currency_formatter'}} Committed
         %th.center{:data => {:sortable => 'true', :formatter => 'currency_formatter'}} Available
