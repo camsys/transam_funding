@@ -17,7 +17,7 @@
     owner_id = parseInt($(this).val());
 
     if (owner_id > 0) {
-      $('#user_activity_line_item_filter_funding_buckets').('disabled', 'disabled');
+      $('#user_activity_line_item_filter_funding_buckets').removeAttr('disabled');
       $('#user_activity_line_item_filter_funding_buckets option').each(function() {
         var val = parseInt($(this).data('owner-id'));
         if (val == owner_id) {
@@ -31,7 +31,7 @@
         required: true
       });
     } else {
-      $('#user_activity_line_item_filter_funding_buckets').removeAttr('disabled');
+      $('#user_activity_line_item_filter_funding_buckets').('disabled', 'disabled');
       $('#user_activity_line_item_filter_funding_buckets option').hide();
       $('#user_activity_line_item_filter_funding_buckets option[value=""]').show();
       $('#user_activity_line_item_filter_funding_buckets option[value=""]').attr('selected','selected');
