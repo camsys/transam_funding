@@ -7,7 +7,7 @@
         = select_tag(:owner_id, options_for_select(TransitOperator.where(id: @organization_list).map{|o| [o.coded_name, o.id]}), {include_blank: true, class: 'form-control'})
 
   .col-sm-6
-    = f.input :funding_buckets, :collection => FundingBucket.active.map{ |f| [f.to_s, f.id, {:style => 'display:none;', :data => {owner_id: f.owner_id} } ] }, :label => 'Funding'
+    = f.input :funding_buckets, :collection => FundingBucket.active.map{ |f| [f.to_s, f.id, {:style => 'display:none;', :data => {owner_id: f.owner_id} } ] }, :label => 'Funding', :disabled => true
 = f.input :not_fully_funded, :label => 'Not fully funded'
 
 :javascript
@@ -17,6 +17,7 @@
     owner_id = parseInt($(this).val());
 
     if (owner_id > 0) {
+      $('#user_activity_line_item_filter_funding_buckets').('disabled', 'disabled');
       $('#user_activity_line_item_filter_funding_buckets option').each(function() {
         var val = parseInt($(this).data('owner-id'));
         if (val == owner_id) {
@@ -30,6 +31,7 @@
         required: true
       });
     } else {
+      $('#user_activity_line_item_filter_funding_buckets').removeAttr('disabled');
       $('#user_activity_line_item_filter_funding_buckets option').hide();
       $('#user_activity_line_item_filter_funding_buckets option[value=""]').show();
       $('#user_activity_line_item_filter_funding_buckets option[value=""]').attr('selected','selected');
