@@ -64,6 +64,7 @@ class FundingBucket< ActiveRecord::Base
       :owner_id,
       :fy_year,
       :budget_amount,
+      :name,
       :description,
       :line_num,
       :act_num,

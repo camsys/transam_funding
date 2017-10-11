@@ -20,9 +20,18 @@
           %i.fa.fa-usd
         = f.input_field :budget_amount, :class => "form-control", :required => true, :min => 1, :integer => true, :value => @funding_bucket.new_record? ? nil : @funding_bucket.budget_amount.to_i
 
+  = f.input :name, :as => :text, :label=> 'Bucket Name', :required => true
+
   = f.button :submit, 'Save', :class => "btn btn-primary"
 
 :javascript
+
+  var multiple_years = false;
+  var multiple_agencies = false;
+  var multiple_buckets_for_agency_year = false;
+  var restricted = false;
+
+  update_bucket_name();
 
   // jquery validations
   $('.funding_bucket_form').validate({
@@ -59,7 +68,63 @@
           alert("We are sorry but something went wrong. " + xhr.status + " " + thrownError);
           }
         });
+
+        set_bucket_configuration_from_template($('#funding_bucket_funding_template_id').val(),update_bucket_name);
     }else{
       $('#funding_bucket_owner_id').empty();
     }
   });
+
+  $('#funding_bucket_owner_id').change(function(){
+    update_bucket_name();
+  });
+  $('#funding_bucket_fy_year').change(function(){
+    update_bucket_name();
+  });
+
+  function update_bucket_name(){
+    bucket_name = build_bucket_name();
+
+    if((multiple_buckets_for_agency_year) && ($('#funding_bucket_funding_template_id').val() > 0) && ($('#funding_bucket_owner_id').val() > 0) && ($('#funding_bucket_fy_year').val() > 0)){
+      $('.funding_bucket_name').show();
+      $('#funding_bucket_name').val(bucket_name+'-');
+    } else {
+      $('.funding_bucket_name').hide();
+      $('#funding_bucket_name').val('');
+    }
+
+  }
+
+  function build_bucket_name(){
+    var template = $('#funding_bucket_funding_template_id option:selected').text();
+    var owner = $('#funding_bucket_owner_id option:selected').text();
+    var index_of_dash = owner.indexOf('-');
+    owner = owner.substr(0, index_of_dash);
+    var fy = 'FYXX/ZZ';
+
+    fy = $('#funding_bucket_fy_year option:selected').text();
+    fy = fy.replace(" ", "");
+    fy = fy.replace("-", "/");
+
+    var text = template+'-'+owner+'-'+fy;
+
+    return text;
+  }
+
+  function set_bucket_configuration_from_template(template_id, callback){
+    var url = '#{find_configuration_options_from_template_id_funding_buckets_path}';
+    $.ajax({
+      url: url,
+      data: {template_id: template_id},
+      success: function(result){
+        multiple_years = result.recurring;
+        multiple_agencies = result.create_multiple_agencies;
+        multiple_buckets_for_agency_year = result.create_multiple_buckets_for_agency_year;
+        restricted = result.restricted;
+        callback();
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        alert("We are sorry but something went wrong. " + xhr.status + " " + thrownError);
+      }
+    });
+  }

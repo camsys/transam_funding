@@ -336,7 +336,7 @@ class FundingBucketsController < OrganizationAwareController
       @funding_bucket.owner_id = @organization_list.first
     end
 
-    @funding_bucket.generate_unique_name()
+    @funding_bucket.generate_unique_name() if @funding_bucket.name.blank?
 
     respond_to do |format|
       if @funding_bucket.save
