@@ -30,7 +30,6 @@
   var multiple_agencies = false;
   var multiple_buckets_for_agency_year = false;
   var restricted = false;
-
   update_bucket_name();
 
   // jquery validations
@@ -85,7 +84,7 @@
   function update_bucket_name(){
     bucket_name = build_bucket_name();
 
-    if((multiple_buckets_for_agency_year) && ($('#funding_bucket_funding_template_id').val() > 0) && ($('#funding_bucket_owner_id').val() > 0) && ($('#funding_bucket_fy_year').val() > 0)){
+    if((multiple_buckets_for_agency_year) && ($('#funding_bucket_funding_template_id').val() > 0) && (($('#funding_bucket_owner_id').val() > 0) || (parseInt('#{@organization_list.count}')==1)) && ($('#funding_bucket_fy_year').val() > 0)){
       $('.funding_bucket_name').show();
       $('#funding_bucket_name').val(bucket_name+'-');
     } else {
@@ -97,11 +96,15 @@
 
   function build_bucket_name(){
     var template = $('#funding_bucket_funding_template_id option:selected').text();
-    var owner = $('#funding_bucket_owner_id option:selected').text();
-    var index_of_dash = owner.indexOf('-');
-    owner = owner.substr(0, index_of_dash);
-    var fy = 'FYXX/ZZ';
+    if (parseInt('#{@organization_list.count}') == 1) {
+      var owner = '#{Organization.find_by(id: @organization_list).short_name}';
+    } else {
+      var owner = $('#funding_bucket_owner_id option:selected').text();
+      var index_of_dash = owner.indexOf('-');
+      owner = owner.substr(0, index_of_dash);
+    }
 
+    var fy = 'FYXX/ZZ';
     fy = $('#funding_bucket_fy_year option:selected').text();
     fy = fy.replace(" ", "");
     fy = fy.replace("-", "/");
