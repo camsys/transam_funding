@@ -462,9 +462,17 @@
     var state_cash = get_state_cash();
     var local_cash = get_local_cash();
 
-    var total = (federal_cash + state_cash + local_cash)/amount_requested;
+    var total_cash_amount = federal_cash + state_cash + local_cash
+    var total = total_cash_amount/amount_requested;
 
-    $('#funding_request_total_percent').val((total*100).toFixed(3));
+    total_percent = (total*100).toFixed(3)
+
+    if(total_percent == 100 && total_cash_amount != amount_requested)
+    {
+      total_percent = 99.999
+    }
+
+    $('#funding_request_total_percent').val(total_percent);
     $('#funding_request_total_percent').attr('readonly', true);
   }
 
