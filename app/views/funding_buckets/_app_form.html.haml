@@ -39,6 +39,21 @@
     }
   });
 
+  $( "#funding_bucket_name" ).rules( "add", {
+    remote: {
+      url: '#{is_bucket_name_unique_funding_buckets_path}',
+      type: "get",
+      data: {
+        bucket_name: function() {
+          return $('#funding_bucket_name').val();
+        }
+      }
+    },
+    messages: {
+      remote: "This bucket name is not unique. Please update the name and resubmit."
+    }
+  });
+
   $.extend($.validator.messages, {
     integer: 'Please enter a whole number greater than or equal to 1.',
     min: 'Please enter a whole number greater than or equal to 1.'
