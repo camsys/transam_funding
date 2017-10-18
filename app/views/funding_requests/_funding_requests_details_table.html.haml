@@ -77,7 +77,7 @@
           %tr
             %td
             %td.right Total Funded:
-            %td.right=format_as_percentage(f.funding_request_amount > 0 ? (f.total_amount.to_f/f.funding_request_amount*100) : 0,3)
+            %td.right=format_as_percentage(f.funding_request_amount > 0 ? (f.total_amount.to_f/f.funding_request_amount >= 0.998 ? (f.total_amount.to_f != f.funding_request_amount ? 99.999 : 100.00) : f.total_amount.to_f/f.funding_request_amount*100 ) : 0,3)
             %td.right=format_as_currency(f.total_amount)
             %td
 
