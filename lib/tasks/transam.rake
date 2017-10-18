@@ -17,7 +17,7 @@ namespace :transam do
     capital_plan_module_types = [
         {id: 1, capital_plan_type_id: 1, name: 'Preparation', class_name: 'BaseCapitalPlanModule', strict_action_sequence: false, sequence: 1, active: true},
         {id: 2, capital_plan_type_id: 1, name: 'Unconstrained Plan', class_name: 'BaseCapitalPlanModule', strict_action_sequence: false, sequence: 2, active: true},
-        {id: 3, capital_plan_type_id: 1, name: 'Funding', class_name: 'ConstrainedCapitalPlanModule', strict_action_sequence: false, sequence: 3, active: true},
+        {id: 3, capital_plan_type_id: 1, name: 'Funding', class_name: 'BaseCapitalPlanModule', strict_action_sequence: false, sequence: 3, active: true},
         {id: 4, capital_plan_type_id: 1, name: 'Constrained Plan', class_name: 'ConstrainedCapitalPlanModule', strict_action_sequence: false, sequence: 4, active: true},
         {id: 5, capital_plan_type_id: 1, name: 'Final Review', class_name: 'ReviewCapitalPlanModule', strict_action_sequence: true, sequence: 5, active: true}
     ]
