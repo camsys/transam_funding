@@ -66,7 +66,7 @@ class AliFundingReport < AbstractReport
             type: :select,
             where: :pinned,
             values: [['All', 0], ['Pinned', 1], ['Not Pinned', -1]],
-            label: 'From'
+            label: 'Pinned?'
         }
 
     ]
@@ -117,7 +117,7 @@ class AliFundingReport < AbstractReport
     ali_counts = query.count
     costs = query.sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
     # eager_load implicitly performs left join
-    asset_counts = query.count(:asset_id)
+    asset_counts = query.eager_load(:assets).count(:asset_id)
     funded = query.eager_load(:funding_requests).sum('funding_requests.federal_amount + funding_requests.state_amount + funding_requests.local_amount')
     
     data = []
