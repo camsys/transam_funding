@@ -9,38 +9,13 @@
         %ul.dropdown-menu{:role => 'menu'}
           = render :partial => 'planning/activity_line_item_action_links', :locals => {:project => ali.capital_project, :ali => ali}
     = render :partial => 'activity_line_items/pin_icon', :locals => {:ali => ali, :pinned => ali.pinned?, :link_js => 0}
-  %i.fa.fa-lg.fa-caret-right.panel-toggle.expand_swimlane{:style => 'font-size:1.25em;margin-right:5px;', :data => {:toggle => "collapse", :target => "##{ali.object_key}_ali_body"}}
   = ali.capital_project.name.upcase
   %br
   = ali.to_s.upcase
 
-- panel_params = {:id => "#{ali.object_key}_ali_body"}
-- panel_params[:data] = {:action_path => scheduler_swimlane_action_scheduler_index_path(start_year: year, ali: ali.object_key, sort: params[:sort])}
+- panel_params = {:data => {:action_path => scheduler_swimlane_action_scheduler_index_path(start_year: year, ali: ali.object_key, sort: params[:sort])}}
 - panel_params[:class] = 'clickable'
 - if ali.object_key == params[:ali]
   - panel_params[:style] = 'background-color: #d9edf7;'
-.panel-body.collapse{panel_params}
-  - if ali.assets.empty?
-    %p There are no assets associated with this ALI
-  - else
-    - ali.assets.each do |asset|
-      - cost = get_swimlane_activity_cost(asset, year)
-      = render :partial => 'scheduler/asset_detail', :locals => {:year => year, :asset => asset, :cost => cost, :color => '#4e95f4'}
-  %table.table.table-condensed
-    %tbody
-      - ali.funding_requests.each do |f|
-        %tr
-          %td.left= f.federal_funding_line_item
-          %td.right= format_as_currency(f.federal_amount)
-
-        %tr
-          %td.left= f.state_funding_line_item
-          %td.right= format_as_currency(f.state_amount)
-
-        %tr
-          %td.left= f.local_funding_line_item
-          %td.right= format_as_currency(f.local_amount)
-          %td.right= format_as_currency(f.total_amount)
-
-.panel-footer{panel_params.except(:id)}
+.panel-body{panel_params}
   = render partial: 'scheduler/swimlane_detail_totals', locals: {ali: ali}
