@@ -3,7 +3,7 @@ class FundingBucketsController < OrganizationAwareController
 
   add_breadcrumb "Home", :root_path
 
-  before_action :check_filter,      :only => [:index, :new, :edit]
+  before_action :set_and_check_filter,      :only => [:index, :new, :edit]
   before_action :set_funding_bucket, only: [:show, :edit, :update, :destroy, :edit_bucket_app, :update_bucket_app,]
 
 
@@ -593,6 +593,14 @@ class FundingBucketsController < OrganizationAwareController
 
     if @funding_bucket.nil?
       redirect_to '/404'
+    end
+  end
+
+  def set_and_check_filter
+    if current_user.organization.type_of? Grantor
+      check_filter(Rails.application.config.try(:default_funding_filter))
+    else
+      check_filter
     end
   end
 
