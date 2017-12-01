@@ -9,10 +9,11 @@
         Funding
         %span.badge= (@activity_line_item.funding_requests.count)
 
-    %li
-      %a{:href => "#assets", :data =>{:toggle => 'tab'}}
-        Assets
-        %span.badge.pull-right= (@activity_line_item.assets.count)
+    - if @activity_line_item.sogr?
+      %li
+        %a{:href => "#assets", :data =>{:toggle => 'tab'}}
+          Assets
+          %span.badge.pull-right= (@activity_line_item.assets.count)
     %li
       %a{:href => "#comments", :data =>{:toggle => 'tab'}}
         Comments
@@ -34,11 +35,10 @@
       .tab-content
         = render 'funding_requests/funding_requests_details_table'
 
-
-
-    .tab-pane.fade#assets
-      .tab-content
-        = render 'assets_modal'
+    - if @activity_line_item.sogr?
+      .tab-pane.fade#assets
+        .tab-content
+          = render 'assets_modal'
 
     .tab-pane.fade#comments
       .tab-content
