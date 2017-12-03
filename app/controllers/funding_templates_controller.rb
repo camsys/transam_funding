@@ -174,6 +174,11 @@ class FundingTemplatesController < OrganizationAwareController
     end
 
   def set_and_check_filter
-    check_filter(Rails.application.config.try(:default_funding_filter))
+    filter_name = Rails.application.config.try(:default_funding_filter)
+    if filter_name.present?
+      check_filter(UserOrganizationFilter.find_by(name: filter_name))
+    else
+      check_filter
+    end
   end
 end
