@@ -51,12 +51,12 @@ class FundingLineItem < ActiveRecord::Base
   # Validations
   #------------------------------------------------------------------------------
   validates :organization,                    :presence => true
-  validates :fy_year,                         :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 1990}
+  validates :fy_year,                         :presence => true, :numericality => {:only_integer => true, :greater_than_or_equal_to => 1990}
   validates :funding_source,                  :presence => true
   validates :funding_line_item_type,          :presence => true
-  #validates :amount,                            :presence => true, :numericality => {:only_integer => :true, :greater_than => 0}
-  validates :spent,                           :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}
-  validates :pcnt_operating_assistance,       :presence => true, :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0, :less_than_or_equal_to => 100}
+  #validates :amount,                            :presence => true, :numericality => {:only_integer => true, :greater_than => 0}
+  validates :spent,                           :presence => true, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0}
+  validates :pcnt_operating_assistance,       :presence => true, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :less_than_or_equal_to => 100}
 
 
   #------------------------------------------------------------------------------
