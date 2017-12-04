@@ -42,15 +42,15 @@ class FundingRequest < ActiveRecord::Base
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
-  #validates :federal_funding_line_item_id,      :presence => :true
-  #validates :state_funding_line_item_id,        :presence => :true
-  validates :activity_line_item,                :presence => :true
-  validates :federal_amount,                    :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}, :allow_nil => true
-  validates :state_amount,                      :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}, :allow_nil => true
-  validates :local_amount,                      :numericality => {:only_integer => :true, :greater_than_or_equal_to => 0}, :allow_nil => true
-  validates :created_by_id,                     :presence => :true
-  validates :updated_by_id,                     :presence => :true
-  validates :total_amount,                      :numericality => {:only_integer => :true, :less_than_or_equal_to => :funding_request_amount, greater_than: 0}
+  #validates :federal_funding_line_item_id,      :presence => true
+  #validates :state_funding_line_item_id,        :presence => true
+  validates :activity_line_item,                :presence => true
+  validates :federal_amount,                    :numericality => {:only_integer => true, :greater_than_or_equal_to => 0}, :allow_nil => true
+  validates :state_amount,                      :numericality => {:only_integer => true, :greater_than_or_equal_to => 0}, :allow_nil => true
+  validates :local_amount,                      :numericality => {:only_integer => true, :greater_than_or_equal_to => 0}, :allow_nil => true
+  validates :created_by_id,                     :presence => true
+  validates :updated_by_id,                     :presence => true
+  validates :total_amount,                      :numericality => {:only_integer => true, :less_than_or_equal_to => :funding_request_amount, greater_than: 0}
 
   #-----------------------------------------------------------------------------
   # Attributes
