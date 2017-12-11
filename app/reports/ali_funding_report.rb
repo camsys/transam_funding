@@ -12,6 +12,13 @@ class AliFundingReport < AbstractReport
             .where(capital_projects: {organization_id: organization_id_list})
 
     key = params[:key].split('-')
+
+    pinned_status_type = ReplacementStatusType.find_by(name: 'Pinned')
+    if params[:pinned].to_i == 1
+      query = query.eager_load(:assets).where(capital_projects: {notional: false}, assets: {replacement_status_type_id: pinned_status_type.id})
+    elsif params[:pinned].to_i == -1
+      query = query.eager_load(:assets).where.not(assets: {replacement_status_type_id: pinned_status_type.id})
+    end
     
     (params[:group_by] || []).each_with_index do |group, i|
       case group.to_sym
@@ -49,9 +56,20 @@ class AliFundingReport < AbstractReport
   end    
   
   def get_actions
-    @actions = [{type: :check_box_collection,
-                 group: :group_by,
-                 values: [:by_year, :by_agency, :by_scope, :split_sogr]}]
+    @actions = [
+        {
+            type: :check_box_collection,
+            group: :group_by,
+            values: [:by_year, :by_agency, :by_scope, :split_sogr]
+        },
+        {
+            type: :select,
+            where: :pinned,
+            values: [['All', 0], ['Pinned', 1], ['Not Pinned', -1]],
+            label: 'Pinned?'
+        }
+
+    ]
   end
   
   def get_data(organization_id_list, params)
@@ -63,6 +81,13 @@ class AliFundingReport < AbstractReport
     query = ActivityLineItem.unscoped.joins(:team_ali_code, :capital_project)
             .includes(:team_ali_code, capital_project: :organization)
             .where(capital_projects: {organization_id: organization_id_list})
+
+    pinned_status_type = ReplacementStatusType.find_by(name: 'Pinned')
+    if params[:pinned].to_i == 1
+      query = query.eager_load(:assets).where(capital_projects: {notional: false}, assets: {replacement_status_type_id: pinned_status_type.id})
+    elsif params[:pinned].to_i == -1
+      query = query.eager_load(:assets).where.not(assets: {replacement_status_type_id: pinned_status_type.id})
+    end
 
     params[:group_by] = ['by_year', 'by_agency'] if params[:group_by].nil? && params[:button].nil?
     # Add clauses based on params
