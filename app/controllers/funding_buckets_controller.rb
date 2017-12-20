@@ -598,7 +598,7 @@ class FundingBucketsController < OrganizationAwareController
 
   def set_and_check_filter
     filter_name = Rails.application.config.try(:default_funding_filter)
-    if current_user.organization.type_of?(Grantor) && filter_name.present?
+    if Organization.get_typed_organization(current_user.organization).type_of?(Grantor) && filter_name.present?
       check_filter(UserOrganizationFilter.find_by(name: filter_name))
     else
       check_filter
