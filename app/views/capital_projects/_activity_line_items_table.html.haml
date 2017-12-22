@@ -11,6 +11,9 @@
         %th Name
         %th.center FY
         %th.center Sub Category
+        %th.center Purchased New?
+        %th.center Fuel Type
+        %th.right Length
         %th.right Count
         %th.right Cost
         %th.right Total Funds
@@ -23,6 +26,7 @@
 
     %tbody
       - sum_assets = 0
+      - is_sogr_capital_project = alis.first.capital_project.sogr
       - alis.each do |ali|
         - sum_assets += ali.assets.count
         %tr{:data => {:action_path => "#{capital_project_activity_line_item_path(project, ali)}"}}
@@ -31,7 +35,13 @@
           %td.left.nowrap= ali.name
           %td.center.nowrap= format_as_fiscal_year(ali.fy_year)
           %td.center.nowrap= ali.team_ali_code
-          %td.right.nowrap= format_as_integer(ali.assets.count)
+          %td.center.nowrap= format_as_boolean(ali.purchased_new)
+          %td.center.nowrap= ali.fuel_type
+          %td.right.nowrap= format_as_integer(ali.length)
+          - if is_sogr_capital_project
+            %td.right.nowrap= format_as_integer(ali.assets.count)
+          -else
+            %td.right.nowrap= format_as_integer(ali.count)
           %td.right.nowrap= format_as_currency(ali.cost) + (ali.is_cost_estimated? ? " (e)" : "")
           %td.right.nowrap= format_as_currency(ali.total_funds)
           %td.right.nowrap= format_as_currency(ali.funds_required)
@@ -50,9 +60,11 @@
 
     %tfoot
       %tr
-        %td{:colspan => 4}
-        %td.right.nowrap= format_as_integer(sum_assets)
-
+        - if is_sogr_capital_project
+          %td{:colspan => 7}
+          %td.right.nowrap= format_as_integer(sum_assets)
+        -else
+          %td{:colspan => 8}
         %td.right.nowrap= format_as_currency(project.total_cost)
         %td.right.nowrap= format_as_currency(project.total_funds)
         %td.right.nowrap= format_as_currency(project.funding_difference)
