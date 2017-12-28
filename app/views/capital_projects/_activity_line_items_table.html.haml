@@ -11,7 +11,7 @@
         %th Name
         %th.center FY
         %th.center Sub Category
-        %th.center Purchased New?
+        %th.center Replace with New
         %th.center Fuel Type
         %th.right Length
         %th.right Count
@@ -35,9 +35,22 @@
           %td.left.nowrap= ali.name
           %td.center.nowrap= format_as_fiscal_year(ali.fy_year)
           %td.center.nowrap= ali.team_ali_code
-          %td.center.nowrap= format_as_boolean(ali.purchased_new)
-          %td.center.nowrap= ali.fuel_type
-          %td.right.nowrap= format_as_integer(ali.length)
+
+          -unless ali.purchased_new.nil?
+            %td.center.nowrap= format_as_boolean(ali.purchased_new)
+          -else
+            %td.center.nowrap -
+
+          -unless ali.fuel_type.nil?
+            %td.center.nowrap= ali.fuel_type
+          -else
+            %td.center.nowrap -
+
+          -unless ali.length.nil?
+            %td.right.nowrap= format_as_integer(ali.length)
+          -else
+            %td.center.nowrap -
+
           - if is_sogr_capital_project
             %td.right.nowrap= format_as_integer(ali.assets.count)
           -else
