@@ -11,6 +11,9 @@
         %th Name
         %th.center FY
         %th.center Sub Category
+        %th.center Replace with New
+        %th.center Fuel Type
+        %th.right Length
         %th.right Count
         %th.right Cost
         %th.right Total Funds
@@ -22,43 +25,67 @@
           %th.center
 
     %tbody
-      - sum_assets = 0
-      - alis.each do |ali|
-        - sum_assets += ali.assets.count
-        %tr{:data => {:action_path => "#{capital_project_activity_line_item_path(project, ali)}"}}
-          - if popup == '1'
-            %td= render :partial => 'activity_line_items/pin_icon', :locals => {:ali => ali, :pinned => ali.pinned?}
-          %td.left.nowrap= ali.name
-          %td.center.nowrap= format_as_fiscal_year(ali.fy_year)
-          %td.center.nowrap= ali.team_ali_code
-          %td.right.nowrap= format_as_integer(ali.assets.count)
-          %td.right.nowrap= format_as_currency(ali.cost) + (ali.is_cost_estimated? ? " (e)" : "")
-          %td.right.nowrap= format_as_currency(ali.total_funds)
-          %td.right.nowrap= format_as_currency(ali.funds_required)
-          %td.right.nowrap= format_as_percentage(ali.pcnt_funded.to_i)
+      -if alis.count >= 1
+        - sum_assets = 0
+        - is_sogr_capital_project = alis.first.capital_project.sogr
+        - alis.each do |ali|
+          - sum_assets += ali.assets.count
+          %tr{:data => {:action_path => "#{capital_project_activity_line_item_path(project, ali)}"}}
+            - if popup == '1'
+              %td= render :partial => 'activity_line_items/pin_icon', :locals => {:ali => ali, :pinned => ali.pinned?}
+            %td.left.nowrap= ali.name
+            %td.center.nowrap= format_as_fiscal_year(ali.fy_year)
+            %td.center.nowrap= ali.team_ali_code
 
-          - if popup == '1' and ali.assets.present?
-            %td.center
-              - popup_partial = ali.notional? ? 'activity_line_items/assets_notional_datatable' : 'activity_line_items/assets_planning_datatable'
-              %a{:tabindex => 0, :class => 'transam-popover', :data => {:toggle => "popover", :html => 'true', :placement => 'left', :container => 'body', :title => "#{ali}: Assets",  :content => "#{raw render :partial => popup_partial, :locals => {:ali => ali, :popup => '0'}}"}}
-                %i.fa.fa-info-circle.text-info.fa-1-25x
-          - if ali.has_early_replacement_assets?
-            %td.center
-              %a{:tabindex => 0, :class => 'transam-tooltip', :data => {:toggle => "tooltip", :placement => 'left', :title => "Contains early replacement assets"}}
-                %i.fa.fa-exclamation-triangle{style: 'color: red !important;'}
+            -unless ali.purchased_new.nil?
+              %td.center.nowrap= format_as_boolean(ali.purchased_new)
+            -else
+              %td.center.nowrap -
+
+            -unless ali.fuel_type.nil?
+              %td.center.nowrap= ali.fuel_type
+            -else
+              %td.center.nowrap -
+
+            -unless ali.length.nil?
+              %td.right.nowrap= format_as_integer(ali.length)
+            -else
+              %td.center.nowrap -
+
+            - if is_sogr_capital_project
+              %td.right.nowrap= format_as_integer(ali.assets.count)
+            -else
+              %td.right.nowrap= format_as_integer(ali.count)
+            %td.right.nowrap= format_as_currency(ali.cost) + (ali.is_cost_estimated? ? " (e)" : "")
+            %td.right.nowrap= format_as_currency(ali.total_funds)
+            %td.right.nowrap= format_as_currency(ali.funds_required)
+            %td.right.nowrap= format_as_percentage(ali.pcnt_funded.to_i)
+
+            - if popup == '1' and ali.assets.present?
+              %td.center
+                - popup_partial = ali.notional? ? 'activity_line_items/assets_notional_datatable' : 'activity_line_items/assets_planning_datatable'
+                %a{:tabindex => 0, :class => 'transam-popover', :data => {:toggle => "popover", :html => 'true', :placement => 'left', :container => 'body', :title => "#{ali}: Assets",  :content => "#{raw render :partial => popup_partial, :locals => {:ali => ali, :popup => '0'}}"}}
+                  %i.fa.fa-info-circle.text-info.fa-1-25x
+            - if ali.has_early_replacement_assets?
+              %td.center
+                %a{:tabindex => 0, :class => 'transam-tooltip', :data => {:toggle => "tooltip", :placement => 'left', :title => "Contains early replacement assets"}}
+                  %i.fa.fa-exclamation-triangle{style: 'color: red !important;'}
 
 
-    %tfoot
-      %tr
-        %td{:colspan => 4}
-        %td.right.nowrap= format_as_integer(sum_assets)
+        %tfoot
+          %tr
+            - if is_sogr_capital_project
+              %td{:colspan => 7}
+              %td.right.nowrap= format_as_integer(sum_assets)
+            -else
+              %td{:colspan => 8}
+            %td.right.nowrap= format_as_currency(project.total_cost)
+            %td.right.nowrap= format_as_currency(project.total_funds)
+            %td.right.nowrap= format_as_currency(project.funding_difference)
+            %td.right.nowrap= format_as_percentage(project.total_cost > 0 ? (project.total_funds * 100.0 / project.total_cost).to_i : 0)
+            - if popup
+              %td.center
 
-        %td.right.nowrap= format_as_currency(project.total_cost)
-        %td.right.nowrap= format_as_currency(project.total_funds)
-        %td.right.nowrap= format_as_currency(project.funding_difference)
-        %td.right.nowrap= format_as_percentage(project.total_cost > 0 ? (project.total_funds * 100.0 / project.total_cost).to_i : 0)
-        - if popup
-          %td.center
 
 :javascript
   $('.transam-popover').popover({
