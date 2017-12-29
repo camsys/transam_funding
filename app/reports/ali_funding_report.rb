@@ -2,12 +2,13 @@ class AliFundingReport < AbstractReport
 
   COMMON_LABELS = ['# ALIs', '# Assets', 'Cost', 'Funded', 'Balance']
   COMMON_FORMATS = [:integer, :integer, :currency, :currency, :currency]
-  DETAIL_LABELS = ['NAME', 'FY', 'Sub Category', '# Assets', 'Cost', 'Funded', 'Balance']
-  DETAIL_FORMATS = [:string, :fiscal_year, :string, :integer, :currency, :currency, :currency]
+  DETAIL_LABELS = ['NAME', 'FY', 'Sub Category', 'Pinned', '# Assets', 'Cost', 'Funded', 'Balance']
+  DETAIL_FORMATS = [:string, :fiscal_year, :string, :boolean, :integer, :currency, :currency, :currency]
 
   def self.get_detail_data(organization_id_list, params)
     # Default scope orders by project_id
-    query = ActivityLineItem.unscoped.joins(:team_ali_code, :capital_project)
+    query = ActivityLineItem.unscoped.distinct.joins(:team_ali_code, :capital_project)
+            .eager_load(:assets)
             .includes(:team_ali_code, capital_project: :organization)
             .where(capital_projects: {organization_id: organization_id_list})
 
@@ -15,9 +16,9 @@ class AliFundingReport < AbstractReport
 
     pinned_status_type = ReplacementStatusType.find_by(name: 'Pinned')
     if params[:pinned].to_i == 1
-      query = query.eager_load(:assets).where(capital_projects: {notional: false}, assets: {replacement_status_type_id: pinned_status_type.id})
+      query = query.where(capital_projects: {notional: false}, assets: {replacement_status_type_id: pinned_status_type.id})
     elsif params[:pinned].to_i == -1
-      query = query.eager_load(:assets).where.not(assets: {replacement_status_type_id: pinned_status_type.id})
+      query = query.where.not(assets: {replacement_status_type_id: pinned_status_type.id})
     end
     
     (params[:group_by] || []).each_with_index do |group, i|
@@ -34,13 +35,14 @@ class AliFundingReport < AbstractReport
       query = query.where(clause, key[i])
     end
     
-    data = query.pluck(:id, :name, :fy_year, 'team_ali_codes.code').to_a
+    data = query.pluck(:id, :name, :fy_year, 'team_ali_codes.code', 'assets.replacement_status_type_id').to_a
     query = query.group('activity_line_items.id')
     asset_counts = query.joins(:assets).count(:asset_id)
     costs = query.sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
     # eager_load implicitly performs left join
     funded = query.eager_load(:funding_requests).sum('funding_requests.federal_amount + funding_requests.state_amount + funding_requests.local_amount')
     data.each do |row|
+      row[-1] = row[-1].to_i == pinned_status_type.id ? true : false
       row << asset_counts[row[0]]
       row << costs[row[0]]
       row << funded[row[0]]
@@ -93,6 +95,8 @@ class AliFundingReport < AbstractReport
     # Add clauses based on params
     @clauses = []
     @group_by = params[:group_by] ? {group_by: params[:group_by]} : {}
+    @group_by[:pinned] = params[:pinned].to_i
+
     (params[:group_by] || []).each do |group|
       labels << group.to_s.titleize.split[1]
       case group.to_sym
