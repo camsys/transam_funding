@@ -18,7 +18,7 @@ class AliFundingReport < AbstractReport
     if params[:pinned].to_i == 1
       query = query.where(capital_projects: {notional: false}, assets: {replacement_status_type_id: pinned_status_type.id})
     elsif params[:pinned].to_i == -1
-      query = query.where.not(assets: {replacement_status_type_id: pinned_status_type.id})
+      query = query.where('assets.replacement_status_type_id != ? OR assets.replacement_status_type_id IS NULL', pinned_status_type.id)
     end
     
     (params[:group_by] || []).each_with_index do |group, i|
@@ -88,7 +88,7 @@ class AliFundingReport < AbstractReport
     if params[:pinned].to_i == 1
       query = query.eager_load(:assets).where(capital_projects: {notional: false}, assets: {replacement_status_type_id: pinned_status_type.id})
     elsif params[:pinned].to_i == -1
-      query = query.eager_load(:assets).where.not(assets: {replacement_status_type_id: pinned_status_type.id})
+      query = query.eager_load(:assets).where('assets.replacement_status_type_id != ? OR assets.replacement_status_type_id IS NULL', pinned_status_type.id)
     end
 
     params[:group_by] = ['by_year', 'by_agency'] if params[:group_by].nil? && params[:button].nil?
