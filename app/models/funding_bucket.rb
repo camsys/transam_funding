@@ -89,7 +89,7 @@ class FundingBucket< ActiveRecord::Base
   def self.state_owned(org_ids)
     buckets = FundingBucket.joins(:funding_template).where('funding_templates.owner_id = ? AND (funding_templates.restricted IS NULL OR funding_templates.restricted = 0)', FundingSourceType.find_by(name: 'State'))
 
-    restricted_buckets = FundingBucket.where(funding_templates: {restricted: true}, funding_buckets: {target_organization_id: org_ids})
+    restricted_buckets = FundingBucket.joins(:funding_template).where(funding_templates: {restricted: true}, funding_buckets: {target_organization_id: org_ids})
 
     if org_ids.present?
       orgs = Organization.where(id: org_ids)

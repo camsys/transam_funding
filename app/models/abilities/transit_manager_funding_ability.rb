@@ -15,7 +15,7 @@ module Abilities
       cannot :update_status, BondRequest
 
       can [:add_funding_request], ActivityLineItem do |ali|
-        !ali.notional? && ali.milestones.find_by(milestone_type: MilestoneType.find_by(name: "Contract Completed")).try(:milestone_date).present?
+        !ali.notional? && ali.milestones.find_by(milestone_type: MilestoneType.find_by(name: "Contract Complete")).try(:milestone_date).present?
       end
       can [:create, :update], FundingRequest
       can :destroy, FundingRequest do |fr|

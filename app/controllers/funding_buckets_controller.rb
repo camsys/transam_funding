@@ -3,7 +3,7 @@ class FundingBucketsController < OrganizationAwareController
 
   add_breadcrumb "Home", :root_path
 
-  before_action :check_filter,      :only => [:index, :new, :edit]
+  before_action :set_and_check_filter,      :only => [:index, :new, :edit]
   before_action :set_funding_bucket, only: [:show, :edit, :update, :destroy, :edit_bucket_app, :update_bucket_app,]
 
 
@@ -50,13 +50,6 @@ class FundingBucketsController < OrganizationAwareController
       @searched_template = params[:searched_template]
     end
 
-    # this is a search of the owner not a search on the eligibility
-    # a search on the eligiblity follows the overall system filter -- not set for a super manager
-    unless @searched_agency_id.blank?
-      agency_filter_id = @searched_agency_id.to_i
-      conditions << 'funding_buckets.owner_id = ?'
-      values << agency_filter_id
-    end
 
     unless @searched_fiscal_year.blank?
       fiscal_year_filter = @searched_fiscal_year.to_i
@@ -80,8 +73,11 @@ class FundingBucketsController < OrganizationAwareController
 
     conditions << 'funding_buckets.active = true'
 
-    @buckets = FundingBucket.active.where(conditions.join(' AND '), *values)
 
+    @buckets = FundingBucket.active.where(conditions.join(' AND '), *values)
+    unless @searched_agency_id.blank?
+      @buckets = @buckets.state_owned(@searched_agency_id) + @buckets.agency_owned(@searched_agency_id)
+    end
 
     # cache the set of object keys in case we need them later
     cache_list(@buckets, INDEX_KEY_LIST_VAR)
@@ -597,6 +593,15 @@ class FundingBucketsController < OrganizationAwareController
 
     if @funding_bucket.nil?
       redirect_to '/404'
+    end
+  end
+
+  def set_and_check_filter
+    filter_name = Rails.application.config.try(:default_funding_filter)
+    if Organization.get_typed_organization(current_user.organization).type_of?(Grantor) && filter_name.present?
+      check_filter(UserOrganizationFilter.find_by(name: filter_name))
+    else
+      check_filter
     end
   end
 

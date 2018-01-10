@@ -5,7 +5,7 @@
   -total_funded_by_line_amounts = total_funded_by_line_amounts + f.funding_request_amount
 
 - if ali_updatable
-  - if !@activity_line_item.notional? && @activity_line_item.milestones.find_by(milestone_type: MilestoneType.find_by(name: "Contract Completed")).try(:milestone_date).nil?
+  - if !@activity_line_item.notional? && @activity_line_item.milestones.find_by(milestone_type: MilestoneType.find_by(name: "Contract Complete")).try(:milestone_date).nil?
     .row
       .col-md-12
         .alert.alert-warning

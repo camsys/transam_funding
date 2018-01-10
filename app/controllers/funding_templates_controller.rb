@@ -5,7 +5,7 @@ class FundingTemplatesController < OrganizationAwareController
   add_breadcrumb "Home", :root_path
 
   before_action :set_funding_template, only: [:show, :edit, :update, :destroy]
-  before_action :check_filter,      :only => [:index, :show, :new, :edit]
+  before_action :set_and_check_filter,      :only => [:index, :show, :new, :edit]
 
   INDEX_KEY_LIST_VAR    = "funding_template_key_list_cache_var"
 
@@ -172,4 +172,13 @@ class FundingTemplatesController < OrganizationAwareController
     def funding_template_params
       params.require(:funding_template).permit(FundingTemplate.allowable_params)
     end
+
+  def set_and_check_filter
+    filter_name = Rails.application.config.try(:default_funding_filter)
+    if filter_name.present?
+      check_filter(UserOrganizationFilter.find_by(name: filter_name))
+    else
+      check_filter
+    end
+  end
 end
