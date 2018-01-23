@@ -185,7 +185,7 @@ class FundingBucketsController < OrganizationAwareController
 
     # users in super manager role who can supervise/see all organizations ad all funding
     if current_user.user_organization_filters.include? UserOrganizationFilter.system_filters.first
-      check_filter
+      set_and_check_filter
 
       add_breadcrumb @funding_bucket.funding_template.funding_source.name, funding_source_path(@funding_bucket.funding_template.funding_source)
       add_breadcrumb @funding_bucket.funding_template.name, funding_template_path(@funding_bucket.funding_template)
