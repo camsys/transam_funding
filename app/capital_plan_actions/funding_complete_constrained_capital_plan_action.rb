@@ -10,7 +10,14 @@ class FundingCompleteConstrainedCapitalPlanAction < BaseCapitalPlanAction
 
     total_funds = FundingRequest.where(activity_line_item_id: alis.ids).sum('federal_amount + state_amount + local_amount')
     total_ali_cost = alis.sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
-    pcnt_funded = total_ali_cost > 0 ?  (total_funds * 100.0 / total_ali_cost).to_i : 100
+    pcnt_funded = total_ali_cost > 0 ?  (total_funds * 100.0 / total_ali_cost): 100
+
+    # round up if over 100 but round down if below
+    if pcnt_funded > 100
+      pcnt_funded = pcnt_funded.ceil
+    else
+      pcnt_funded = pcnt_funded.to_i
+    end
 
 
     overcommitted_buckets = FundingBucket.where(id: FundingRequest.joins(activity_line_item: :capital_project).where('capital_projects.organization_id = ? AND capital_projects.fy_year = ?', capital_plan.organization_id, capital_plan.fy_year).pluck(:federal_funding_line_item_id, :state_funding_line_item_id, :local_funding_line_item_id).flatten.uniq).where('budget_committed > budget_amount')
