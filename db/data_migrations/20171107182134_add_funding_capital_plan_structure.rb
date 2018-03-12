@@ -1,5 +1,7 @@
 class AddFundingCapitalPlanStructure < ActiveRecord::DataMigration
   def up
+    # actually hidden for all clients right now but leaving this migration as funding is only used by BPT will need to update eventually
+
     if CapitalPlanType.count == 0
       capital_plan_types = [
           {id: 1, name: 'Transit Capital Plan', description: 'Transit Capital Plan', active: true}
