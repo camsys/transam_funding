@@ -186,13 +186,4 @@ namespace :transam do
     User.all.update_all(user_activity_line_item_filter_id: UserActivityLineItemFilter.find_by(name: 'All ALIs').id)
   end
 
-  desc "Rename all buckets without names"
-  task rename_all_buckets_without_names: :environment do
-    nameless_buckets = FundingBucket.where(name: '')
-
-    nameless_buckets.each {|bucket|
-      bucket.generate_unique_name
-      bucket.save
-    }
-  end
 end
