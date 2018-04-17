@@ -1,3 +1,3 @@
 module TransamFunding
-  VERSION = "0.0.85"
+  VERSION = "0.0.86"
 end
