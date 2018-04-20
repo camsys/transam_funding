@@ -185,4 +185,5 @@ namespace :transam do
 
     User.all.update_all(user_activity_line_item_filter_id: UserActivityLineItemFilter.find_by(name: 'All ALIs').id)
   end
+
 end

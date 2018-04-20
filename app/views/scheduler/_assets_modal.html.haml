@@ -15,7 +15,7 @@
                 %span.sr-only Toggle Dropdown
               %ul.dropdown-menu
                 - fy_years = get_fiscal_years
-                - fy_years = fy_years[1..-1] if CapitalPlan.current_plan(@project.organization_id).capital_plan_module_completed?(CapitalPlanModuleType.find_by(name: 'Constrained Plan').id)
+                - fy_years = fy_years[1..-1] if CapitalPlan.current_plan(@project.organization_id) && CapitalPlan.current_plan(@project.organization_id).capital_plan_module_completed?(CapitalPlanModuleType.find_by(name: 'Constrained Plan').id)
                 - fy_years.each do |fy|
                   - unless fy[1] == @project.fy_year
                     %li
