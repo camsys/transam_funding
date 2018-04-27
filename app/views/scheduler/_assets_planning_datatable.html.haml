@@ -170,7 +170,7 @@
 
       var is_early = is_early_replacement(move_year);
       if(is_early) {
-        var msg = "You are moving assets from " + getFiscalYear(#{ali.fy_year}) + " to " + getFiscalYear(move_year) + ". This action will put some assets in early replacement. Please provide an explanation <span style='color: red;'>(*-required)</span>:";
+        var msg = "You are moving assets from " + getFiscalYear(#{ali.fy_year}) + " to " + getFiscalYear(move_year) + ". This action will put some assets in early replacement. Please provide an explanation <span >(*-required)</span>:";
         transam.bootbox_comment_dialog(msg, function(reason) {
           if(reason == null) {
               return true;
@@ -319,7 +319,7 @@
     }
 
     if (data.is_early_replacement) {
-      special_icons = special_icons + '<a class="transam-popover" data-placement="left" data-toggle="popover" tabindex="0" data-html="true" data-container="body" title="Early Replacement" data-content="<p>' + data.formatted_early_replacement_reason + '</p>"><i class="fa fa-exclamation-triangle" style="color: red !important;"></i></a>';
+      special_icons = special_icons + '<a class="transam-popover" data-placement="left" data-toggle="popover" tabindex="0" data-html="true" data-container="body" title="Early Replacement" data-content="<p>' + data.formatted_early_replacement_reason + '</p>"><i class="fa fa-exclamation-triangle text-danger"></i></a>';
     }
 
     if((data.replace_with_subtype) && (data.replace_with_subtype != data.asset_subtype_id)) {
