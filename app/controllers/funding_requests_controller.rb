@@ -4,7 +4,7 @@ class FundingRequestsController < OrganizationAwareController
 
   before_action :get_capital_project
   before_action :get_activity_line_item
-  before_filter :check_for_cancel,        :only => [:create, :update]
+  before_action :check_for_cancel,        :only => [:create, :update]
   before_action :set_funding_request,     :only => [:show, :edit, :update, :destroy]
 
   # Include the fiscal year mixin

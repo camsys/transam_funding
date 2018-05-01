@@ -2,7 +2,7 @@ class SchedulerController < AbstractCapitalProjectsController
 
   include TransamFormatHelper
 
-  before_filter :set_view_vars,  :only =>    [:index, :loader, :scheduler_ali_action, :scheduler_swimlane_action]
+  before_action :set_view_vars,  :only =>    [:index, :loader, :scheduler_ali_action, :scheduler_swimlane_action]
 
   before_action :get_activity_line_item, :only => [:scheduler_ali_action, :scheduler_swimlane_action]
 
