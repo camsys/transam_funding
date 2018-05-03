@@ -156,7 +156,7 @@ class FundingRequestsController < OrganizationAwareController
           notify_user(:notice, "Capital Project #{capital_project.name} is fully funded.")
         end
         format.html {
-          redirect_to :back
+          redirect_back(fallback_location: root_path)
         }
         format.json { render action: 'show', status: :created, location: @funding_request }
       else
@@ -177,7 +177,7 @@ class FundingRequestsController < OrganizationAwareController
       if @funding_request.update(form_params)
         notify_user(:notice, "The Funding Request was successfully updated")
         format.html {
-          redirect_to :back
+          redirect_back(fallback_location: root_path)
         }
         format.json { head :no_content }
       else

@@ -203,7 +203,7 @@ class SchedulerController < AbstractCapitalProjectsController
       if new_redirect
         redirect_to new_redirect.to_s
       else
-        redirect_to :back
+        redirect_back(fallback_location: root_path)
       end
 
     when ALI_UPDATE_COST_ACTION
@@ -248,7 +248,7 @@ class SchedulerController < AbstractCapitalProjectsController
         @msg = "There was an error deleting the funding line."
       end
 
-      redirect_to :back
+      redirect_back(fallback_location: root_path)
     end
 
     # Get the ALIs for each year

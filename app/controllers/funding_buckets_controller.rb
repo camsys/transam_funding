@@ -357,7 +357,7 @@ class FundingBucketsController < OrganizationAwareController
     respond_to do |format|
       if @funding_bucket.update(bucket_params)
         notify_user(:notice, "The bucket was successfully updated.")
-        format.html { redirect_to :back }
+        format.html { redirect_back(fallback_location: root_path) }
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }
@@ -397,7 +397,7 @@ class FundingBucketsController < OrganizationAwareController
                 redirect_to funding_buckets_path
               end
             else
-              redirect_to :back
+              redirect_back(fallback_location: root_path)
             end
           }
           format.json { head :no_content }
