@@ -9,3 +9,8 @@ $notional_project_color: #ffaaff;
   background-color: lighten($notional_project_color, 10%) !important;
   border-color: darken($notional_project_color, 10%)!important;
 }
+
+.funding-request-line-item-edit, .funding-request-line-item-delete, .funding-request-line-item {
+  margin-left: 1px;
+  margin-right: 1px;
+}
