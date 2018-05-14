@@ -8,7 +8,8 @@ addons:
   firefox: "50.0"
 branches:
   only:
-  - /quarter\d*/
+    - master
+    - /quarter\d*/
 before_install:
 - mysql -e "create database IF NOT EXISTS transam_funding_testing;" -uroot
 - wget https://github.com/mozilla/geckodriver/releases/download/v0.11.1/geckodriver-v0.11.1-linux64.tar.gz
@@ -30,3 +31,4 @@ script:
 - bundle exec rspec
 - cd spec/python_unittest/
 # - python -m unittest bucket_creation_form
+bundler_args: --without not_travis

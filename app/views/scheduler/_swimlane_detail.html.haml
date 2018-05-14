@@ -2,7 +2,7 @@
   %span.pull-right.ali_cost
     = ali.team_ali_code.to_s
     - if can?(:update, ali) || can?(:update_cost, ali)
-      .btn-group{:style => 'margin-left: 5px;'}
+      .btn-group.btn-action
         %button.btn.btn-default.btn-xs.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
           %i.fa.fa-edit
           %span.caret

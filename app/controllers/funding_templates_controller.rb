@@ -4,8 +4,10 @@ class FundingTemplatesController < OrganizationAwareController
 
   add_breadcrumb "Home", :root_path
 
+  skip_before_action :get_organization_selections,      :only => [:index, :show, :new, :edit]
+  before_action :set_viewable_organizations,      :only => [:index, :show, :new, :edit]
+
   before_action :set_funding_template, only: [:show, :edit, :update, :destroy]
-  before_action :set_and_check_filter,      :only => [:index, :show, :new, :edit]
 
   INDEX_KEY_LIST_VAR    = "funding_template_key_list_cache_var"
 
@@ -145,7 +147,7 @@ class FundingTemplatesController < OrganizationAwareController
   def destroy
     funding_source = @funding_template.funding_source
     @funding_template.destroy
-    redirect_to :back, notice: 'Template was successfully destroyed.'
+    redirect_back(fallback_location: root_path, notice: 'Template was successfully destroyed.')
   end
 
   def find_match_required_from_funding_source_id
@@ -173,12 +175,11 @@ class FundingTemplatesController < OrganizationAwareController
       params.require(:funding_template).permit(FundingTemplate.allowable_params)
     end
 
-  def set_and_check_filter
-    filter_name = Rails.application.config.try(:default_funding_filter)
-    if filter_name.present?
-      check_filter(UserOrganizationFilter.find_by(name: filter_name))
-    else
-      check_filter
-    end
+
+  def set_viewable_organizations
+    @viewable_organizations = current_user.viewable_organizations.where.not(organization_type: OrganizationType.find_by(class_name: 'PlanningPartner')).pluck(:id)
+
+    get_organization_selections
   end
+
 end

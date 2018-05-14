@@ -119,7 +119,7 @@ AbstractCapitalProjectsController.class_eval do
     # get the projects based on filtered ALIs
     @projects = CapitalProject.includes(:capital_project_type,:team_ali_code).active
     unless no_ali_or_asset_params_exist  # dont impose ALI/asset conditions unless they were in the params
-      @projects = CapitalProject.includes(:capital_project_type,:team_ali_code).where(id: @alis.uniq(:capital_project_id).pluck(:capital_project_id))
+      @projects = CapitalProject.includes(:capital_project_type,:team_ali_code).where(id: @alis.distinct.pluck(:capital_project_id))
     end
 
     # org id is not tied to ALI filter

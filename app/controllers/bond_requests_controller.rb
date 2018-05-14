@@ -115,7 +115,7 @@ class BondRequestsController < OrganizationAwareController
 
     perform_workflow_update @bond_request, event_name, event_proxy
 
-    redirect_to :back
+    redirect_back(fallback_location: root_path)
 
   end
 
@@ -150,7 +150,7 @@ class BondRequestsController < OrganizationAwareController
       end
     end
 
-    redirect_to :back
+    redirect_back(fallback_location: root_path)
   end
 
   def perform_workflow_update bond_request, event_name, event_proxy, pt_num=nil

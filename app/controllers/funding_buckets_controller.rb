@@ -3,7 +3,9 @@ class FundingBucketsController < OrganizationAwareController
 
   add_breadcrumb "Home", :root_path
 
-  before_action :set_and_check_filter,      :only => [:index, :new, :edit]
+  skip_before_action :get_organization_selections,      :only => [:index, :new, :edit, :show]
+  before_action :set_viewable_organizations,      :only => [:index, :new, :edit]
+
   before_action :set_funding_bucket, only: [:show, :edit, :update, :destroy, :edit_bucket_app, :update_bucket_app,]
 
 
@@ -184,12 +186,14 @@ class FundingBucketsController < OrganizationAwareController
 
 
     # users in super manager role who can supervise/see all organizations ad all funding
-    if current_user.user_organization_filters.include? UserOrganizationFilter.system_filters.first
-      set_and_check_filter
+    if can? :manage, FundingBucket
+      set_viewable_organizations
 
       add_breadcrumb @funding_bucket.funding_template.funding_source.name, funding_source_path(@funding_bucket.funding_template.funding_source)
       add_breadcrumb @funding_bucket.funding_template.name, funding_template_path(@funding_bucket.funding_template)
     else
+      get_organization_selections
+
       add_breadcrumb 'Funding Programs', funding_sources_path
       add_breadcrumb 'My Funds', my_funds_funding_buckets_path
     end
@@ -353,7 +357,7 @@ class FundingBucketsController < OrganizationAwareController
     respond_to do |format|
       if @funding_bucket.update(bucket_params)
         notify_user(:notice, "The bucket was successfully updated.")
-        format.html { redirect_to :back }
+        format.html { redirect_back(fallback_location: root_path) }
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }
@@ -393,7 +397,7 @@ class FundingBucketsController < OrganizationAwareController
                 redirect_to funding_buckets_path
               end
             else
-              redirect_to :back
+              redirect_back(fallback_location: root_path)
             end
           }
           format.json { head :no_content }
@@ -596,13 +600,10 @@ class FundingBucketsController < OrganizationAwareController
     end
   end
 
-  def set_and_check_filter
-    filter_name = Rails.application.config.try(:default_funding_filter)
-    if Organization.get_typed_organization(current_user.organization).type_of?(Grantor) && filter_name.present?
-      check_filter(UserOrganizationFilter.find_by(name: filter_name))
-    else
-      check_filter
-    end
+  def set_viewable_organizations
+    @viewable_organizations = current_user.viewable_organizations.where.not(organization_type: OrganizationType.find_by(class_name: 'PlanningPartner')).pluck(:id)
+
+    get_organization_selections
   end
 
   def bucket_params
