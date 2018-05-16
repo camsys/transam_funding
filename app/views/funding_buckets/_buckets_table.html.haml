@@ -6,11 +6,15 @@
     :card_view => "false",
     :pagination => 'true',
     :show_pagination_switch => 'true',
-    :page_list => "[5, 10, 20, 50, 100, 200]",
+    :page_list => "[5, 10, 20, 50, 100]",
     :page_size => current_user.num_table_rows,
     :search => 'false',
     :toolbar => "#buckets_table_actions",
-    :export_types => "['csv', 'txt', 'excel']",
+    :sticky_header => 'true',
+    :sticky_header_offset_y => '65px',
+    :reorderable_columns => "true",
+    :max_moving_rows => "101",
+    :export_types => "['csv', 'txt']",
     :show_export => 'true',
     :show_columns => 'true',
     :state_save => 'true',
@@ -48,7 +52,7 @@
           %td.left= format_as_fiscal_year(b.fy_year)
           - if @funding_template.nil?
             %td.left= "#{b.funding_template.funding_source.name} (#{b.funding_template.name})"
-          %td.left= "#{b.name}"
+          %td.left= link_to b.name, funding_bucket_path(b.object_key)
           - if @my_funds
             %td.left= b.is_bucket_app? ? 'Other' : (b.funding_template.funding_source.formula_fund ? 'Formula' : 'Discretionary')
           - else
@@ -95,13 +99,14 @@
     $('.transam-tooltip').tooltip();
   });
 
-  function percentage_formatter(value) {
-    if (value == "") {
-      return value;
-    } else {
-      return format("$"+"##0", value);
-    }
-  };
+  //TODO Delete this once I know this removed duplication is not necessary
+  // function percentage_formatter(value) {
+  //   if (value == "") {
+  //     return value;
+  //   } else {
+  //     return format("$"+"##0", value);
+  //   }
+  // };
 
   $('#' + '#{table_dom_id}').on('post-body.bs.table', function () {
     $('.transam-popover').popover({
@@ -110,13 +115,4 @@
     $('.transam-tooltip').tooltip();
   });
 
-  $('#' + '#{table_dom_id}').on('click', 'td', function () {
-    var path = "#{funding_bucket_path('xxx')}";
-    var row = $(this).parent('tr').attr('id');
-
-    if ($(this).attr('data-field') != 'action-cell') {
-      var url = path.replace("xxx", row);
-      document.location.href = url;
-    }
-  });
 
