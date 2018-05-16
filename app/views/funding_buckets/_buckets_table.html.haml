@@ -99,15 +99,6 @@
     $('.transam-tooltip').tooltip();
   });
 
-  //TODO Delete this once I know this removed duplication is not necessary
-  // function percentage_formatter(value) {
-  //   if (value == "") {
-  //     return value;
-  //   } else {
-  //     return format("$"+"##0", value);
-  //   }
-  // };
-
   $('#' + '#{table_dom_id}').on('post-body.bs.table', function () {
     $('.transam-popover').popover({
       trigger: 'hover'
