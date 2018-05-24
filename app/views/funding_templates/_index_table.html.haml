@@ -55,7 +55,7 @@
             %td.left{data: {tableexport: {msonumberformat: "\\@"}}}
               = f.funding_source.to_s
           %td.left{data: {tableexport: {value: "#{f.name}"}}}
-            = f.name
+            = link_to f.name, funding_template_path(f.object_key)
 
           %td.left= f.contributor.to_s
           %td.center{data: {tableexport: {value: "#{f.transfer_only ? 'Yes' : 'No'}"}}}= format_as_boolean(f.transfer_only)
@@ -88,14 +88,4 @@
     });
 
     $('.transam-tooltip').tooltip();
-  });
-
-  $('#' + '#{table_dom_id}').on('click', 'td', function () {
-    var path = "#{funding_template_path('xxx')}";
-    var row = $(this).parent('tr').attr('id');
-
-    if ($(this).attr('data-field') != 'action-cell') {
-      var url = path.replace("xxx", row);
-      document.location.href = url;
-    }
   });
