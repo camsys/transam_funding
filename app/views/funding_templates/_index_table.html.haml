@@ -55,7 +55,7 @@
             %td.left{data: {tableexport: {msonumberformat: "\\@"}}}
               = f.funding_source.to_s
           %td.left{data: {tableexport: {value: "#{f.name}"}}}
-            = f.name
+            = link_to f.name, funding_template_path(f.object_key)
 
           %td.left= f.contributor.to_s
           %td.center{data: {tableexport: {value: "#{f.transfer_only ? 'Yes' : 'No'}"}}}= format_as_boolean(f.transfer_only)
@@ -78,6 +78,8 @@
                 = link_to funding_template_path(f), :method => :delete, :data => {:confirm => "This template is associated with #{f.funding_buckets.active.count} buckets. Are you sure? The action cannot be undone."}  do
                   %i.fa.fa-trash-o.fa-fw.text-danger
 
+= render 'shared/table_formatters'
+
 :javascript
 
   $('#' + '#{table_dom_id}').on('post-body.bs.table', function () {
@@ -86,22 +88,4 @@
     });
 
     $('.transam-tooltip').tooltip();
-  });
-
-  function pcnt_formatter(value) {
-    if (value == "") {
-      return value;
-    } else {
-      return format("##0.000", value) + "%";
-    }
-  };
-
-  $('#' + '#{table_dom_id}').on('click', 'td', function () {
-    var path = "#{funding_template_path('xxx')}";
-    var row = $(this).parent('tr').attr('id');
-
-    if ($(this).attr('data-field') != 'action-cell') {
-      var url = path.replace("xxx", row);
-      document.location.href = url;
-    }
   });
