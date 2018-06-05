@@ -12,7 +12,8 @@ gemspec
 
 # To use debugger
 # gem 'debugger'
-gem 'transam_core', git: 'https://github.com/camsys/transam_core', branch: :quarter2
+gem 'transam_core', git: '../transam_core', branch: :quarter2
+# gem 'transam_core', git: 'https://github.com/camsys/transam_core', branch: :quarter2
 gem 'transam_reporting', git: 'https://github.com/camsys/transam_reporting', branch: :quarter2
 gem 'transam_transit', git: 'https://github.com/camsys/transam_transit', branch: :quarter2
 gem 'transam_accounting', git: 'https://github.com/camsys/transam_accounting', branch: :quarter2
