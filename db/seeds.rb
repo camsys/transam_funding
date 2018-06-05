@@ -55,8 +55,14 @@ capital_plan_action_types = [
     {capital_plan_type_id: 1, capital_plan_module_type_id: 5, name: 'Archive', class_name: 'BaseCapitalPlanAction', roles: 'admin', sequence: 4, active: true}
 ]
 
+system_config_extensions = [
+    {class_name: 'FundingSource', extension_name: 'FundingFundingSource', active: true}
+]
+
 
 lookup_tables = %w{ funding_template_types funding_bucket_types capital_plan_types capital_plan_module_types capital_plan_action_types}
+merge_tables = %w{ system_config_extensions }
+
 
 lookup_tables.each do |table_name|
   puts "  Loading #{table_name}"
@@ -71,6 +77,16 @@ lookup_tables.each do |table_name|
   klass = table_name.classify.constantize
   data.each do |row|
     x = klass.new(row)
+    x.save!
+  end
+end
+
+merge_tables.each do |table_name|
+  puts "  Merging #{table_name}"
+  data = eval(table_name)
+  klass = table_name.classify.constantize
+  data.each do |row|
+    x = klass.new(row.except(:belongs_to, :type))
     x.save!
   end
 end
