@@ -1,5 +1,5 @@
 = format_field("Template",@funding_bucket.funding_template)
-= format_field("Fiscal Year",format_as_fiscal_year(@funding_bucket.fy_year))
+= format_field(get_fiscal_year_label,format_as_fiscal_year(@funding_bucket.fy_year))
 = format_field("Owner", @funding_bucket.owner)
 = format_field("Fund Amount", format_as_currency(@funding_bucket.budget_amount))
 = format_field("Funds Committed", format_as_currency(@funding_bucket.budget_committed))

@@ -12,7 +12,7 @@
 = format_field("Local Amount", format_as_currency(@bond_request.local_amount))
 - if @bond_request.authorized?
   %hr
-  = format_field("FY", format_as_fiscal_year(@bond_request.fy_year))
+  = format_field(get_fy_label, format_as_fiscal_year(@bond_request.fy_year))
   = format_field("Act Number", @bond_request.act_num)
   = format_field("PT Number", @bond_request.pt_num)
   = format_field("Page Number", @bond_request.page_num)
@@ -21,7 +21,7 @@
   = format_field("Line Number", @bond_request.line_num)
 %hr
 %hr
-= format_field("FY Created", format_as_fiscal_year(fiscal_year_year_on_date(@bond_request.created_at)))
+= format_field("#{get_fy_label} Created", format_as_fiscal_year(fiscal_year_year_on_date(@bond_request.created_at)))
 = format_field("Created On", format_as_date(@bond_request.created_at))
 = format_field("Last Updated", format_as_date(@bond_request.updated_at))
 - if @bond_request.submitted?

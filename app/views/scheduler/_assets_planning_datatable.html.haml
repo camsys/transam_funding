@@ -46,7 +46,7 @@
         %th.right{data: {field: 'reported_mileage', :sortable => 'true', formatter: 'integer_formatter'}} Mileage
         %th.center{data: {field: 'reported_condition_rating', :sortable => 'true'}} Cond.
 
-        %th.center{data: {field: 'policy_replacement_fiscal_year', :sortable => 'true'}} Policy FY
+        %th.center{data: {field: 'policy_replacement_fiscal_year', :sortable => 'true'}} Policy #{get_fy_label}
         %th.right{data: {field: 'scheduled_cost', :sortable => 'true', formatter: 'currency_formatter'}} Sch. Cost
         - if popup == '1'
           %th.center{data: {formatter: 'popup_formatter_for_date_name'}}

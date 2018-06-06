@@ -24,7 +24,7 @@ class NeedsFundingReport < AbstractReport
     state_funds[current_planning_year_year] = FundingBucket.state.current(current_planning_year_year).sum(:budget_amount)
     local_funds[current_planning_year_year] = FundingBucket.local.current(current_planning_year_year).sum(:budget_amount)
 
-    labels = ['Fiscal Year', 'Total Needs', 'Total Federal Funds', 'Total State Funds',
+    labels = [get_fiscal_year_label, 'Total Needs', 'Total Federal Funds', 'Total State Funds',
               'Total Local Funds', 'Balance/(Shortfall)']
     formats = [nil, :currency, :currency, :currency, :currency, :currency]
 

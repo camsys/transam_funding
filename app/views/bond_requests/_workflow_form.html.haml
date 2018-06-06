@@ -32,7 +32,7 @@
 
           .row
             .col-xs-4
-              = f.input :fy_year, :collection => get_fiscal_years(Date.today), :label => 'FY Year', :required => true
+              = f.input :fy_year, :collection => get_fiscal_years(Date.today), :label => get_fy_label, :required => true
           .row
             .col-xs-4
               = f.input :act_num, :required => true
