@@ -6,7 +6,7 @@ class AddFundingSystemConfigExtensions < ActiveRecord::DataMigration
     ]
 
     system_config_extensions.each do |extension|
-      SystemConfigExetnsion.create!(extension)
+      SystemConfigExtension.create!(extension)
     end
   end
 end
