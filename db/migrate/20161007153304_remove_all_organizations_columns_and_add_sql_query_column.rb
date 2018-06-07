@@ -1,4 +1,4 @@
-class RemoveAllOrganizationsColumnsAndAddSqlQueryColumn < ActiveRecord::Migration
+class RemoveAllOrganizationsColumnsAndAddSqlQueryColumn < ActiveRecord::Migration[4.2]
   def change
     unless column_exists? :funding_templates, :query_string
       add_column :funding_templates, :query_string, :text, after: :match_required

@@ -1,4 +1,4 @@
-class UpdateFundingRequestPrecision < ActiveRecord::Migration
+class UpdateFundingRequestPrecision < ActiveRecord::Migration[4.2]
   def change
     reversible do |dir|
       change_table :funding_requests do |t|

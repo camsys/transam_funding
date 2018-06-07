@@ -1,4 +1,4 @@
-class AddBondRequestFundingBuckets < ActiveRecord::Migration
+class AddBondRequestFundingBuckets < ActiveRecord::Migration[4.2]
   def change
     add_reference :funding_buckets, :bond_request
 

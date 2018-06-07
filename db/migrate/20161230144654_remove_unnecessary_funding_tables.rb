@@ -1,4 +1,4 @@
-class RemoveUnnecessaryFundingTables < ActiveRecord::Migration
+class RemoveUnnecessaryFundingTables < ActiveRecord::Migration[4.2]
   def change
     if ActiveRecord::Base.connection.table_exists? :funding_plans
       drop_table :funding_plans

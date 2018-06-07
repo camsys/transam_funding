@@ -1,4 +1,4 @@
-class CreateBuckets < ActiveRecord::Migration
+class CreateBuckets < ActiveRecord::Migration[4.2]
   def change
     create_table :bucket_types do |t|
       t.string :name, null: false
