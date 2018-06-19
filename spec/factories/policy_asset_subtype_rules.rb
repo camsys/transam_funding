@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :policy_asset_subtype_rule do
     min_service_life_months 144
