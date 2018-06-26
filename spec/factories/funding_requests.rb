@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :funding_request do
     association :activity_line_item
     association :creator, :factory => :normal_user

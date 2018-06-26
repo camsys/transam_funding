@@ -1,4 +1,4 @@
-class AddBondFieldsFundingBuckets < ActiveRecord::Migration
+class AddBondFieldsFundingBuckets < ActiveRecord::Migration[4.2]
   def change
     add_column :funding_buckets, :line_num, :string
     add_column :funding_buckets, :act_num, :string

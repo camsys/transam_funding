@@ -1,4 +1,4 @@
-class AddOptionsToFundingTemplates < ActiveRecord::Migration
+class AddOptionsToFundingTemplates < ActiveRecord::Migration[4.2]
 
   def change
     unless column_exists? :funding_templates, :create_multiple_buckets_for_agency_year

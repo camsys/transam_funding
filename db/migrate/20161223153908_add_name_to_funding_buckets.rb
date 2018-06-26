@@ -1,4 +1,4 @@
-class AddNameToFundingBuckets < ActiveRecord::Migration
+class AddNameToFundingBuckets < ActiveRecord::Migration[4.2] 
 
   def change
     unless column_exists? :funding_buckets, :name

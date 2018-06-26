@@ -1,4 +1,4 @@
-class CreateFundingTemplates < ActiveRecord::Migration
+class CreateFundingTemplates < ActiveRecord::Migration[4.2]
   def change
     create_table :funding_templates do |t|
       t.string :object_key,         index: true, limit: 12, null: false

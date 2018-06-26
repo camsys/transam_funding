@@ -1,4 +1,4 @@
-class RenameTimestampsFundingBuckets < ActiveRecord::Migration
+class RenameTimestampsFundingBuckets < ActiveRecord::Migration[4.2]
   def change
 
     # accidentally didnt use t.timestamps

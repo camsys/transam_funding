@@ -1,9 +1,9 @@
 class CapitalPlanReport < AbstractReport
 
   include FiscalYear
-
+  
   KEY_INDEX = 2
-  DETAIL_LABELS = ['NAME', 'FY', 'Sub Category', '# Assets', 'Cost', 'Federal', 'State', 'Local']
+  DETAIL_LABELS = ['NAME', FiscalYearHelper.get_fy_label, 'Sub Category', '# Assets', 'Cost', 'Federal', 'State', 'Local']
   DETAIL_FORMATS = [:string, :fiscal_year, :string, :integer, :currency, :currency, :currency, :currency]
   
   def initialize(attributes = {})
@@ -55,7 +55,7 @@ class CapitalPlanReport < AbstractReport
   end
   
   def get_data(organization_id_list, params)
-    labels = ['FY', 'Project', 'object_key', 'Title', 'Scope', '#&nbsp;ALIs', 'Cost', 'Fed&nbsp;$', 'State&nbsp;$', 'Local&nbsp;$']
+    labels = [FiscalYearHelper.get_fy_label, 'Project', 'object_key', 'Title', 'Scope', '#&nbsp;ALIs', 'Cost', 'Fed&nbsp;$', 'State&nbsp;$', 'Local&nbsp;$']
     formats = [:fiscal_year, :string, :hidden, :string, :string, :integer, :currency, :currency, :currency, :currency]
     
     # Order by org name, then by FY

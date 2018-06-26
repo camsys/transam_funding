@@ -1,4 +1,4 @@
-class CleanupFundingTables < ActiveRecord::Migration
+class CleanupFundingTables < ActiveRecord::Migration[4.2]
   def change
     rename_column :funding_templates, :contributer_id, :contributor_id
     add_column :funding_templates, :all_organizations, :boolean

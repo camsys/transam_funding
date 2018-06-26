@@ -2,7 +2,7 @@ class SchedulerController < AbstractCapitalProjectsController
 
   include TransamFormatHelper
 
-  before_filter :set_view_vars,  :only =>    [:index, :loader, :scheduler_ali_action, :scheduler_swimlane_action]
+  before_action :set_view_vars,  :only =>    [:index, :loader, :scheduler_ali_action, :scheduler_swimlane_action]
 
   before_action :get_activity_line_item, :only => [:scheduler_ali_action, :scheduler_swimlane_action]
 
@@ -203,7 +203,7 @@ class SchedulerController < AbstractCapitalProjectsController
       if new_redirect
         redirect_to new_redirect.to_s
       else
-        redirect_to :back
+        redirect_back(fallback_location: root_path)
       end
 
     when ALI_UPDATE_COST_ACTION
@@ -248,7 +248,7 @@ class SchedulerController < AbstractCapitalProjectsController
         @msg = "There was an error deleting the funding line."
       end
 
-      redirect_to :back
+      redirect_back(fallback_location: root_path)
     end
 
     # Get the ALIs for each year

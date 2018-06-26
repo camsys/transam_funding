@@ -22,9 +22,9 @@
   .fiscal_year_div{:id => "fiscal_year_div"}
     .row
       .col-sm-4
-        = f.input :fiscal_year_range_start, :required => true, :collection => @fiscal_years, :include_blank => true, :label => "From FY", :selected => params[:fiscal_year_range_start]
+        = f.input :fiscal_year_range_start, :required => true, :collection => @fiscal_years, :include_blank => true, :label => "From #{get_fy_label}", :selected => params[:fiscal_year_range_start]
       .col-sm-4
-        = f.input :fiscal_year_range_end, :required => true, :collection => @fiscal_years, :include_blank => true, :label => "To FY", :selected => params[:fiscal_year_range_end]
+        = f.input :fiscal_year_range_end, :required => true, :collection => @fiscal_years, :include_blank => true, :label => "To #{get_fy_label}", :selected => params[:fiscal_year_range_end]
 
   .escalate_by_div{:id => "escalate_by_div_id"}
     .row

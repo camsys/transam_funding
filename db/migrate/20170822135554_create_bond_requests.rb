@@ -1,4 +1,4 @@
-class CreateBondRequests < ActiveRecord::Migration
+class CreateBondRequests < ActiveRecord::Migration[4.2]
   def change
     create_table :bond_requests do |t|
       t.string    :object_key, index: true, limit: 12, null: false

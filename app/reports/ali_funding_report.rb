@@ -1,8 +1,9 @@
 class AliFundingReport < AbstractReport
+  include FiscalYearHelper
 
   COMMON_LABELS = ['# ALIs', '# Assets', 'Cost', 'Funded', 'Balance']
   COMMON_FORMATS = [:integer, :integer, :currency, :currency, :currency]
-  DETAIL_LABELS = ['NAME', 'FY', 'Sub Category', 'Pinned', '# Assets', 'Cost', 'Funded', 'Balance']
+  DETAIL_LABELS = ['NAME', FiscalYearHelper.get_fy_label, 'Sub Category', 'Pinned', '# Assets', 'Cost', 'Funded', 'Balance']
   DETAIL_FORMATS = [:string, :fiscal_year, :string, :boolean, :integer, :currency, :currency, :currency]
 
   def self.get_detail_data(organization_id_list, params)

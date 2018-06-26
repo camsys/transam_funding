@@ -4,14 +4,12 @@
       = "Description"
   %li
     %a{:href => "#just", :data =>{:toggle => 'tab'}}
-      %span{:style => 'white-space: nowrap !important;'}
-        Justification
+      Justification
 
   - if @bond_request.rejected?
     %li
       %a{:href => "#reject", :data =>{:toggle => 'tab'}}
-        %span{:style => 'white-space: nowrap !important;'}
-          Rejection
+        Rejection
 
 .tab-content{:style => 'max-height:400px;overflow-y: auto;'}
   .tab-pane.fade#desc
