@@ -19,7 +19,7 @@ class AliFundingReport < AbstractReport
     if params[:pinned].to_i == 1
       query = query.where(capital_projects: {notional: false}, assets: {replacement_status_type_id: pinned_status_type.id})
     elsif params[:pinned].to_i == -1
-      query = query.where('assets.replacement_status_type_id != ? OR assets.replacement_status_type_id IS NULL', pinned_status_type.id)
+      query = query.where('transam_assets.replacement_status_type_id != ? OR transam_assets.replacement_status_type_id IS NULL', pinned_status_type.id)
     end
     
     (params[:group_by] || []).each_with_index do |group, i|
@@ -36,7 +36,7 @@ class AliFundingReport < AbstractReport
       query = query.where(clause, key[i])
     end
     
-    data = query.pluck(:id, :name, :fy_year, 'team_ali_codes.code', 'assets.replacement_status_type_id').to_a
+    data = query.pluck(:id, :name, :fy_year, 'team_ali_codes.code', 'transam_assets.replacement_status_type_id').to_a
     query = query.group('activity_line_items.id')
     asset_counts = query.joins(:assets).count(:asset_id)
     costs = query.sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
@@ -87,9 +87,9 @@ class AliFundingReport < AbstractReport
 
     pinned_status_type = ReplacementStatusType.find_by(name: 'Pinned')
     if params[:pinned].to_i == 1
-      query = query.eager_load(:assets).where(capital_projects: {notional: false}, assets: {replacement_status_type_id: pinned_status_type.id})
+      query = query.eager_load(:transam_assets)#.where(capital_projects: {notional: false}, assets: {replacement_status_type_id: pinned_status_type.id})
     elsif params[:pinned].to_i == -1
-      query = query.eager_load(:assets).where('assets.replacement_status_type_id != ? OR assets.replacement_status_type_id IS NULL', pinned_status_type.id)
+      query = query.eager_load(:assets).where('transam_assets.replacement_status_type_id != ? OR transam_assets.replacement_status_type_id IS NULL', pinned_status_type.id)
     end
 
     params[:group_by] = ['by_year', 'by_agency'] if params[:group_by].nil? && params[:button].nil?
