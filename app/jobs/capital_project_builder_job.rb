@@ -8,17 +8,15 @@
 class CapitalProjectBuilderJob < Job
 
   attr_accessor :organization
-  attr_accessor :asset_types
+  attr_accessor :fta_asset_categories
   attr_accessor :start_fy
   attr_accessor :creator
 
   def run
 
-    start_time = Time.now
-
     # Run the builder
     options = {}
-    options[:asset_type_ids] = asset_types
+    options[:fta_asset_category_ids] = fta_asset_categories
     options[:start_fy] = start_fy
     builder = CapitalProjectBuilder.new
     num_created = builder.build(organization, options)
@@ -27,20 +25,13 @@ class CapitalProjectBuilderJob < Job
     # ---------------------------------------------
 
     # Find all the matching assets for this organization
-    asset_type_ids = options[:asset_type_ids].blank? ? organization.asset_type_counts.keys : options[:asset_type_ids]
+    assets = Rails.application.config.asset_base_class_name.constantize.replacement_by_policy.very_specific
+                 .where(options.except(:start_fy).merge({organization_id: organization.id, disposition_date: nil, scheduled_disposition_year: nil}))
+                 .where('transam_assets.scheduled_replacement_year >= ?', start_fy)
 
-    AssetType.where(id: asset_type_ids).each do |asset_type|
+    assets += Rails.application.config.asset_base_class_name.constantize.replacement_underway.where(organization_id: organization.id)
 
-      # Find all the matching assets for this organization.
-      # right now only get assets for SOGR building thus compare assets scheduled replacement year to builder start year
-      assets = asset_type.class_name.constantize.replacement_by_policy.where('asset_type_id = ? AND organization_id = ? AND scheduled_replacement_year >= ? AND disposition_date IS NULL AND scheduled_disposition_year IS NULL', asset_type.id, organization.id, start_fy)
-
-      assets += asset_type.class_name.constantize.replacement_underway.where('asset_type_id = ? AND organization_id = ?', asset_type.id, organization.id)
-
-      FundingRequest.distinct.joins('INNER JOIN activity_line_items_assets ON funding_requests.activity_line_item_id = activity_line_items_assets.activity_line_item_id').where('activity_line_items_assets.asset_id IN (?)', assets.map{|x| x.id}).destroy_all
-    end
-
-
+    FundingRequest.distinct.joins('INNER JOIN activity_line_items_assets ON funding_requests.activity_line_item_id = activity_line_items_assets.activity_line_item_id').where('activity_line_items_assets.asset_id IN (?)', assets.map{|x| x.id}).destroy_all
 
     # ---------------------------------------------
 
@@ -65,15 +56,15 @@ class CapitalProjectBuilderJob < Job
 
   def check
     raise ArgumentError, "organization can't be blank " if organization.nil?
-    raise ArgumentError, "asset_types can't be blank " if asset_types.nil?
+    raise ArgumentError, "fta_asset_categories can't be blank " if fta_asset_categories.nil?
     raise ArgumentError, "start_fy can't be blank " if start_fy.nil?
     raise ArgumentError, "creator can't be blank " if creator.nil?
   end
 
-  def initialize(organization, asset_types, start_fy, creator)
+  def initialize(organization, fta_asset_categories, start_fy, creator)
     super
     self.organization = organization
-    self.asset_types = asset_types
+    self.fta_asset_categories = fta_asset_categories
     self.start_fy = start_fy
     self.creator = creator
   end
