@@ -17,9 +17,10 @@ class AliFundingReport < AbstractReport
 
     pinned_status_type = ReplacementStatusType.find_by(name: 'Pinned')
     if params[:pinned].to_i == 1
-      query = query.where(capital_projects: {notional: false}, assets: {replacement_status_type_id: pinned_status_type.id})
+      query = query.where(capital_projects: {notional: false}, Rails.application.config.asset_base_class_name.tableize.to_sym => {replacement_status_type_id: pinned_status_type.id})
     elsif params[:pinned].to_i == -1
-      query = query.where('assets.replacement_status_type_id != ? OR assets.replacement_status_type_id IS NULL', pinned_status_type.id)
+      assets_arel_table = Rails.application.config.asset_base_class_name.constantize.arel_table
+      query = query.where(assets_arel_table[:replacement_status_type_id].eq(nil).or(assets_arel_table[:replacement_status_type_id].not_eq(pinned_status_type.id)))
     end
     
     (params[:group_by] || []).each_with_index do |group, i|
@@ -36,7 +37,7 @@ class AliFundingReport < AbstractReport
       query = query.where(clause, key[i])
     end
     
-    data = query.pluck(:id, :name, :fy_year, 'team_ali_codes.code', 'assets.replacement_status_type_id').to_a
+    data = query.pluck(:id, :name, :fy_year, 'team_ali_codes.code', :replacement_status_type_id).to_a
     query = query.group('activity_line_items.id')
     asset_counts = query.joins(:assets).count(:asset_id)
     costs = query.sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
@@ -87,9 +88,10 @@ class AliFundingReport < AbstractReport
 
     pinned_status_type = ReplacementStatusType.find_by(name: 'Pinned')
     if params[:pinned].to_i == 1
-      query = query.eager_load(:assets).where(capital_projects: {notional: false}, assets: {replacement_status_type_id: pinned_status_type.id})
+      query = query.eager_load(:assets).where(capital_projects: {notional: false}, Rails.application.config.asset_base_class_name.tableize.to_sym => {replacement_status_type_id: pinned_status_type.id})
     elsif params[:pinned].to_i == -1
-      query = query.eager_load(:assets).where('assets.replacement_status_type_id != ? OR assets.replacement_status_type_id IS NULL', pinned_status_type.id)
+      assets_arel_table = Rails.application.config.asset_base_class_name.constantize.arel_table
+      query = query.eager_load(:assets).where(assets_arel_table[:replacement_status_type_id].eq(nil).or(assets_arel_table[:replacement_status_type_id].not_eq(pinned_status_type.id)))
     end
 
     params[:group_by] = ['by_year', 'by_agency'] if params[:group_by].nil? && params[:button].nil?
