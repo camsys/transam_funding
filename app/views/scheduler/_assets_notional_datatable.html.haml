@@ -61,13 +61,18 @@
     is_rehabilitation = false;
   }
 
+  // override class so can do own popover configs. base was acting weird
+  function popup_formatter_for_date_name(value, data) {
+    return '<a class="transam-popover-ali-asset" id="' + data.object_key + '" data-container="body" data-content="" data-html="true" data-placement="left" data-title="' + data.asset_tag + '" data-toggle="popover" tabindex="0"><i class="fa fa-info-circle fa-1-25x text-info"></i></a>';
+  }
+
   $(document).ready(function() {
 
     $("##{table_dom_id}").bootstrapTable();
 
     $('#' + '#{table_dom_id}').on('post-body.bs.table', function () {
-      $('.transam-popover').popover({
-        trigger: 'hover',
+      $('.transam-popover-ali-asset').popover({
+        trigger: 'focus',
         container: 'body',
         placement: 'left',
         content: function(){
