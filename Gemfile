@@ -19,6 +19,8 @@ gem 'transam_accounting', git: 'https://github.com/camsys/transam_accounting', b
 gem 'transam_cpt', git: 'https://github.com/camsys/transam_cpt', branch: :quarter4
 gem "capybara", '2.6.2' # lock gem for old capybara behavior on hidden element xpath
 
+gem 'active_record-acts_as', git: 'https://github.com/camsys/active_record-acts_as', branch: 'master' # use our fork
+
 # This gem allows us to share githooks. Githooks in the .hooks folder can be checked
 # in, and when "bundle install" is run this gem automatically creates symlinks into
 # your local .git/hooks. If you have pre-existing hooks in .git/hooks, it will move
