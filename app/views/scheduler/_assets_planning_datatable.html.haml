@@ -35,7 +35,7 @@
       %tr
         %th.bs-checkbox{:data => {:checkbox => 'true', :field => 'state'}}
         %th.center{:data => {:field => 'object_key', :visible => 'false'}} Object
-        %th.left{data: {field: 'asset_tag', :sortable => 'true'}} Tag
+        %th.left{data: {field: 'asset_tag', :sortable => 'true', :formatter => 'asset_tag_formatter'}} Tag
         %th.left{data: {field: 'asset_subtype_id', :sortable => 'true'}} Subtype
         %th.left{data: {field: 'fuel_type', :sortable => 'true'}} Fuel
         %th.left{data: {field: 'description', :sortable => 'true'}} Descrip.
@@ -80,6 +80,15 @@
     };
   };
 
+  function asset_tag_formatter(value, data) {
+    return "<a href='/inventory/" + data.object_key + "'>" + value + "</a>"
+  };
+
+  // override class so can do own popover configs. base was acting weird
+  function popup_formatter_for_date_name(value, data) {
+    return '<a class="transam-popover-ali-asset" id="' + data.object_key + '" data-container="body" data-content="" data-html="true" data-placement="left" data-title="' + data.asset_tag + '" data-toggle="popover" tabindex="0"><i class="fa fa-info-circle fa-1-25x text-info"></i></a>';
+  }
+
   $(document).ready(function() {
 
     // Disable the package actions
@@ -88,8 +97,8 @@
     $("##{table_dom_id}").bootstrapTable();
 
     $('#' + '#{table_dom_id}').on('post-body.bs.table', function () {
-      $('.transam-popover').popover({
-        trigger: 'hover',
+      $('.transam-popover-ali-asset').popover({
+        trigger: 'focus',
         container: 'body',
         placement: 'left',
         content: function(){
@@ -206,10 +215,7 @@
     enable_disable_asset_actions();
   });
 
-  $("##{table_dom_id}").on('click-row.bs.table', function (e, row, $element) {
-    var url = path.replace("x", row['object_key']);
-    document.location.href = url;
-  }).on('check.bs.table', function(e, row) {
+  $("##{table_dom_id}").on('check.bs.table', function(e, row) {
     update_selected();
   }).on('uncheck.bs.table', function(e, row) {
     update_selected();

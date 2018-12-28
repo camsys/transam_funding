@@ -12,14 +12,14 @@ gemspec
 
 # To use debugger
 # gem 'debugger'
-gem 'transam_core', git: '../transam_core', branch: :quarter3
-# gem 'transam_core', git: 'https://github.com/camsys/transam_core', branch: :quarter3
-gem 'transam_reporting', git: 'https://github.com/camsys/transam_reporting', branch: :quarter3
-gem 'transam_transit', git: 'https://github.com/camsys/transam_transit', branch: :quarter3
-gem 'transam_accounting', git: 'https://github.com/camsys/transam_accounting', branch: :quarter3
-gem 'transam_cpt', git: 'https://github.com/camsys/transam_cpt', branch: :quarter3
-gem 'mysql2', '~> 0.3.20' # lock gem for dummy app
+gem 'transam_core', git: 'https://github.com/camsys/transam_core', branch: :quarter4
+gem 'transam_reporting', git: 'https://github.com/camsys/transam_reporting', branch: :quarter4
+gem 'transam_transit', git: 'https://github.com/camsys/transam_transit', branch: :quarter4
+gem 'transam_accounting', git: 'https://github.com/camsys/transam_accounting', branch: :quarter4
+gem 'transam_cpt', git: 'https://github.com/camsys/transam_cpt', branch: :quarter4
 gem "capybara", '2.6.2' # lock gem for old capybara behavior on hidden element xpath
+
+gem 'active_record-acts_as', git: 'https://github.com/camsys/active_record-acts_as', branch: 'master' # use our fork
 
 # This gem allows us to share githooks. Githooks in the .hooks folder can be checked
 # in, and when "bundle install" is run this gem automatically creates symlinks into
