@@ -22,6 +22,9 @@ class FundingBucket< ActiveRecord::Base
 
   belongs_to :funding_template
   has_one    :funding_source, :through => :funding_template
+
+  has_one :funding_source_type, :through => :funding_source
+
   belongs_to :owner, :class_name => "Organization"
 
   has_many :grant_purchases, :as => :sourceable, :dependent => :destroy
