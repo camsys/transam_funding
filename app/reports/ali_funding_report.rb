@@ -36,9 +36,9 @@ class AliFundingReport < AbstractReport
       end
       query = query.where(clause, key[i])
     end
-    
-    data = query.pluck(:id, :name, :fy_year, 'team_ali_codes.code', :replacement_status_type_id).to_a
+
     query = query.group('activity_line_items.id')
+    data = query.pluck(:id, :name, :fy_year, 'team_ali_codes.code', :replacement_status_type_id).to_a
     asset_counts = query.joins(:assets).count(:asset_id)
     costs = query.sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
     # eager_load implicitly performs left join
@@ -87,12 +87,6 @@ class AliFundingReport < AbstractReport
             .where(capital_projects: {organization_id: organization_id_list})
 
     pinned_status_type = ReplacementStatusType.find_by(name: 'Pinned')
-    if params[:pinned].to_i == 1
-      query = query.eager_load(:assets).where(capital_projects: {notional: false}, Rails.application.config.asset_base_class_name.tableize.to_sym => {replacement_status_type_id: pinned_status_type.id})
-    elsif params[:pinned].to_i == -1
-      assets_arel_table = Rails.application.config.asset_base_class_name.constantize.arel_table
-      query = query.eager_load(:assets).where(assets_arel_table[:replacement_status_type_id].eq(nil).or(assets_arel_table[:replacement_status_type_id].not_eq(pinned_status_type.id)))
-    end
 
     params[:group_by] = ['by_year', 'by_agency'] if params[:group_by].nil? && params[:button].nil?
     # Add clauses based on params
@@ -120,11 +114,18 @@ class AliFundingReport < AbstractReport
       query = query.group(clause).order(clause)
     end
 
+    if params[:pinned].to_i == 1
+      query_with_assets = query.eager_load(:assets).where(capital_projects: {notional: false}, Rails.application.config.asset_base_class_name.tableize.to_sym => {replacement_status_type_id: pinned_status_type.id})
+    elsif params[:pinned].to_i == -1
+      assets_arel_table = Rails.application.config.asset_base_class_name.constantize.arel_table
+      query_with_assets = query.eager_load(:assets).where(assets_arel_table[:replacement_status_type_id].eq(nil).or(assets_arel_table[:replacement_status_type_id].not_eq(pinned_status_type.id)))
+    end
+
     # Generate queries for each column
     ali_counts = query.count
     costs = query.sum(ActivityLineItem::COST_SUM_SQL_CLAUSE)
     # eager_load implicitly performs left join
-    asset_counts = query.eager_load(:assets).count(:asset_id)
+    asset_counts = (query_with_assets || query).eager_load(:assets).count(:asset_id)
     funded = query.eager_load(:funding_requests).sum('funding_requests.federal_amount + funding_requests.state_amount + funding_requests.local_amount')
     
     data = []
