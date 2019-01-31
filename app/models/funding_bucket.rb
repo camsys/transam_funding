@@ -17,8 +17,8 @@ class FundingBucket< ActiveRecord::Base
   #------------------------------------------------------------------------------
 
   # Each funding source was created and updated by a user
-  belongs_to :creator, :class_name => "User", :foreign_key => :created_by_id
-  belongs_to :updator, :class_name => "User", :foreign_key => :updated_by_id
+  belongs_to :creator, -> { unscope(where: :active) }, :class_name => "User", :foreign_key => :created_by_id
+  belongs_to :updator, -> { unscope(where: :active) }, :class_name => "User", :foreign_key => :updated_by_id
 
   belongs_to :funding_template
   has_one    :funding_source, :through => :funding_template
