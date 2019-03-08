@@ -75,10 +75,10 @@
         %tfoot
           %tr
             - if is_sogr_capital_project
-              %td{:colspan => 7}
+              %td{:colspan => popup == '1' ? 7 : 6}
               %td.right.nowrap= format_as_integer(sum_assets)
             -else
-              %td{:colspan => 8}
+              %td{:colspan => popup == '1' ? 8 : 7}
             %td.right.nowrap= format_as_currency(project.total_cost)
             %td.right.nowrap= format_as_currency(project.total_funds)
             %td.right.nowrap= format_as_currency(project.funding_difference)
