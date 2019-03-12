@@ -1,10 +1,10 @@
 :css
-  #filter-div button {
+  .btn-toolbar button {
     margin-top: 4px;
     margin-left: 4px;
   }
 
-= form_tag (@my_funds ? my_funds_funding_buckets_path : funding_buckets_path), :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right panel-action', style: 'padding-top: 1px' do
+= form_tag (@my_funds ? my_funds_funding_buckets_path : funding_buckets_path), :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right panel-action' do
   #filter-div
     .form-group
       - if @organizations.count > 1
