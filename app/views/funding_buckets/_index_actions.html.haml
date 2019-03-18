@@ -1,12 +1,19 @@
-= form_tag (@my_funds ? my_funds_funding_buckets_path : funding_buckets_path), :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right panel-action', style: 'padding-top: 1px' do
-  .form-group
-    - if @organizations.count > 1
-      = select_tag(:agency_id, options_for_select(@organizations, :selected => @searched_agency_id), :class => "form-control bucket-filter", :style => "width: 250px;", :prompt => "All Organizations")
-    - if @templates
-      = select_tag(:searched_template, options_for_select(@templates, :selected => @searched_template), :class => "form-control bucket-filter", :style => "width: 250px;", :prompt => "All Templates")
-    = select_tag(:fy_year, options_for_select(get_fiscal_years, :selected => @searched_fiscal_year), :class => "form-control bucket-filter", :style => "width: 250px;", :prompt => "All Years")
+:css
+  .btn-toolbar button {
+    margin-top: 4px;
+    margin-left: 4px;
+  }
 
-    = select_tag(:funds_filter, options_for_select([['Funds Available','funds_available'], ['Zero Balance','zero_balance'], ['Funds Overcommitted', 'funds_overcommitted']], :selected => @funds_filter), :class => "form-control bucket-filter", :style => "width: 250px;", :prompt => "All Funds")
+= form_tag (@my_funds ? my_funds_funding_buckets_path : funding_buckets_path), :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right panel-action' do
+  #filter-div
+    .form-group
+      - if @organizations.count > 1
+        = select_tag(:agency_id, options_for_select(@organizations, :selected => @searched_agency_id), :class => "form-control bucket-filter", :style => "width: 250px;", :prompt => "All Organizations")
+      - if @templates
+        = select_tag(:searched_template, options_for_select(@templates, :selected => @searched_template), :class => "form-control bucket-filter", :style => "width: 250px;", :prompt => "All Templates")
+      = select_tag(:fy_year, options_for_select(get_fiscal_years, :selected => @searched_fiscal_year), :class => "form-control bucket-filter", :style => "width: 250px;", :prompt => "All Years")
 
-  = button_tag :class => 'btn btn-default', :type => 'submit' do
-    %i.fa.fa-filter
+      = select_tag(:funds_filter, options_for_select([['Funds Available','funds_available'], ['Zero Balance','zero_balance'], ['Funds Overcommitted', 'funds_overcommitted']], :selected => @funds_filter), :class => "form-control bucket-filter", :style => "width: 250px;", :prompt => "All Funds")
+
+    = button_tag :class => 'btn btn-default pull-right', :type => 'submit' do
+      %i.fa.fa-filter

@@ -10,6 +10,12 @@
       %i.fa.fa-fw.fa-legal
       = ' Buckets'
 
+  - if can? :read, Grant
+    %li.text-left
+      = link_to grants_path do
+        %i.fa.fa-balance-scale.fa-fw
+        Grants
+
 %li.divider
 %li.text-left
   = link_to my_funds_funding_buckets_path do

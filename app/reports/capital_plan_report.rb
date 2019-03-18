@@ -1,10 +1,10 @@
 class CapitalPlanReport < AbstractReport
 
   include FiscalYear
-  
+    
   KEY_INDEX = 2
-  DETAIL_LABELS = ['NAME', FiscalYearHelper.get_fy_label, 'Sub Category', '# Assets', 'Cost', 'Federal', 'State', 'Local']
-  DETAIL_FORMATS = [:string, :fiscal_year, :string, :integer, :currency, :currency, :currency, :currency]
+  DETAIL_LABELS = ['NAME', FiscalYearHelper.get_fy_label, 'Sub Category', '# Assets', '', 'Cost', 'Federal', 'State', 'Local']
+  DETAIL_FORMATS = [:string, :fiscal_year, :string, :integer, :string, :currency, :currency, :currency, :currency]
   
   def initialize(attributes = {})
     super(attributes)
@@ -27,6 +27,7 @@ class CapitalPlanReport < AbstractReport
     data.each do |row|
       id = row[0]
       row << asset_counts[id]
+      row << ''
       row << costs[id]
       row << federal[id]
       row << state[id]
@@ -43,7 +44,7 @@ class CapitalPlanReport < AbstractReport
         type: :select,
         where: :start_fy_year,
         values: get_fiscal_years,
-        label: 'From'
+        label: "Project #{FiscalYearHelper.get_fy_label} From"
       },
       {
         type: :select,
@@ -55,8 +56,8 @@ class CapitalPlanReport < AbstractReport
   end
   
   def get_data(organization_id_list, params)
-    labels = [FiscalYearHelper.get_fy_label, 'Project', 'object_key', 'Title', 'Scope', '#&nbsp;ALIs', 'Cost', 'Fed&nbsp;$', 'State&nbsp;$', 'Local&nbsp;$']
-    formats = [:fiscal_year, :string, :hidden, :string, :string, :integer, :currency, :currency, :currency, :currency]
+    labels = ["Project #{FiscalYearHelper.get_fy_label}", 'Project', 'object_key', 'Title', 'Scope', '#&nbsp;ALIs', 'Multi Year Project', 'Cost', 'Fed&nbsp;$', 'State&nbsp;$', 'Local&nbsp;$']
+    formats = [:fiscal_year, :object_url, :hidden, :string, :string, :integer, :boolean, :currency, :currency, :currency, :currency]
     
     # Order by org name, then by FY
     query = CapitalProject.where(organization_id: organization_id_list).joins(:organization).order('organizations.name', :fy_year)
@@ -96,6 +97,7 @@ class CapitalPlanReport < AbstractReport
         cp.title,
         cp.team_ali_code.scope,
         cp.activity_line_items.count,
+        cp.multi_year,
         cp.total_cost,
         cp.federal_funds,
         cp.state_funds,
@@ -103,7 +105,8 @@ class CapitalPlanReport < AbstractReport
       ]
       if current_org != cp.organization
         if current_org
-          org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, nil, total_ali_count,
+          org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, nil,
+                       total_ali_count, nil,
                        total_cost, total_federal_funds, total_state_funds, total_local_funds]
           data << [current_org.name, org_data]
         end
@@ -125,7 +128,8 @@ class CapitalPlanReport < AbstractReport
           total_local_funds += cp.local_funds
         else
           if current_fy
-            org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, nil, total_ali_count,
+            org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, nil,
+                         total_ali_count, nil,
                          total_cost, total_federal_funds, total_state_funds, total_local_funds]
           end
           current_fy = cp.fy_year
@@ -138,7 +142,8 @@ class CapitalPlanReport < AbstractReport
         org_data << row
       end
     end
-    org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, nil, total_ali_count,
+    org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, nil,
+                 total_ali_count, nil,
                  total_cost, total_federal_funds, total_state_funds, total_local_funds]
     data << [current_org.name, org_data]
     
@@ -156,5 +161,9 @@ class CapitalPlanReport < AbstractReport
 
   def get_detail_view
     "generic_report_detail"
+  end
+
+  def get_object_url(row)
+    "/capital_projects/#{get_key(row)}".html_safe
   end
 end

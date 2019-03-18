@@ -1,7 +1,7 @@
 language: ruby
 sudo: required
 rvm:
-- 2.2.2
+- 2.5.3
 python:
 - 3.4
 addons:

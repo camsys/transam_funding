@@ -36,8 +36,8 @@ class FundingRequest < ActiveRecord::Base
   belongs_to  :activity_line_item
 
   # Each funding request was created and updated by a user
-  belongs_to :creator, :class_name => "User", :foreign_key => "created_by_id"
-  belongs_to :updator, :class_name => "User", :foreign_key => "updated_by_id"
+  belongs_to :creator, -> { unscope(where: :active) }, :class_name => "User", :foreign_key => "created_by_id"
+  belongs_to :updator, -> { unscope(where: :active) }, :class_name => "User", :foreign_key => "updated_by_id"
 
   #------------------------------------------------------------------------------
   # Validations
