@@ -74,7 +74,7 @@ AbstractCapitalProjectsController.class_eval do
       no_ali_or_asset_params_exist = false
     end
 
-    unless asset_search[asset_table.to_sym].empty?
+    unless asset_search[asset_table.to_sym].empty? && asset_search.keys.count == 1
 
       asset_search[asset_table.to_sym][:organization_id] = @organization_list
 
