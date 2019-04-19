@@ -73,7 +73,7 @@
     var year = $(this).parent('tr').data('year');
 
 
-    if ($(this).attr('data-field') != 'action-cell') {
+    if (($(this).attr('data-field') != 'action-cell') && (parseInt(year) > parseInt('#{current_fiscal_year_year}'))) {
       path = path.replace("xxx", ali);
       var url = path.replace("yyy", year);
       document.location.href = url;
