@@ -1,5 +1,5 @@
 module Abilities
-  class SuperManagerFundingAbility
+  class BudgetManager
     include CanCan::Ability
 
     def initialize(user)

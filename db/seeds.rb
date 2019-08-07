@@ -61,9 +61,13 @@ system_config_extensions = [
     {engine_name: 'funding', class_name: 'ActivityLineItem', extension_name: 'TransamFundable', active: true}
 ]
 
+roles = [
+    {name: 'budget_manager', :show_in_user_mgmt => true, privilege: true},
+]
+
 
 lookup_tables = %w{ funding_template_types funding_bucket_types capital_plan_types capital_plan_module_types capital_plan_action_types}
-merge_tables = %w{ system_config_extensions }
+merge_tables = %w{ system_config_extensions roles }
 
 
 lookup_tables.each do |table_name|
