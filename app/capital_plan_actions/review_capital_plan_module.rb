@@ -24,28 +24,34 @@ class ReviewCapitalPlanModule < BaseCapitalPlanModule
       # update bucket budget amounts and committed amounts, soft delete if bucket used up
       ali.funding_requests.each do |request|
         fed_bucket = request.federal_funding_line_item
-        fed_bucket.budget_amount = fed_bucket.budget_amount-request.federal_amount
-        fed_bucket.budget_committed = fed_bucket.budget_committed-request.federal_amount
-        if fed_bucket.budget_amount == 0
-          fed_bucket.active = false
+        if fed_bucket
+          fed_bucket.budget_amount = fed_bucket.budget_amount-request.federal_amount
+          fed_bucket.budget_committed = fed_bucket.budget_committed-request.federal_amount
+          if fed_bucket.budget_amount == 0
+            fed_bucket.active = false
+          end
+          fed_bucket.save
         end
-        fed_bucket.save
 
         state_bucket = request.state_funding_line_item
-        state_bucket.budget_amount = state_bucket.budget_amount-request.state_amount
-        state_bucket.budget_committed = state_bucket.budget_committed-request.state_amount
-        if state_bucket.budget_amount == 0
-          state_bucket.active = false
+        if state_bucket
+          state_bucket.budget_amount = state_bucket.budget_amount-request.state_amount
+          state_bucket.budget_committed = state_bucket.budget_committed-request.state_amount
+          if state_bucket.budget_amount == 0
+            state_bucket.active = false
+          end
+          state_bucket.save
         end
-        state_bucket.save
 
         local_bucket = request.local_funding_line_item
-        local_bucket.budget_amount = local_bucket.budget_amount-request.local_amount
-        local_bucket.budget_committed = local_bucket.budget_committed-request.local_amount
-        if local_bucket.budget_amount == 0
-          local_bucket.active = false
+        if local_bucket
+          local_bucket.budget_amount = local_bucket.budget_amount-request.local_amount
+          local_bucket.budget_committed = local_bucket.budget_committed-request.local_amount
+          if local_bucket.budget_amount == 0
+            local_bucket.active = false
+          end
+          local_bucket.save
         end
-        local_bucket.save
 
       end
     end
