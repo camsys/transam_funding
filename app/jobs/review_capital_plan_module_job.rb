@@ -66,6 +66,9 @@ class ReviewCapitalPlanModuleJob < Job
       end
     end
 
+    # update archived fiscal year
+    ArchivedFiscalYear.find_or_create_by(organization_id: plan.organization_id, fy_year: plan.fy_year)
+
     event_url = Rails.application.routes.url_helpers.capital_plans_path
     notification = Notification.create!(text: "The #{format_as_fiscal_year(plan.fy_year)} Capital Plan has been archived for #{plan.organization.short_name}.", link: event_url, notifiable_type: 'Organization', notifiable_id: plan.organization_id)
     User.with_role(:admin).each do |usr|
