@@ -19,9 +19,17 @@
 
 #projects_table_actions.row
   - if can? :create, CapitalProject
-    = link_to new_capital_project_path, :class => 'btn btn-default', :style => 'margin-left: 5px;' do
-      %i.fa.fa-plus.fa-fw
-      = " New Capital Project"
+    -#= link_to new_capital_project_path, :class => 'btn btn-default', :style => 'margin-left: 5px;' do
+    -#  %i.fa.fa-plus.fa-fw
+    -#  = " New Capital Project"
+    %input{:type=>"checkbox", :class=>"flyout-checkbox", :id=>"flyout-checkbox"}
+    %label{:class=>"flyout-label btn btn-primary btn-md", :for=>"flyout-checkbox"} New Capital Project
+    .flyout-content-left
+      .flyout-panel
+        %header
+          %label{:class=>"flyout-label", :for=>"flyout-checkbox"}
+            %span New Capital Project
+        #flyout-body{:class=>"flyout-body"}
   .navbar-form.pull-right{:style => 'margin-top: 0px;'}
     %button.btn.btn-primary.btn-md.dropdown-toggle{:data => {:toggle => 'dropdown'}, :style => 'vertical-align: top;'}
       %i.fa.fa-file
@@ -177,4 +185,12 @@
   function total_funds_formatter(value) {
     return '#{format_as_currency(@projects.total_funds)}';
   }
+
+  $(document).ready(function(){
+    createFlyout(
+      "#flyout-body",
+      "#{@project, @fiscal_years = helper_new}",
+      "#{raw escape_javascript(render :partial => 'form', :locals => {:project => @project})}"
+     );
+  });
 
