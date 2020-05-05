@@ -3,68 +3,68 @@
   show_actions ||= 0
 
 
-#bond_requests_table_actions.btn-toolbar
-  - if show_actions == 1
-    = render :partial => "bond_requests/index_actions"
-
-.table-responsive
-  %table.table.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
-    :card_view => "false",
-    :pagination => 'true',
-    :show_pagination_switch => 'false',
-    :page_list => "5, 10, 20, 50, 100, 200, 10000]",
-    :page_size => current_user.num_table_rows,
-    :search => 'false',
-    :toolbar => "#bond_requests_table_actions",
-    :export_types => "['csv', 'txt', 'excel']",
-    :show_export => 'true',
-    :show_columns => 'true',
-    :cookie => 'true',
-    :cookie_id_table => "bond_requests_id",
-    :cookie_expire => "1y"}, :style => 'width:100%;'}
-
-    %thead
-      %tr
-        %th.center{:data => {:field => 'checked', :checkbox => 'true'}}
-        %th.center{:data => {:visible => 'false'}} Object Key
-        %th.center{:data => {:sortable => 'true'}} Organization
-        %th.center{:data => {:sortable => 'true', :formatter => 'date_formatter'}} Created
-        %th.center{:data => {:sortable => 'true'}} Title
-        %th.center{:data => {:sortable => 'true', :formatter => 'currency_formatter'}} Amount
-        %th.center{:data => {:sortable => 'true'}} Status
-
-        %th.center{:data => {:sortable => 'true'}} Description
-        %th.center{:data => {:sortable => 'true'}} Justification
-        %th.center{:data => {:visible => 'false', :sortable => 'true'}} Rejection
-        %th.center{:data => {:sortable => 'true'}} Action
-    %tbody
-      - bond_requests.each do |f|
-        %tr{:id => f.object_key, :class => 'action-path'}
-          %td{:data => {:field => 'action-cell'}}
-          %td.left= f.object_key
-          %td.left= f.organization.short_name
-          %td.left= f.created_at
-          %td.left= f.title
-          %td.right= f.amount
-          %td.right= f.state.humanize
-          %td.left{data: {tableexport: {value: f.description}}}
-            %a.transam-popover{data: {placement: 'left', toggle: 'popover', html: 'true', content: f.description}, title: 'Description', tabindex: '0'}
-              %i.fa.fa-info-circle
-          %td.left{data: {tableexport: {value: f.justification}}}
-            %a.transam-popover{data: {placement: 'left', toggle: 'popover', html: 'true', content: f.justification}, title: 'Justification', tabindex: '0'}
-              %i.fa.fa-info-circle
-          %td.left{data: {tableexport: {value: f.rejection}}}
-            %a.transam-popover{data: {placement: 'left', toggle: 'popover', html: 'true', content: f.rejection}, title: 'Rejection', tabindex: '0'}
-              %i.fa.fa-info-circle
-          %td.center.nowrap{:data => {:field => 'action-cell'}}
-            - if f.pending? && (can? :update, f)
-              = link_to edit_bond_request_path(f), :class => "button btn-xs", :title => "Edit request" do
-                %i.fa.fa-edit.fa-1-5x.text-success
-              - if can? :update_status, f
-                = link_to new_workflow_event_bond_requests_path(:event => 'reject', :targets => f.object_key), :remote => true, :title => 'Reject request' do
-                  %i.fa.fa-fw{:class => get_workflow_event_icon('reject')}
-
-= render 'shared/table_formatters'
+-##bond_requests_table_actions.btn-toolbar
+-#  - if show_actions == 1
+-#    = render :partial => "bond_requests/index_actions"
+-#
+-#.table-responsive
+-#  %table.table.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
+-#    :card_view => "false",
+-#    :pagination => 'true',
+-#    :show_pagination_switch => 'false',
+-#    :page_list => "5, 10, 20, 50, 100, 200, 10000]",
+-#    :page_size => current_user.num_table_rows,
+-#    :search => 'false',
+-#    :toolbar => "#bond_requests_table_actions",
+-#    :export_types => "['csv', 'txt', 'excel']",
+-#    :show_export => 'true',
+-#    :show_columns => 'true',
+-#    :cookie => 'true',
+-#    :cookie_id_table => "bond_requests_id",
+-#    :cookie_expire => "1y"}, :style => 'width:100%;'}
+-#
+-#    %thead
+-#      %tr
+-#        %th.center{:data => {:field => 'checked', :checkbox => 'true'}}
+-#        %th.center{:data => {:visible => 'false'}} Object Key
+-#        %th.center{:data => {:sortable => 'true'}} Organization
+-#        %th.center{:data => {:sortable => 'true', :formatter => 'date_formatter'}} Created
+-#        %th.center{:data => {:sortable => 'true'}} Title
+-#        %th.center{:data => {:sortable => 'true', :formatter => 'currency_formatter'}} Amount
+-#        %th.center{:data => {:sortable => 'true'}} Status
+-#
+-#        %th.center{:data => {:sortable => 'true'}} Description
+-#        %th.center{:data => {:sortable => 'true'}} Justification
+-#        %th.center{:data => {:visible => 'false', :sortable => 'true'}} Rejection
+-#        %th.center{:data => {:sortable => 'true'}} Action
+-#    %tbody
+-#      - bond_requests.each do |f|
+-#        %tr{:id => f.object_key, :class => 'action-path'}
+-#          %td{:data => {:field => 'action-cell'}}
+-#          %td.left= f.object_key
+-#          %td.left= f.organization.short_name
+-#          %td.left= f.created_at
+-#          %td.left= f.title
+-#          %td.right= f.amount
+-#          %td.right= f.state.humanize
+-#          %td.left{data: {tableexport: {value: f.description}}}
+-#            %a.transam-popover{data: {placement: 'left', toggle: 'popover', html: 'true', content: f.description}, title: 'Description', tabindex: '0'}
+-#              %i.fa.fa-info-circle
+-#          %td.left{data: {tableexport: {value: f.justification}}}
+-#            %a.transam-popover{data: {placement: 'left', toggle: 'popover', html: 'true', content: f.justification}, title: 'Justification', tabindex: '0'}
+-#              %i.fa.fa-info-circle
+-#          %td.left{data: {tableexport: {value: f.rejection}}}
+-#            %a.transam-popover{data: {placement: 'left', toggle: 'popover', html: 'true', content: f.rejection}, title: 'Rejection', tabindex: '0'}
+-#              %i.fa.fa-info-circle
+-#          %td.center.nowrap{:data => {:field => 'action-cell'}}
+-#            - if f.pending? && (can? :update, f)
+-#              = link_to edit_bond_request_path(f), :class => "button btn-xs", :title => "Edit request" do
+-#                %i.fa.fa-edit.fa-1-5x.text-success
+-#              - if can? :update_status, f
+-#                = link_to new_workflow_event_bond_requests_path(:event => 'reject', :targets => f.object_key), :remote => true, :title => 'Reject request' do
+-#                  %i.fa.fa-fw{:class => get_workflow_event_icon('reject')}
+-#
+-#= render 'shared/table_formatters'
 
 :javascript
 
