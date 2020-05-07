@@ -3,148 +3,224 @@
   show_actions ||= 0
 
 
--##bond_requests_table_actions.btn-toolbar
--#  - if show_actions == 1
--#    = render :partial => "bond_requests/index_actions"
--#
--#.table-responsive
--#  %table.table.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
--#    :card_view => "false",
--#    :pagination => 'true',
--#    :show_pagination_switch => 'false',
--#    :page_list => "5, 10, 20, 50, 100, 200, 10000]",
--#    :page_size => current_user.num_table_rows,
--#    :search => 'false',
--#    :toolbar => "#bond_requests_table_actions",
--#    :export_types => "['csv', 'txt', 'excel']",
--#    :show_export => 'true',
--#    :show_columns => 'true',
--#    :cookie => 'true',
--#    :cookie_id_table => "bond_requests_id",
--#    :cookie_expire => "1y"}, :style => 'width:100%;'}
--#
--#    %thead
--#      %tr
--#        %th.center{:data => {:field => 'checked', :checkbox => 'true'}}
--#        %th.center{:data => {:visible => 'false'}} Object Key
--#        %th.center{:data => {:sortable => 'true'}} Organization
--#        %th.center{:data => {:sortable => 'true', :formatter => 'date_formatter'}} Created
--#        %th.center{:data => {:sortable => 'true'}} Title
--#        %th.center{:data => {:sortable => 'true', :formatter => 'currency_formatter'}} Amount
--#        %th.center{:data => {:sortable => 'true'}} Status
--#
--#        %th.center{:data => {:sortable => 'true'}} Description
--#        %th.center{:data => {:sortable => 'true'}} Justification
--#        %th.center{:data => {:visible => 'false', :sortable => 'true'}} Rejection
--#        %th.center{:data => {:sortable => 'true'}} Action
--#    %tbody
--#      - bond_requests.each do |f|
--#        %tr{:id => f.object_key, :class => 'action-path'}
--#          %td{:data => {:field => 'action-cell'}}
--#          %td.left= f.object_key
--#          %td.left= f.organization.short_name
--#          %td.left= f.created_at
--#          %td.left= f.title
--#          %td.right= f.amount
--#          %td.right= f.state.humanize
--#          %td.left{data: {tableexport: {value: f.description}}}
--#            %a.transam-popover{data: {placement: 'left', toggle: 'popover', html: 'true', content: f.description}, title: 'Description', tabindex: '0'}
--#              %i.fa.fa-info-circle
--#          %td.left{data: {tableexport: {value: f.justification}}}
--#            %a.transam-popover{data: {placement: 'left', toggle: 'popover', html: 'true', content: f.justification}, title: 'Justification', tabindex: '0'}
--#              %i.fa.fa-info-circle
--#          %td.left{data: {tableexport: {value: f.rejection}}}
--#            %a.transam-popover{data: {placement: 'left', toggle: 'popover', html: 'true', content: f.rejection}, title: 'Rejection', tabindex: '0'}
--#              %i.fa.fa-info-circle
--#          %td.center.nowrap{:data => {:field => 'action-cell'}}
--#            - if f.pending? && (can? :update, f)
--#              = link_to edit_bond_request_path(f), :class => "button btn-xs", :title => "Edit request" do
--#                %i.fa.fa-edit.fa-1-5x.text-success
--#              - if can? :update_status, f
--#                = link_to new_workflow_event_bond_requests_path(:event => 'reject', :targets => f.object_key), :remote => true, :title => 'Reject request' do
--#                  %i.fa.fa-fw{:class => get_workflow_event_icon('reject')}
--#
--#= render 'shared/table_formatters'
+#bond_requests_table_actions.btn-toolbar
+  - if show_actions == 1
+    = render :partial => "bond_requests/index_actions"
 
-:javascript
 
-  var selected_rows = new Set();
+:css
 
-  $(document).ready(function() {
+  .col-item:nth-child(1){
+    width:10%;
+  }
+  .col-item:nth-child(2){
+    width:12%;
+  }
+  .col-item:nth-child(3){
+    width:12%;
+  }
+  .col-item:nth-child(4){
+    width:12%;
+  }
+  .col-item:nth-child(5){
+    width:8%;
+  }
+  .col-item:nth-child(6){
+    width:8%;
+  }
+  .col-item:nth-child(7){
+    width:8%;
+  }
+  .col-item:nth-child(8){
+    width:12%;
+  }
 
-    // Disable the table actions
-    enable_disable_table_actions();
+= javascript_include_tag  "https://kit.fontawesome.com/#{ENV['FONT_AWESOME']}.js"
+.library-table
+  %table.elbat{:id => table_dom_id,
+    :use => 'true',
+    :data => {:use => 'true',
+      :side => 'client',
+      :current_page => '0',
+      :current_page_size => '10',
+      :page_sizes => "10,20,50,100,200",
+      :search => 'client',
+      :export => "['csv', 'txt', 'excel']",
+      :columns => "Title,drilldown-link,
+                  Organization,,
+                  Description,,
+                  Justification,,
+                  Status,,
+                  Amount,,
+                  Created,,
+                  Rejection,,
+                  Object Key,,",
+        :selected_columns => "Title,
+                  Organization,
+                  Description,
+                  Justification,
+                  Status,
+                  Amount,
+                  Created",
+      :cookies => "true",
+      :sort => 'client',
+      :params => "{}",
+      :filter => "[]",
+      :data_source => 'client',
+      :url => ''}}
+  - bond_requests.each_with_index do |f, index|
 
-    // Add a handler for the print action which appends the selected orders to
-    // the href
-    $(".selected-action").on('click', function(e) {
+    :javascript
+      add_row('#{table_dom_id}',
+      {
+        "Title": '#{h link_to f.title }',
+        "Organization": '#{h f.organization.short_name }',
+        "Description": '#{h f.description }',
+        "Justification": '#{h f.justification }',
+        "Status": '#{h f.state.humanize }',
+        "Amount": '#{h f.amount }',
+        "Created": '#{h f.created_at }',
+      }, #{index});
 
-      var href = this.href;
-      href = href + '&targets=' + Array.from(selected_rows).toString();
-      $(this).attr('href', href);
-    });
-  });
 
-  $('#' + '#{table_dom_id}').on('check.bs.table', function(e, row) {
-    update_selected();
-  }).on('uncheck.bs.table', function(e, row) {
-    update_selected();
-  }).on('check-all.bs.table', function(e, row) {
-    update_selected();
-  }).on('uncheck-all.bs.table', function(e, row) {
-    update_selected();
-  }).on('sort.bs.table', function(e, name, order) {
-    //console.log('Sorting on ' + name + ' dir => ' + order);
-    $('#' + '#{table_dom_id}').bootstrapTable('selectPage', 1);
-  }).on('load-success.bs.table', function() {
-    // Table reloaded, clear saved selection
-    selected_rows = new Set();
-    enable_disable_table_actions();
-  }).on('post-body.bs.table', function () {
-    $('.transam-popover').popover({
-      trigger: 'hover'
-    });
+-# .table-responsive
+-#   %table.table.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
+-#     :card_view => "false",
+-#     :pagination => 'true',
+-#     :show_pagination_switch => 'false',
+-#     :page_list => "5, 10, 20, 50, 100, 200, 10000]",
+-#     :page_size => current_user.num_table_rows,
+-#     :search => 'false',
+-#     :toolbar => "#bond_requests_table_actions",
+-#     :export_types => "['csv', 'txt', 'excel']",
+-#     :show_export => 'true',
+-#     :show_columns => 'true',
+-#     :cookie => 'true',
+-#     :cookie_id_table => "bond_requests_id",
+-#     :cookie_expire => "1y"}, :style => 'width:100%;'}
 
-    $('.transam-tooltip').tooltip();
-  });
+-#     %thead
+-#       %tr
+-#         %th.center{:data => {:field => 'checked', :checkbox => 'true'}}
+-#         %th.center{:data => {:visible => 'false'}} Object Key
+-#         %th.center{:data => {:sortable => 'true'}} Organization
+-#         %th.center{:data => {:sortable => 'true', :formatter => 'date_formatter'}} Created
+-#         %th.center{:data => {:sortable => 'true'}} Title
+-#         %th.center{:data => {:sortable => 'true', :formatter => 'currency_formatter'}} Amount
+-#         %th.center{:data => {:sortable => 'true'}} Status
 
-  $('#' + '#{table_dom_id}').on('click', 'td', function () {
-    var path = "#{bond_request_path('xxx')}";
-    var row = $(this).parent('tr').attr('id');
+-#         %th.center{:data => {:sortable => 'true'}} Description
+-#         %th.center{:data => {:sortable => 'true'}} Justification
+-#         %th.center{:data => {:visible => 'false', :sortable => 'true'}} Rejection
+-#         %th.center{:data => {:sortable => 'true'}} Action
+-#     %tbody
+-#       - bond_requests.each do |f|
+-#         %tr{:id => f.object_key, :class => 'action-path'}
+-#           %td{:data => {:field => 'action-cell'}}
+-#           %td.left= f.object_key
+-#           %td.left= f.organization.short_name
+-#           %td.left= f.created_at
+-#           %td.left= f.title
+-#           %td.right= f.amount
+-#           %td.right= f.state.humanize
+-#           %td.left{data: {tableexport: {value: f.description}}}
+-#             %a.transam-popover{data: {placement: 'left', toggle: 'popover', html: 'true', content: f.description}, title: 'Description', tabindex: '0'}
+-#               %i.fa.fa-info-circle
+-#           %td.left{data: {tableexport: {value: f.justification}}}
+-#             %a.transam-popover{data: {placement: 'left', toggle: 'popover', html: 'true', content: f.justification}, title: 'Justification', tabindex: '0'}
+-#               %i.fa.fa-info-circle
+-#           %td.left{data: {tableexport: {value: f.rejection}}}
+-#             %a.transam-popover{data: {placement: 'left', toggle: 'popover', html: 'true', content: f.rejection}, title: 'Rejection', tabindex: '0'}
+-#               %i.fa.fa-info-circle
+-#           %td.center.nowrap{:data => {:field => 'action-cell'}}
+-#             - if f.pending? && (can? :update, f)
+-#               = link_to edit_bond_request_path(f), :class => "button btn-xs", :title => "Edit request" do
+-#                 %i.fa.fa-edit.fa-1-5x.text-success
+-#               - if can? :update_status, f
+-#                 = link_to new_workflow_event_bond_requests_path(:event => 'reject', :targets => f.object_key), :remote => true, :title => 'Reject request' do
+-#                   %i.fa.fa-fw{:class => get_workflow_event_icon('reject')}
 
-    if ($(this).attr('data-field') != 'action-cell' && !$(this).hasClass('bs-checkbox')) {
-      var url = path.replace("xxx", row);
-      document.location.href = url;
-    }
-  });
+-# = render 'shared/table_formatters'
 
-  // Enables or disables the package actions depending on how many are selected
-  function enable_disable_table_actions() {
-    var num = selected_rows.size;
-    if (num > 0) {
-      $('.selected-action').removeClass('disabled');
-    } else {
-      $('.selected-action').addClass('disabled');
-    }
-  };
+-# :javascript
 
-  // Updates the selected rows in the table
-  function update_selected() {
-    var selected = $('#' + '#{table_dom_id}').bootstrapTable('getSelections');
-    selected_rows = new Set();
-    for (i = 0; i < selected.length; i++) {
-      //console.log(selected[i]);
-      selected_rows.add(selected[i][1]);
-    }
-    console.log(selected_rows);
-    enable_disable_table_actions();
-  };
+-#   var selected_rows = new Set();
 
-  // Removes an object identified by its object key from the set of objects selected
-  function remove_from_selected(object_key) {
-    selected_rows.delete(object_key);
-    enable_disable_table_actions();
-  };
+-#   $(document).ready(function() {
+
+-#     // Disable the table actions
+-#     enable_disable_table_actions();
+
+-#     // Add a handler for the print action which appends the selected orders to
+-#     // the href
+-#     $(".selected-action").on('click', function(e) {
+
+-#       var href = this.href;
+-#       href = href + '&targets=' + Array.from(selected_rows).toString();
+-#       $(this).attr('href', href);
+-#     });
+-#   });
+
+-#   $('#' + '#{table_dom_id}').on('check.bs.table', function(e, row) {
+-#     update_selected();
+-#   }).on('uncheck.bs.table', function(e, row) {
+-#     update_selected();
+-#   }).on('check-all.bs.table', function(e, row) {
+-#     update_selected();
+-#   }).on('uncheck-all.bs.table', function(e, row) {
+-#     update_selected();
+-#   }).on('sort.bs.table', function(e, name, order) {
+-#     //console.log('Sorting on ' + name + ' dir => ' + order);
+-#     $('#' + '#{table_dom_id}').bootstrapTable('selectPage', 1);
+-#   }).on('load-success.bs.table', function() {
+-#     // Table reloaded, clear saved selection
+-#     selected_rows = new Set();
+-#     enable_disable_table_actions();
+-#   }).on('post-body.bs.table', function () {
+-#     $('.transam-popover').popover({
+-#       trigger: 'hover'
+-#     });
+
+-#     $('.transam-tooltip').tooltip();
+-#   });
+
+-#   $('#' + '#{table_dom_id}').on('click', 'td', function () {
+-#     var path = "#{bond_request_path('xxx')}";
+-#     var row = $(this).parent('tr').attr('id');
+
+-#     if ($(this).attr('data-field') != 'action-cell' && !$(this).hasClass('bs-checkbox')) {
+-#       var url = path.replace("xxx", row);
+-#       document.location.href = url;
+-#     }
+-#   });
+
+-#   // Enables or disables the package actions depending on how many are selected
+-#   function enable_disable_table_actions() {
+-#     var num = selected_rows.size;
+-#     if (num > 0) {
+-#       $('.selected-action').removeClass('disabled');
+-#     } else {
+-#       $('.selected-action').addClass('disabled');
+-#     }
+-#   };
+
+-#   // Updates the selected rows in the table
+-#   function update_selected() {
+-#     var selected = $('#' + '#{table_dom_id}').bootstrapTable('getSelections');
+-#     selected_rows = new Set();
+-#     for (i = 0; i < selected.length; i++) {
+-#       //console.log(selected[i]);
+-#       selected_rows.add(selected[i][1]);
+-#     }
+-#     console.log(selected_rows);
+-#     enable_disable_table_actions();
+-#   };
+
+-#   // Removes an object identified by its object key from the set of objects selected
+-#   function remove_from_selected(object_key) {
+-#     selected_rows.delete(object_key);
+-#     enable_disable_table_actions();
+-#   };
 
 
 
