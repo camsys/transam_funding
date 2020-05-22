@@ -57,7 +57,7 @@
         "Bucket Name":'#{ link_to b.name, funding_bucket_path(b.object_key) }',
         "Year":"#{h format_as_fiscal_year(b.fy_year) }",
         "Owner":"#{h b.owner.short_name }",
-        "Template Name":"#{h b.funding_template.funding_source.name} (#{b.funding_template.name}) }",
+        "Template Name":"#{h b.funding_template.funding_source.name} (#{b.funding_template.name})",
         "Program Type":"#{h b.funding_template.funding_source.funding_source_type.name }",
         "Apportionment Amount":"#{h b.budget_amount }",
         "Allocated":"#{h b.budget_committed }",
