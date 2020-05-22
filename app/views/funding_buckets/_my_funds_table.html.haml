@@ -4,7 +4,7 @@
 :css
 
   .col-item:nth-child(2){
-    width:16%;
+    width:24%;
   }
   .col-item:nth-child(3){
     width:8%;
@@ -27,17 +27,15 @@
       :columns => "Bucket Name,drilldown-link,
                   Year,
                   Owner,
-                  Template Name,
                   Program Type,
-                  Apportionment Amount,
-                  Allocated,
-                  Available,
+                  Apportionment Amount,right-align,
+                  Allocated,right-align,
+                  Available,right-align,
                   Expires,
                   Object Key,",
       :selected_columns => "Bucket Name,
                   Year,
                   Owner,
-                  Template Name,
                   Program Type,
                   Apportionment Amount,
                   Allocated,
@@ -57,11 +55,10 @@
         "Bucket Name":'#{ link_to b.name, funding_bucket_path(b.object_key) }',
         "Year":"#{h format_as_fiscal_year(b.fy_year) }",
         "Owner":"#{h b.owner.short_name }",
-        "Template Name":"#{h b.funding_template.funding_source.name} (#{b.funding_template.name})",
-        "Program Type":"#{h b.funding_template.funding_source.funding_source_type.name }",
-        "Apportionment Amount":"#{h b.budget_amount }",
-        "Allocated":"#{h b.budget_committed }",
-        "Available":"#{h b.budget_remaining }",
+        "Program Type":"#{h (b.funding_template.funding_source.formula_fund ? 'Formula' : 'Discretionary') }",
+        "Apportionment Amount":"#{h format_as_currency(b.budget_amount) }",
+        "Allocated":"#{h format_as_currency(b.budget_committed) }",
+        "Available":"#{h format_as_currency(b.budget_remaining) }",
         "Expires":"#{h b.funding_template.funding_source.life_in_years.nil? ? "" : format_as_fiscal_year(b.fy_year + b.funding_template.funding_source.life_in_years - 1) }",
         "Object Key":"#{h b.object_key }",
       }, #{index});
@@ -69,7 +66,7 @@
 
 
 
-
+-# "Template Name":"#{h b.funding_template.funding_source.name} (#{b.funding_template.name})",
 
 -# .table-responsive
 -#   %table.table.table-hover{:id => table_dom_id, :data => {:toggle => 'table',
