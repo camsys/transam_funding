@@ -4,7 +4,7 @@
 :css
 
   .col-item:nth-child(2){
-    width:14%;
+    width:16%;
   }
   .col-item:nth-child(4){
     width:8%;
@@ -29,9 +29,9 @@
                   Owner,
                   Source,
                   Restricted To,
-                  Apportionment Amount,
-                  Committed,
-                  Available,
+                  Apportionment Amount,right-align,
+                  Allocated,right-align,
+                  Available,right-align,
                   Expires,
                   Contributor,
                   Program (Template),
@@ -42,7 +42,7 @@
                   Source,
                   Restricted To,
                   Apportionment Amount,
-                  Committed,
+                  Allocated,
                   Available,
                   Expires",
       :cookies => "true",
@@ -61,9 +61,9 @@
         "Owner":"#{h b.owner.short_name }",
         "Source":"#{h b.funding_template.funding_source.funding_source_type.name }",
         "Restricted To":"#{h b.target_organization.try(:short_name) }",
-        "Apportionment Amount":"#{h b.budget_amount }",
-        "Committed":"#{h b.budget_committed }",
-        "Available":"#{h b.budget_remaining }",
+        "Apportionment Amount":"#{h format_as_currency(b.budget_amount) }",
+        "Allocated":"#{h format_as_currency(b.budget_committed) }",
+        "Available":"#{h format_as_currency(b.budget_remaining) }",
         "Expires":"#{h b.funding_template.funding_source.life_in_years.nil? ? "" : format_as_fiscal_year(b.fy_year + b.funding_template.funding_source.life_in_years - 1) }",
         "Contributor":"todo",
         "Program (Template)":"#{h b.funding_template.funding_source.name} (#{b.funding_template.name}) }",
