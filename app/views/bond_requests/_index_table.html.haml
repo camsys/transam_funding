@@ -51,7 +51,7 @@
                   Description,,
                   Justification,,
                   Status,,
-                  Amount,,
+                  Amount,right-align,
                   Created,right-align,
                   Rejection,,
                   Object Key,,",
@@ -73,12 +73,12 @@
     :javascript
       add_row('#{table_dom_id}',
       {
-        "Title": '#{h link_to f.title }',
+        "Title": '#{h link_to f.title, bond_request_path(f)}',
         "Organization": '#{h f.organization.short_name }',
         "Description": '#{h f.description }',
         "Justification": '#{h f.justification }',
         "Status": '#{h f.state.humanize }',
-        "Amount": '#{h f.amount }',
+        "Amount": '#{h format_as_currency(f.amount) }',
         "Created": '#{h f.created_at }',
       }, #{index});
 
