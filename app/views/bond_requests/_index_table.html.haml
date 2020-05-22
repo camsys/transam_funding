@@ -79,7 +79,7 @@
         "Justification": '#{h f.justification }',
         "Status": '#{h f.state.humanize }',
         "Amount": '#{h format_as_currency(f.amount) }',
-        "Created": '#{h f.created_at }',
+        "Created": '#{h format_as_date_time(f.created_at) }',
       }, #{index});
 
 
