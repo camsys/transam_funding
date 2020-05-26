@@ -49,10 +49,10 @@ class FundingTemplate < ActiveRecord::Base
       :match_required,
       :active,
       :query_string,
-      :organization_ids,
       :create_multiple_agencies,
       :create_multiple_buckets_for_agency_year,
       :restricted,
+      {:organization_ids => []},
       {:funding_template_type_ids=>[]}
   ]
 
