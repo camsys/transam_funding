@@ -93,17 +93,14 @@ class FundingTemplatesController < OrganizationAwareController
 
   # POST /funding_templates
   def create
-    @funding_template = FundingTemplate.new(funding_template_params.except(:organization_ids))
+    @funding_template = FundingTemplate.new(funding_template_params)
 
     if params[:query].to_i > 0
       @funding_template.query_string = QueryParam.find(params[:query].to_i).try(:query_string)
+      # clear the existing list of organizations
+      @funding_template.organizations.clear
     else
       @funding_template.query_string = nil
-
-      org_list = funding_template_params[:organization_ids].split(',').uniq
-      org_list.each do |id|
-        @funding_template.organizations << Organization.find(id)
-      end
     end
 
     if @funding_template.save
@@ -116,7 +113,7 @@ class FundingTemplatesController < OrganizationAwareController
 
   # PATCH/PUT /funding_templates/1
   def update
-    if @funding_template.update(funding_template_params.except(:organization_ids))
+    if @funding_template.update(funding_template_params)
 
       if params[:query].to_i > 0
         @funding_template.query_string = QueryParam.find(params[:query].to_i).try(:query_string)
@@ -125,14 +122,6 @@ class FundingTemplatesController < OrganizationAwareController
         @funding_template.organizations.clear
       else
         @funding_template.query_string = nil
-
-        # clear the existing list of organizations
-        @funding_template.organizations.clear
-        # Add the (possibly) new organizations into the object
-        org_list = funding_template_params[:organization_ids].split(',')
-        org_list.each do |id|
-          @funding_template.organizations << Organization.find(id)
-        end
       end
 
       @funding_template.save
