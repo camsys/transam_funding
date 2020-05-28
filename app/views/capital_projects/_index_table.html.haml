@@ -75,10 +75,10 @@
                 Title,
                 Scope,
                 Project Type,
-                SOGR,
-                Shadow,
-                Multi-Year,
-                Emergency Project,
+                SOGR,checkmark-column,
+                Shadow,checkmark-column,
+                Multi-Year,checkmark-column,
+                Emergency Project,checkmark-column,
                 ALI,
                 Requested,
                 Allocated,",
@@ -99,6 +99,16 @@
     :sort => 'server',
     :sort_params => '',
     :url => table_capital_projects_path(:format => :json) }}
+
+:javascript
+  window["#{table_dom_id}"].apply_styles = function(){
+    $("##{table_dom_id} .checkmark-column .cell-text:contains('true')").each(function(){
+      if($(this).children().length === 0) {
+        $(this).text("").append($("<i id='checkmark' class='fa fa-check text-default'></i>"));
+      }
+    $("##{table_dom_id} .checkmark-column .cell-text:contains('false')").hide();
+    });
+  }
 
 
 
