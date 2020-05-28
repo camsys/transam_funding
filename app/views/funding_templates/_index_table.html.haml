@@ -29,10 +29,10 @@
                   Owner,
                   Contributor,
                   Transfer,
-                  Capital,
-                  Operating,
-                  Debt Service,
-                  Other,
+                  Capital,checkmark-column,
+                  Operating,checkmark-column,
+                  Debt Service,checkmark-column,
+                  Other,checkmark-column,
                   Recurring,
                   % Match,
                   Object Key,",
@@ -53,6 +53,9 @@
       :filter => "[]",
       :data_source => 'client',
       :url => ''}}
+
+
+
   - funding_templates.each_with_index do |f, index|
 
     :javascript
@@ -63,16 +66,24 @@
         "Owner":"#{h f.owner.to_s }",
         "Contributor":"#{h f.contributor.to_s }",
         "Transfer":"#{h f.transfer_only ? 'Yes' : 'No' }",
-        "Capital":"todo",
-        "Operating":"todo",
-        "Debt Service":"todo",
-        "Other":"todo",
+        "Capital":"#{h format_as_boolean(f.funding_template_type_is? 'Capital')}",
+        "Operating":"#{h format_as_boolean(f.funding_template_type_is? 'Operating')}",
+        "Debt Service":"#{h format_as_boolean(f.funding_template_type_is? 'Debt Service')}",
+        "Other":"#{h format_as_boolean(f.funding_template_type_is? 'Other')}",
         "Recurring":"#{h f.recurring ? 'Yes' : 'No' }",
         "% Match":"#{h f.match_required.present? ? f.match_required : '' }",
         "Object Key":"#{h f.object_key }",
       }, #{index});
 
-
+-# :javascript
+-#   window["#{table_dom_id}"].apply_styles = function(){
+-#     $("##{table_dom_id} .checkmark-column .cell-text:contains('true')").each(function(){
+-#       if($(this).children().length === 0) {
+-#         $(this).text("").append($("<i id='checkmark' class='fa fa-check text-default'></i>"));
+-#       }
+-#     $("##{table_dom_id} .checkmark-column .cell-text:contains('false')").hide();
+-#     });
+-#   }
 
 
 
