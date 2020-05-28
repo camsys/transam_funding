@@ -101,7 +101,7 @@
     :cookies => 'true',
     :sort => 'server',
     :sort_params => '',
-    :url => capital_projects_path(:format => :json) }}
+    :url => table_capital_projects_path(:format => :json) }}
 
 
 
@@ -241,12 +241,4 @@
 -#   function total_funds_formatter(value) {
 -#     return '#{format_as_currency(@projects.total_funds)}';
 -#   }
-
-  $(document).ready(function(){
-    createFlyout(
-      "#flyout-body",
-      "#{@project, @fiscal_years = helper_new}",
-      "#{raw escape_javascript(render :partial => 'form', :locals => {:project => @project})}"
-     );
-  });
 
