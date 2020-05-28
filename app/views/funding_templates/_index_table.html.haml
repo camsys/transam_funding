@@ -71,7 +71,7 @@
         "Debt Service":"#{h format_as_boolean(f.funding_template_type_is? 'Debt Service')}",
         "Other":"#{h format_as_boolean(f.funding_template_type_is? 'Other')}",
         "Recurring":"#{h f.recurring ? 'Yes' : 'No' }",
-        "% Match":"#{h f.match_required.present? ? f.match_required : '' }",
+        "% Match":"#{h format_as_percentage(f.match_required.present? ? f.match_required : '') }",
         "Object Key":"#{h f.object_key }",
       }, #{index});
 
