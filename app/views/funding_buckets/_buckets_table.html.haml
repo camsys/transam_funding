@@ -1,17 +1,7 @@
 :ruby
   table_dom_id = SecureRandom.hex
 
-:css
 
-  .col-item:nth-child(2){
-    width:16%;
-  }
-  .col-item:nth-child(4){
-    width:8%;
-  }
-  .col-item:nth-child(5){
-    width:8%;
-  }
 
 = javascript_include_tag  "https://kit.fontawesome.com/#{ENV['FONT_AWESOME']}.js"
 .library-table
@@ -21,30 +11,23 @@
       :side => 'client',
       :current_page => '0',
       :current_page_size => '10',
-      :page_sizes => "10,20,50,100,200",
+      :page_sizes => "10,20,50,100",
       :search => 'client',
       :export => "['csv', 'txt', 'excel']",
-      :columns => "Bucket Name,drilldown-link,
-                  Year,
-                  Owner,
-                  Source,
-                  Restricted To,
-                  Apportionment Amount,right-align,
-                  Allocated,right-align,
-                  Available,right-align,
-                  Expires,
-                  Contributor,
-                  Program (Template),
-                  Object Key,",
-      :selected_columns => "Bucket Name,
-                  Year,
-                  Owner,
-                  Source,
-                  Restricted To,
-                  Apportionment Amount,
-                  Allocated,
-                  Available,
-                  Expires",
+      :columns => '{"0":{"name":"Bucket Name","type":"drilldown-link","width":"16%"},
+                    "1":{"name":"Year","width":"8%"},
+                    "2":{"name":"Owner","width":"8%"},
+                    "3":{"name":"Source"},
+                    "4":{"name":"Restricted To"},
+                    "5":{"name":"Apportionment Amount","type":"right-align"},
+                    "6":{"name":"Allocated","type":"right-align"},
+                    "7":{"name":"Available","type":"right-align"},
+                    "8":{"name":"Expires"},
+                    "9":{"name":"Contributor"},
+                    "10":{"name":"Program (Template)"},
+                    "11":{"name":"Object Key"},
+                    "12":{"name":"Actions", "type":"action-column"}}',
+      :selected_columns => "0,1,2,3,4,5,6,7,8,12",
       :cookies => "true",
       :sort => 'client',
       :sort_params => @params,
@@ -52,25 +35,44 @@
       :data_source => 'client',
       :url => ''}}
   - buckets.each_with_index do |b, index|
+    %div.actions
+      %a.transam-popover{data: {placement: 'left', toggle: 'popover', html: 'true', content: b.description}, title: 'Description', tabindex: '0'}
+        %i.fa.fa-info-circle
+      - if (can? :edit_bucket_app, b) && b.is_bucket_app?
+        = link_to edit_bucket_app_funding_bucket_path(b) do
+          %i.fa.fa-edit.fa-1-5x.text-success
+      - elsif (can? :update, b)
+        = link_to edit_funding_bucket_path(b), :remote => true do
+          %i.fa.fa-edit.fa-1-5x.text-success
+
+      -#We want to display different text based on what the user is deleting. If it is a regular bucket then we want to make it clear that it isn't a grant application.
+      - if (can? :destroy, b) && b.deleteable?
+        = link_to funding_bucket_path(b), :method => :delete, :data => {:confirm => "Are you sure you want to remove this #{ b.is_bucket_app? ? 'fund':'bucket'}? The action can't be undone."}  do
+          %i.fa.fa-trash-o.fa-1-5x.text-danger
 
     :javascript
       add_row('#{table_dom_id}',
       {     
-        "Bucket Name":'#{ link_to b.name, funding_bucket_path(b.object_key) }',
-        "Year":"#{h format_as_fiscal_year(b.fy_year) }",
-        "Owner":"#{h b.owner.short_name }",
-        "Source":"#{h b.funding_template.funding_source.funding_source_type.name }",
-        "Restricted To":"#{h b.target_organization.try(:short_name) }",
-        "Apportionment Amount":"#{h format_as_currency(b.budget_amount) }",
-        "Allocated":"#{h format_as_currency(b.budget_committed) }",
-        "Available":"#{h format_as_currency(b.budget_remaining) }",
-        "Expires":"#{h b.funding_template.funding_source.life_in_years.nil? ? "" : format_as_fiscal_year(b.fy_year + b.funding_template.funding_source.life_in_years - 1) }",
-        "Contributor":"todo",
-        "Program (Template)":"#{h b.funding_template.funding_source.name} (#{b.funding_template.name}) }",
-        "Object Key":"#{h b.object_key }",
-        
+        "0":'#{ link_to b.name, funding_bucket_path(b.object_key) }',
+        "1":"#{h format_as_fiscal_year(b.fy_year) }",
+        "2":"#{h b.owner.short_name }",
+        "3":"#{h b.funding_template.funding_source.funding_source_type.name }",
+        "4":"#{h b.target_organization.try(:short_name) }",
+        "5":"#{h format_as_currency(b.budget_amount) }",
+        "6":"#{h format_as_currency(b.budget_committed) }",
+        "7":"#{h format_as_currency(b.budget_remaining) }",
+        "8":"#{h b.funding_template.funding_source.life_in_years.nil? ? "" : format_as_fiscal_year(b.fy_year + b.funding_template.funding_source.life_in_years - 1) }",
+        "9":"#{h b.funding_template.contributor }",
+        "10":"#{h b.funding_template.funding_source.name} (#{b.funding_template.name}) }",
+        "11":"#{h b.object_key }",
       }, #{index});
-
+      // TEMP UNTIL WE DO THIS FOR REAL
+      // TODO: PLEASE DON'T LET THIS GO TO PRODUCTION
+      // HACKY HACK IS HACKY
+      $(".row-item").eq(#{index}).ready(function (){
+        let cell = $("##{table_dom_id} .action-column").eq(#{index}).find(".cell-text");
+        $(".actions").eq(#{index}).detach().appendTo(cell);
+      });
 
 
 

@@ -103,6 +103,11 @@ class FundingTemplate < ActiveRecord::Base
     self.query_string.present? ? Organization.find_by_sql(self.query_string) : self.organizations
   end
 
+  def funding_template_type_is? funding_template_type_name
+    funding_template_types.include?(FundingTemplateType.find_by(name:funding_template_type_name))
+  end
+
+
 
   #------------------------------------------------------------------------------
   #

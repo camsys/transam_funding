@@ -21,58 +21,79 @@
       :side => 'client',
       :current_page => '0',
       :current_page_size => '10',
-      :page_sizes => "10,20,50,100,200",
+      :page_sizes => "10,20,50,100",
       :search => 'client',
       :export => "['csv', 'txt', 'excel']",
-      :columns => "Template Name,drilldown-link,
-                  Program,
-                  Owner,
-                  Contributor,
-                  Transfer,
-                  Capital,
-                  Operating,
-                  Debt Service,
-                  Other,
-                  Recurring,
-                  % Match,
-                  Object Key,",
-      :selected_columns => "Template Name,
-                  Program,
-                  Owner,
-                  Contributor,
-                  Transfer,
-                  Capital,
-                  Operating,
-                  Debt Service,
-                  Other,
-                  Recurring,
-                  % Match",
+      :columns => '{"0":{"name":"Template Name","type":"drilldown-link"},
+                    "1":{"name":"Program"},
+                    "2":{"name":"Owner"},
+                    "3":{"name":"Contributor"},
+                    "4":{"name":"Transfer"},
+                    "5":{"name":"Capital","type":"checkmark-column"},
+                    "6":{"name":"Operating","type":"checkmark-column"},
+                    "7":{"name":"Debt Service","type":"checkmark-column"},
+                    "8":{"name":"Other","type":"checkmark-column"},
+                    "9":{"name":"Recurring"},
+                    "10":{"name":"% Match"},
+                    "11":{"name":"Object Key"},
+                    "12":{"name":"Action","type":"action-column"}}',
+      :selected_columns => "0,1,2,3,4,5,6,7,8,8,10,12",
       :cookies => "true",
       :sort => 'client',
       :sort_params => @params,
       :filter => "[]",
       :data_source => 'client',
       :url => ''}}
+
+
+
   - funding_templates.each_with_index do |f, index|
+    %div.actions
+      %a.transam-popover{data: {placement: 'left', toggle: 'popover', html: 'true', content: f.description}, title: 'Description', tabindex: '0'}
+        %i.fa.fa-info-circle
+      - if can? :update, f
+        = link_to edit_funding_template_path(f), :class => "button btn-xs", :title => "Edit template" do
+          %i.fa.fa-edit.fa-1-5x.text-success
+        - if can? :destroy, f
+          -# link_to funding_template_path(f), :method => :delete, :data => {:confirm => "This template is associated with #{f.funding_buckets.active.count} buckets, which are tagged to YYY projects. Are you sure? The action cannot be undone."}  do
+          = link_to funding_template_path(f), :method => :delete, :data => {:confirm => "This template is associated with #{f.funding_buckets.active.count} buckets. Are you sure? The action cannot be undone."}  do
+            %i.fa.fa-trash-o.fa-fw.text-danger
+
 
     :javascript
       add_row('#{table_dom_id}',
       {
-        "Template Name":'#{ link_to f.name, funding_template_path(f.object_key) }',
-        "Program":"#{h f.funding_source.to_s }",
-        "Owner":"#{h f.owner.to_s }",
-        "Contributor":"#{h f.contributor.to_s }",
-        "Transfer":"#{h f.transfer_only ? 'Yes' : 'No' }",
-        "Capital":"todo",
-        "Operating":"todo",
-        "Debt Service":"todo",
-        "Other":"todo",
-        "Recurring":"#{h f.recurring ? 'Yes' : 'No' }",
-        "% Match":"#{h f.match_required.present? ? f.match_required : '' }",
-        "Object Key":"#{h f.object_key }",
+        "0":'#{ link_to f.name, funding_template_path(f.object_key) }',
+        "1":"#{h f.funding_source.to_s }",
+        "2":"#{h f.owner.to_s }",
+        "3":"#{h f.contributor.to_s }",
+        "4":"#{h f.transfer_only ? 'Yes' : 'No' }",
+        "5":"#{h format_as_boolean(f.funding_template_type_is? 'Capital')}",
+        "6":"#{h format_as_boolean(f.funding_template_type_is? 'Operating')}",
+        "7":"#{h format_as_boolean(f.funding_template_type_is? 'Debt Service')}",
+        "8":"#{h format_as_boolean(f.funding_template_type_is? 'Other')}",
+        "9":"#{h f.recurring ? 'Yes' : 'No' }",
+        "10":"#{h format_as_percentage(f.match_required.present? ? f.match_required : '') }",
+        "11":"#{h f.object_key }",
       }, #{index});
 
+      // TEMP UNTIL WE DO THIS FOR REAL
+      // TODO: PLEASE DON'T LET THIS GO TO PRODUCTION
+      // HACKY HACK IS HACKY
+      $(".row-item").eq(#{index}).ready(function (){
+        let cell = $("##{table_dom_id} .action-column").eq(#{index}).find(".cell-text");
+        $(".actions").eq(#{index}).detach().appendTo(cell);
+      });
 
+-# :javascript
+-#   window["#{table_dom_id}"].apply_styles = function(){
+-#     $("##{table_dom_id} .checkmark-column .cell-text:contains('true')").each(function(){
+-#       if($(this).children().length === 0) {
+-#         $(this).text("").append($("<i id='checkmark' class='fa fa-check text-default'></i>"));
+-#       }
+-#     $("##{table_dom_id} .checkmark-column .cell-text:contains('false')").hide();
+-#     });
+-#   }
 
 
 

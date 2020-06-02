@@ -8,6 +8,7 @@
     = render :partial => "bond_requests/index_actions"
 
 
+<<<<<<< HEAD
 :css
 
   .col-item:nth-child(1){
@@ -34,6 +35,9 @@
   .col-item:nth-child(8){
     width:8%;
   }
+=======
+
+>>>>>>> develop
 
 = javascript_include_tag  "https://kit.fontawesome.com/#{ENV['FONT_AWESOME']}.js"
 .library-table
@@ -43,25 +47,19 @@
       :side => 'client',
       :current_page => '0',
       :current_page_size => '10',
-      :page_sizes => "10,20,50,100,200",
+      :page_sizes => "10,20,50,100",
       :search => 'client',
       :export => "['csv', 'txt', 'excel']",
-      :columns => "Title,drilldown-link,
-                  Organization,,
-                  Description,,
-                  Justification,,
-                  Status,,
-                  Amount,right-align,
-                  Created,right-align,
-                  Rejection,,
-                  Object Key,,",
-        :selected_columns => "Title,
-                  Organization,
-                  Description,
-                  Justification,
-                  Status,
-                  Amount,
-                  Created",
+      :columns => '{"0":{"name":"Title","type":"drilldown-link","width":"12%"},
+                    "1":{"name":"Organization","width":"12%"},
+                    "2":{"name":"Description","width":"12%"},
+                    "3":{"name":"Justification","width":"8%"},
+                    "4":{"name":"Status","width":"8%"},
+                    "5":{"name":"Amount","type":"right-align","width":"8%"},
+                    "6":{"name":"Created","type":"right-align","width":"12%"},
+                    "7":{"name":"Rejection","width":"10%"},
+                    "8":{"name":"Object Key","width":"10%"}}',
+        :selected_columns => "0,1,2,3,4,5,6",
       :cookies => "true",
       :sort => 'client',
       :params => "{}",
@@ -73,13 +71,15 @@
     :javascript
       add_row('#{table_dom_id}',
       {
-        "Title": '#{h link_to f.title, bond_request_path(f)}',
-        "Organization": '#{h f.organization.short_name }',
-        "Description": '#{h f.description }',
-        "Justification": '#{h f.justification }',
-        "Status": '#{h f.state.humanize }',
-        "Amount": '#{h format_as_currency(f.amount) }',
-        "Created": '#{h format_as_date_time(f.created_at) }',
+        "0": '#{h link_to f.title, bond_request_path(f)}',
+        "1": '#{h f.organization.short_name }',
+        "2": '#{h f.description }',
+        "3": '#{h f.justification }',
+        "4": '#{h f.state.humanize }',
+        "5": '#{h format_as_currency(f.amount) }',
+        "6": '#{h format_as_date_time(f.created_at) }',
+        "7": '#{h f.rejection }',
+        "8": '#{h f.object_key }',
       }, #{index});
 
 
