@@ -37,7 +37,7 @@
                     "10":{"name":"% Match"},
                     "11":{"name":"Object Key"},
                     "12":{"name":"Action","type":"action-column"}}',
-      :selected_columns => "0,1,2,3,4,5,6,7,8,8,10,12",
+      :selected_columns => "0,1,2,3,4,5,6,7,8,9,10,12",
       :cookies => "true",
       :sort => 'client',
       :sort_params => @params,
@@ -73,7 +73,7 @@
         "7":"#{h format_as_boolean(f.funding_template_type_is? 'Debt Service')}",
         "8":"#{h format_as_boolean(f.funding_template_type_is? 'Other')}",
         "9":"#{h f.recurring ? 'Yes' : 'No' }",
-        "10":"#{h format_as_percentage(f.match_required.present? ? f.match_required : '') }",
+        "10":"#{h format_as_percentage(f.match_required.present? ? f.match_required : '', 3) }",
         "11":"#{h f.object_key }",
       }, #{index});
 
