@@ -8,42 +8,13 @@
     = render :partial => "bond_requests/index_actions"
 
 
-<<<<<<< HEAD
-:css
-
-  .col-item:nth-child(1){
-    width:10%;
-  }
-  .col-item:nth-child(2){
-    width:12%;
-  }
-  .col-item:nth-child(3){
-    width:6%;
-  }
-  .col-item:nth-child(4){
-    width:16%;
-  }
-  .col-item:nth-child(5){
-    width:16%;
-  }
-  .col-item:nth-child(6){
-    width:6%;
-  }
-  .col-item:nth-child(7){
-    width:6%;
-  }
-  .col-item:nth-child(8){
-    width:8%;
-  }
-=======
-
->>>>>>> develop
 
 = javascript_include_tag  "https://kit.fontawesome.com/#{ENV['FONT_AWESOME']}.js"
 .library-table
   %table.elbat{:id => table_dom_id,
     :use => 'true',
     :data => {:use => 'true',
+      :table_code => 'bond_requests',
       :side => 'client',
       :current_page => '0',
       :current_page_size => '10',
