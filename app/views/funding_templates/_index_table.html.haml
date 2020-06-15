@@ -18,6 +18,7 @@
   %table.elbat{:id => table_dom_id,
     :use => 'true',
     :data => {:use => 'true',
+      :table_code => 'templates',
       :side => 'client',
       :current_page => '0',
       :current_page_size => '10',
@@ -28,7 +29,7 @@
                     "1":{"name":"Program"},
                     "2":{"name":"Owner"},
                     "3":{"name":"Contributor"},
-                    "4":{"name":"Transfer"},
+                    "4":{"name":"Transfer","type":"checkmark-column"},
                     "5":{"name":"Capital","type":"checkmark-column"},
                     "6":{"name":"Operating","type":"checkmark-column"},
                     "7":{"name":"Debt Service","type":"checkmark-column"},
@@ -67,7 +68,7 @@
         "1":"#{h f.funding_source.to_s }",
         "2":"#{h f.owner.to_s }",
         "3":"#{h f.contributor.to_s }",
-        "4":"#{h f.transfer_only ? 'Yes' : 'No' }",
+        "4":"#{h format_as_boolean(f.transfer_only) }",
         "5":"#{h format_as_boolean(f.funding_template_type_is? 'Capital')}",
         "6":"#{h format_as_boolean(f.funding_template_type_is? 'Operating')}",
         "7":"#{h format_as_boolean(f.funding_template_type_is? 'Debt Service')}",
@@ -80,10 +81,7 @@
       // TEMP UNTIL WE DO THIS FOR REAL
       // TODO: PLEASE DON'T LET THIS GO TO PRODUCTION
       // HACKY HACK IS HACKY
-      $(".row-item").eq(#{index}).ready(function (){
-        let cell = $("##{table_dom_id} .action-column").eq(#{index}).find(".cell-text");
-        $(".actions").eq(#{index}).detach().appendTo(cell);
-      });
+      add_aux_queue('#{table_dom_id}',()=>$(".actions").eq(#{index}).detach().appendTo($("##{table_dom_id} .action-column").eq(#{index}).find(".cell-text")));
 
 -# :javascript
 -#   window["#{table_dom_id}"].apply_styles = function(){

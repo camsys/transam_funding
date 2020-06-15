@@ -1,13 +1,43 @@
 :ruby
   table_dom_id = SecureRandom.hex
 
+<<<<<<< HEAD
+:css
 
+  .col-item:nth-child(2){
+    width:28%;
+  }
+  .col-item:nth-child(3){
+    width:8%;
+  }
+  .col-item:nth-child(4){
+    width:8%;
+  }
+  .col-item:nth-child(5){
+    width:16%;
+  }
+  .col-item:nth-child(6){
+    width:8%;
+  }
+  .col-item:nth-child(7){
+    width:6%;
+  }
+  .col-item:nth-child(8){
+    width:6%;
+  }
+  .col-item:nth-child(9){
+    width:6%;
+  }
+=======
+
+>>>>>>> develop
 
 = javascript_include_tag  "https://kit.fontawesome.com/#{ENV['FONT_AWESOME']}.js"
 .library-table
   %table.elbat{:id => table_dom_id,
     :use => 'true',
     :data => {:use => 'true',
+      :table_code => 'my_funds',
       :side => 'client',
       :current_page => '0',
       :current_page_size => '10',
@@ -65,10 +95,7 @@
       // TEMP UNTIL WE DO THIS FOR REAL
       // TODO: PLEASE DON'T LET THIS GO TO PRODUCTION
       // HACKY HACK IS HACKY
-      $(".row-item").eq(#{index}).ready(function (){
-        let cell = $("##{table_dom_id} .action-column").eq(#{index}).find(".cell-text");
-        $(".actions").eq(#{index}).detach().appendTo(cell);
-      });
+      add_aux_queue('#{table_dom_id}',()=>$(".actions").eq(#{index}).detach().appendTo($("##{table_dom_id} .action-column").eq(#{index}).find(".cell-text")));
 
 
 
