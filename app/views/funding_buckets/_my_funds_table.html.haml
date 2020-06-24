@@ -1,36 +1,6 @@
 :ruby
   table_dom_id = SecureRandom.hex
 
-<<<<<<< HEAD
-:css
-
-  .col-item:nth-child(2){
-    width:28%;
-  }
-  .col-item:nth-child(3){
-    width:8%;
-  }
-  .col-item:nth-child(4){
-    width:8%;
-  }
-  .col-item:nth-child(5){
-    width:16%;
-  }
-  .col-item:nth-child(6){
-    width:8%;
-  }
-  .col-item:nth-child(7){
-    width:6%;
-  }
-  .col-item:nth-child(8){
-    width:6%;
-  }
-  .col-item:nth-child(9){
-    width:6%;
-  }
-=======
-
->>>>>>> develop
 
 = javascript_include_tag  "https://kit.fontawesome.com/#{ENV['FONT_AWESOME']}.js"
 .library-table
@@ -44,9 +14,9 @@
       :page_sizes => "10,20,50,100",
       :search => 'client',
       :export => "['csv', 'txt', 'excel']",
-      :columns => '{"0":{"name":"Bucket Name","type":"drilldown-link","width":"24%"},
-                    "1":{"name":"Year","width":"8%"},
-                    "2":{"name":"Owner","width":"8%"},
+      :columns => '{"name":{"name":"Bucket Name","type":"drilldown-link","width":"24%"},
+                    "fiscal_year":{"name":"Year","width":"8%"},
+                    "owner":{"name":"Owner","width":"8%"},
                     "3":{"name":"Program Type"},
                     "4":{"name":"Apportionment Amount","type":"right-align"},
                     "5":{"name":"Allocated","type":"right-align"},
@@ -54,7 +24,7 @@
                     "7":{"name":"Expires"},
                     "8":{"name":"Object Key"},
                     "9":{"name":"Actions","type":"action-column"}}',
-      :selected_columns => "0,1,2,3,4,5,6,7,9",
+      :selected_columns => "name,fiscal_year,owner,3,4,5,6,7,9",
       :cookies => "true",
       :sort => 'client',
       :sort_params => @params,
@@ -82,9 +52,9 @@
     :javascript
       add_row('#{table_dom_id}',
       {     
-        "0":'#{ link_to b.name, funding_bucket_path(b.object_key) }',
-        "1":"#{h format_as_fiscal_year(b.fy_year) }",
-        "2":"#{h b.owner.short_name }",
+        "name":'#{ link_to b.name, funding_bucket_path(b.object_key) }',
+        "fiscal_year":"#{h format_as_fiscal_year(b.fy_year) }",
+        "owner":"#{h b.owner.short_name }",
         "3":"#{h (b.funding_template.funding_source.formula_fund ? 'Formula' : 'Discretionary') }",
         "4":"#{h format_as_currency(b.budget_amount) }",
         "5":"#{h format_as_currency(b.budget_committed) }",
