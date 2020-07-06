@@ -34,7 +34,7 @@
                     "6":{"name":"Operating","type":"checkmark-column"},
                     "7":{"name":"Debt Service","type":"checkmark-column"},
                     "8":{"name":"Other","type":"checkmark-column"},
-                    "9":{"name":"Recurring"},
+                    "9":{"name":"Recurring","type":"checkmark-column"},
                     "10":{"name":"% Match"},
                     "11":{"name":"Object Key"},
                     "12":{"name":"Action","type":"action-column"}}',
@@ -73,7 +73,7 @@
         "6":"#{h format_as_boolean(f.funding_template_type_is? 'Operating')}",
         "7":"#{h format_as_boolean(f.funding_template_type_is? 'Debt Service')}",
         "8":"#{h format_as_boolean(f.funding_template_type_is? 'Other')}",
-        "9":"#{h f.recurring ? 'Yes' : 'No' }",
+        "9":"#{h format_as_boolean(f.recurring)}",
         "10":"#{h format_as_percentage(f.match_required.present? ? f.match_required : '', 3) }",
         "11":"#{h f.object_key }",
       }, #{index});
