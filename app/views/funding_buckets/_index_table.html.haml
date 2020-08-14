@@ -11,6 +11,8 @@
   end
 
 #buckets_table_actions.btn-toolbar
+  #subheader-label
+    %h2 Buckets
   - if can?(:create, FundingBucket)
     .btn-group
       = link_to url, :class => 'btn btn-default' do
