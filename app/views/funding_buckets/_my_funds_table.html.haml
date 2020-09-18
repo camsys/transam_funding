@@ -2,33 +2,29 @@
   table_dom_id = SecureRandom.hex
 
 
-
 = javascript_include_tag  "https://kit.fontawesome.com/#{ENV['FONT_AWESOME']}.js"
 .library-table
   %table.elbat{:id => table_dom_id,
     :use => 'true',
     :data => {:use => 'true',
-      :table_code => 'buckets',
+      :table_code => 'my_funds',
       :side => 'client',
       :current_page => '0',
       :current_page_size => '10',
       :page_sizes => "10,20,50,100",
       :search => 'client',
       :export => "['csv', 'txt']",
-      :columns => '{"name":{"name":"Bucket Name","type":"drilldown-link","width":"16%"},
-                    "year":{"name":"Year","width":"8%"},
+      :columns => '{"name":{"name":"Bucket Name","type":"drilldown-link","width":"24%"},
+                    "fiscal_year":{"name":"Year","width":"8%"},
                     "owner":{"name":"Owner","width":"8%"},
-                    "3":{"name":"Source"},
-                    "4":{"name":"Restricted To"},
-                    "5":{"name":"Apportionment Amount","type":"right-align"},
-                    "6":{"name":"Allocated","type":"right-align"},
-                    "7":{"name":"Available","type":"right-align"},
-                    "8":{"name":"Expires"},
-                    "9":{"name":"Contributor"},
-                    "10":{"name":"Program (Template)"},
-                    "11":{"name":"Object Key"},
-                    "12":{"name":"Actions", "type":"action-column"}}',
-      :selected_columns => "name,year,owner,3,4,5,6,7,8,12",
+                    "3":{"name":"Program Type"},
+                    "4":{"name":"Apportionment Amount","type":"right-align"},
+                    "5":{"name":"Allocated","type":"right-align"},
+                    "6":{"name":"Available","type":"right-align"},
+                    "7":{"name":"Expires"},
+                    "8":{"name":"Object Key"},
+                    "9":{"name":"Actions","type":"action-column"}}',
+      :selected_columns => "name,fiscal_year,owner,3,4,5,6,7,9",
       :cookies => "true",
       :sort => 'client',
       :sort_params => @params,
@@ -37,35 +33,34 @@
       :url => ''}}
   - buckets.each_with_index do |b, index|
     %div.actions
-      %a.transam-popover{data: {placement: 'left', toggle: 'popover', html: 'true', content: b.description}, title: 'Description', tabindex: '0'}
-        %i.fa.fa-info-circle
-      - if (can? :edit_bucket_app, b) && b.is_bucket_app?
-        = link_to edit_bucket_app_funding_bucket_path(b) do
-          %i.fa.fa-edit.fa-1-5x.text-success
-      - elsif (can? :update, b)
-        = link_to edit_funding_bucket_path(b), :remote => true do
-          %i.fa.fa-edit.fa-1-5x.text-success
+      %td.center.nowrap{:data => {:field => 'action-cell'}}
+        %a.transam-popover{data: {placement: 'left', toggle: 'popover', html: 'true', content: b.description}, title: 'Description', tabindex: '0'}
+          %i.fa.fa-info-circle
+        - if (can? :edit_bucket_app, b) && b.is_bucket_app?
+          = link_to edit_bucket_app_funding_bucket_path(b) do
+            %i.fa.fa-edit.fa-1-5x.text-success
+        - elsif (can? :update, b)
+          = link_to edit_funding_bucket_path(b), :remote => true do
+            %i.fa.fa-edit.fa-1-5x.text-success
 
-      -#We want to display different text based on what the user is deleting. If it is a regular bucket then we want to make it clear that it isn't a grant application.
-      - if (can? :destroy, b) && b.deleteable?
-        = link_to funding_bucket_path(b), :method => :delete, :data => {:confirm => "Are you sure you want to remove this #{ b.is_bucket_app? ? 'fund':'bucket'}? The action can't be undone."}  do
-          %i.fa.fa-trash-o.fa-1-5x.text-danger
+        -#We want to display different text based on what the user is deleting. If it is a regular bucket then we want to make it clear that it isn't a grant application.
+        - if (can? :destroy, b) && b.deleteable?
+          = link_to funding_bucket_path(b), :method => :delete, :data => {:confirm => "Are you sure you want to remove this #{ b.is_bucket_app? ? 'fund':'bucket'}? The action can't be undone."}  do
+            %i.fa.fa-trash-o.fa-1-5x.text-danger
+
 
     :javascript
       add_row('#{table_dom_id}',
       {     
         "name":'#{ link_to b.name, funding_bucket_path(b.object_key) }',
-        "year":"#{h format_as_fiscal_year(b.fy_year) }",
+        "fiscal_year":"#{h format_as_fiscal_year(b.fy_year) }",
         "owner":"#{h b.owner.short_name }",
-        "3":"#{h b.funding_template.funding_source.funding_source_type.name }",
-        "4":"#{h b.target_organization.try(:short_name) }",
-        "5":"#{h format_as_currency(b.budget_amount) }",
-        "6":"#{h format_as_currency(b.budget_committed) }",
-        "7":"#{h format_as_currency(b.budget_remaining) }",
-        "8":"#{h b.funding_template.funding_source.life_in_years.nil? ? "" : format_as_fiscal_year(b.fy_year + b.funding_template.funding_source.life_in_years - 1) }",
-        "9":"#{h b.funding_template.contributor }",
-        "10":"#{h b.funding_template.funding_source.name} (#{b.funding_template.name}) }",
-        "11":"#{h b.object_key }",
+        "3":"#{h (b.funding_template.funding_source.formula_fund ? 'Formula' : 'Discretionary') }",
+        "4":"#{h format_as_currency(b.budget_amount) }",
+        "5":"#{h format_as_currency(b.budget_committed) }",
+        "6":"#{h format_as_currency(b.budget_remaining) }",
+        "7":"#{h b.funding_template.funding_source.life_in_years.nil? ? "" : format_as_fiscal_year(b.fy_year + b.funding_template.funding_source.life_in_years - 1) }",
+        "8":"#{h b.object_key }",
       }, #{index});
       // TEMP UNTIL WE DO THIS FOR REAL
       // TODO: PLEASE DON'T LET THIS GO TO PRODUCTION
@@ -75,6 +70,7 @@
 
 
 
+-# "Template Name":"#{h b.funding_template.funding_source.name} (#{b.funding_template.name})",
 
 -# .table-responsive
 -#   %table.table.table-hover{:id => table_dom_id, :data => {:toggle => 'table',

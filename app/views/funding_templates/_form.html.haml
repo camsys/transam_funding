@@ -14,7 +14,7 @@
     .col-sm-6
       = f.association :owner, :collection => FundingSourceType.owner.active, :required => true, :disabled => !@funding_template.new_record?
 
-  = f.input :organization_ids, :as => :hidden
+  = f.hidden_field :organization_ids, :multiple => true
 
   .form-group
     = select_tag(:query, options_for_select(QueryParam.active.where(class_name: f.object.class.name).map{|x| [x.to_s,x.id]}, :selected => QueryParam.find_by(class_name: f.object.class.name, query_string: f.object.query_string).try(:id)), :class => "form-control", :prompt => "Choose Organizations")
