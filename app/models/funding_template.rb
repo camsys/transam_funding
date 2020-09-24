@@ -118,7 +118,7 @@ class FundingTemplate < ActiveRecord::Base
 
   def set_defaults
     # self.all_organizations = self.all_organizations.nil? ? true : self.all_organizations
-    self.active = self.active.nil? ? true : self.active
+    #self.active = self.active.nil? ? true : self.active
     self.create_multiple_buckets_for_agency_year = self.create_multiple_buckets_for_agency_year.nil? ? false : self.create_multiple_buckets_for_agency_year
     self.create_multiple_agencies = self.create_multiple_agencies.nil? ? false : self.create_multiple_agencies
   end
