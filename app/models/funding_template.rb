@@ -107,7 +107,9 @@ class FundingTemplate < ActiveRecord::Base
     funding_template_types.include?(FundingTemplateType.find_by(name:funding_template_type_name))
   end
 
-
+  def recurring_string
+    recurring ? "Recurring" : "Annual"
+  end
 
   #------------------------------------------------------------------------------
   #
