@@ -10,18 +10,30 @@
 
   .row
     .col-sm-6
-      = f.association :contributor, :collection => FundingSourceType.contributor.active, :required => true, :disabled => !@funding_template.new_record?
+      = f.association :contributor, :collection => FundingOrganizationType.active, :required => true, :disabled => !@funding_template.new_record?
     .col-sm-6
-      = f.association :owner, :collection => FundingSourceType.owner.active, :required => true, :disabled => !@funding_template.new_record?
+      = f.association :owner, :collection => FundingOrganizationType.active, :required => true, :disabled => !@funding_template.new_record?
 
-  = f.hidden_field :organization_ids, :multiple => true
+  .row
+    .col-sm-6
+      = f.hidden_field :contributor_organization_ids, :multiple => true
+      .form-group.required
+        %label.required.control-label
+          %abbr{title: 'required'} *
+          = " Eligibility Contributor Organization(s)"
+        #contributor_org_select.input-large
+    .col-sm-6
+      = f.hidden_field :organization_ids, :multiple => true
+      .form-group.required
+        %label.required.control-label
+          %abbr{title: 'required'} *
+          = " Eligibility Owner Organization(s)"
+        #owner_org_select.input-large
+
 
   .form-group
     = select_tag(:query, options_for_select(QueryParam.active.where(class_name: f.object.class.name).map{|x| [x.to_s,x.id]}, :selected => QueryParam.find_by(class_name: f.object.class.name, query_string: f.object.query_string).try(:id)), :class => "form-control", :prompt => "Choose Organizations")
 
-  #org_select.input-large
-  .row
-    May create buckets ...
   .row
     .col-sm-3
       = f.input :recurring, :label => 'multiple years'
@@ -92,7 +104,7 @@
   });
   
   $('body').on('click', '.selector, .selector-chooseall, .selector-clearall', function() {
-    if ($('#selected_grantees option').length > 0) {
+    if ($('#selected_owner_orgs option').length > 0 && ($('#selected_contributor_orgs option').length > 0)) {
       $('#funding_template_submit').attr('disabled', false);
     } else {
       $('#funding_template_submit').attr('disabled', true);

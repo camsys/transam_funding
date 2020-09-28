@@ -26,12 +26,14 @@ class FundingBucket< ActiveRecord::Base
   has_one :funding_source_type, :through => :funding_source
 
   belongs_to :owner, :class_name => "Organization"
+  belongs_to :contributor, class_name: 'Organization'
 
   has_many :grant_purchases, :as => :sourceable, :dependent => :destroy
 
   belongs_to :bond_request
 
   belongs_to :target_organization, :class_name => "Organization", :foreign_key => :target_organization_id
+
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
@@ -76,7 +78,9 @@ class FundingBucket< ActiveRecord::Base
       :page_num,
       :item_num,
       :bond_request_id,
-      :target_organization_id
+      :target_organization_id,
+      :contributor_organization_id,
+      :owner_organization_id
   ]
 
   #------------------------------------------------------------------------------
