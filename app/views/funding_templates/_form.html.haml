@@ -3,9 +3,9 @@
 :wrapper => :vertical_form,
 :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
 
-  = f.association :funding_source, :required => true, :collection => FundingSource.all, :include_blank => true, :label => "Funding Program", :disabled => !@funding_template.new_record?
-  = f.input :name, :required => true, :input_html => {:maxlength => 64}
-  = f.input :external_id, :label => 'dotGrants ID', :input_html => {:maxlength => 32}
+  = f.association :funding_source, :required => true, :collection => FundingSource.all, :include_blank => true, :label => "Program", :disabled => !@funding_template.new_record?
+  = f.input :name, :required => true,  :label => 'Template Name', :input_html => {:maxlength => 64}
+  = f.input :external_id, :label => 'ExternalID', :input_html => {:maxlength => 32}
   = f.input :description
 
   .row
@@ -21,16 +21,20 @@
 
   #org_select.input-large
   .row
-    May create buckets ...
+    Budget Horizon
   .row
     .col-sm-3
       = f.input :recurring, :label => 'multiple years'
     .col-sm-3
-      = f.input :create_multiple_agencies, :label => 'multiple agencies'
-    .col-sm-3
-      = f.input :create_multiple_buckets_for_agency_year, :label => 'multiple times for the same agency/year'
-    .col-sm-3
-      = f.input :restricted, :label => 'buckets restricted to one agency'
+
+    -# .col-sm-3
+    -#   = f.input :recurring, :label => 'multiple years'
+    -# .col-sm-3
+    -#   = f.input :create_multiple_agencies, :label => 'multiple agencies'
+    -# .col-sm-3
+    -#   = f.input :create_multiple_buckets_for_agency_year, :label => 'multiple times for the same agency/year'
+    -# .col-sm-3
+    -#   = f.input :restricted, :label => 'buckets restricted to one agency'
 
 
   .row
