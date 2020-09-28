@@ -42,6 +42,8 @@ class FundingTemplatesController < OrganizationAwareController
     #puts values.inspect
     @funding_templates = FundingTemplate.where(conditions.join(' AND '), *values)
 
+    @funding_template = FundingTemplate.new(:funding_source_id => params[:funding_source_id])
+
     # cache the set of object keys in case we need them later
     cache_list(@funding_templates, INDEX_KEY_LIST_VAR)
 

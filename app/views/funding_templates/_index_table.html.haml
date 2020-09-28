@@ -9,9 +9,16 @@
 #templates_table_actions.btn-toolbar
   - if can? :create, FundingTemplate
     .btn-group
-      = link_to new_funding_template_path(:funding_source_id => @funding_source.try(:id)), :class => 'btn btn-default' do
+      .btn.btn-default#flyout
         %i.fa.fa-plus.fa-fw
         = "Add Template"
+    :javascript
+      $(document).ready(()=>{
+        add_flyout("#flyout", "Add Template", '#{raw escape_javascript(render "funding_templates/form")}', "flyout-right");
+      });    
+    -# = link_to new_funding_template_path(:funding_source_id => @funding_source.try(:id)), :class => 'btn btn-default' do
+    -#   %i.fa.fa-plus.fa-fw
+    -#   = "Add Template"
   - if show_actions == 1
     = render :partial => "funding_templates/index_actions"
 
