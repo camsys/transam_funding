@@ -96,6 +96,7 @@ class FundingTemplatesController < OrganizationAwareController
   # POST /funding_templates
   def create
     @funding_template = FundingTemplate.new(funding_template_params)
+    @funding_template.creator = current_user
 
     if params[:query].to_i > 0
       @funding_template.query_string = QueryParam.find(params[:query].to_i).try(:query_string)

@@ -18,8 +18,10 @@ class FundingTemplate < ActiveRecord::Base
   #------------------------------------------------------------------------------
 
   belongs_to :funding_source
-  belongs_to :contributor, :class_name => "FundingSourceType"
-  belongs_to :owner, :class_name => "FundingSourceType"
+  belongs_to :contributor, class_name: "FundingSourceType"
+  belongs_to :owner, class_name: "FundingSourceType"
+  belongs_to :creator, class_name: "User", foreign_key: :created_by_user_id
+
   has_and_belongs_to_many :funding_template_types,  :join_table => :funding_templates_funding_template_types
   has_and_belongs_to_many :organizations
 
@@ -109,6 +111,10 @@ class FundingTemplate < ActiveRecord::Base
 
   def recurring_string
     recurring ? "Recurring" : "Annual"
+  end
+
+  def creator_org
+    creator.try(:organization).try(:short_name)
   end
 
   #------------------------------------------------------------------------------
