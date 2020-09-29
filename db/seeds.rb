@@ -58,7 +58,8 @@ capital_plan_action_types = [
 system_config_extensions = [
     {engine_name: 'funding', class_name: 'FundingSource', extension_name: 'FundingFundingSource', active: true},
     {engine_name: 'funding', class_name: 'CapitalProject', extension_name: 'TransamFundableCapitalProject', active: true},
-    {engine_name: 'funding', class_name: 'ActivityLineItem', extension_name: 'TransamFundable', active: true}
+    {engine_name: 'funding', class_name: 'ActivityLineItem', extension_name: 'TransamFundable', active: true},
+    {engine_name: 'funding', class_name: 'FundingSourcesController', extension_name: 'FundableFundingSourcesController', active: true}
 ]
 
 
