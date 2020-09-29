@@ -18,12 +18,17 @@ class FundingTemplate < ActiveRecord::Base
   #------------------------------------------------------------------------------
 
   belongs_to :funding_source
-  belongs_to :contributor, class_name: "FundingSourceType"
-  belongs_to :owner, class_name: "FundingSourceType"
+  belongs_to :contributor, :class_name => "FundingOrganizationType"
+  belongs_to :owner, :class_name => "FundingOrganizationType"
   belongs_to :creator, class_name: "User", foreign_key: :created_by_user_id
 
   has_and_belongs_to_many :funding_template_types,  :join_table => :funding_templates_funding_template_types
+
+  # owner organizations
   has_and_belongs_to_many :organizations
+
+  # contributor organizations
+  has_and_belongs_to_many    :contributor_organizations, :join_table => :funding_templates_contributor_organizations, :class_name => 'Organization'
 
   has_many :funding_buckets, :dependent => :destroy
 
@@ -55,6 +60,7 @@ class FundingTemplate < ActiveRecord::Base
       :create_multiple_buckets_for_agency_year,
       :restricted,
       {:organization_ids => []},
+      {:contributor_organization_ids => []},
       {:funding_template_type_ids=>[]}
   ]
 

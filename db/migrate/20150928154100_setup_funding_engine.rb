@@ -5,10 +5,6 @@ class SetupFundingEngine < ActiveRecord::Migration[5.2]
   def change
     # this is an informal way to check if already have funding engine
     unless ActiveRecord::Base.connection.table_exists? :funding_requests
-
-      execute "delete from schema_migrations where version = '20160915130127';"
-      execute "delete from schema_migrations where version = '20160919181213';"
-
       if ActiveRecord::Base.connection.table_exists? :funding_templates
         drop_table :funding_templates
       end
