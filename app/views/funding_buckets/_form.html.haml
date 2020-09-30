@@ -17,8 +17,20 @@
   .owner_id_div{:id => "owner_id_div_id"}
     .row
       .col-sm-8
-        = f.input :owner_id, :required => true, :collection => Organization.all, :include_blank => true, :label => "Owner", :selected => params[:owner_id]
-        = f.input :contributor_id, required: true, collection => Organization.all, :include_blank => true, :label => "Contributor", :selected => params[:contributor_id]
+        .form-group.required
+          %label.required.control-label
+            %abbr{title: 'required'} *
+            = "Owner"
+            %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'Owner organizations are organizations that have permissions to commit or allocate funds from a specific budget.'}, tabindex: '0'}
+              %i.fa.fa-info-circle
+          = f.input :owner_id, :required => true, :collection => Organization.all, :include_blank => true, :label => false, :selected => params[:owner_id]
+        .form-group.required
+          %label.required.control-label
+            %abbr{title: 'required'} *
+            = "Contributor"
+            %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'Contributor organizations are organizations that have permissions to create, update, and delete specific budgets.'}, tabindex: '0'}
+              %i.fa.fa-info-circle
+          = f.input :contributor_id, required: true, :collection => Organization.all, :include_blank => true, :label => false, :selected => params[:contributor_id]
 
   .fiscal_year_div{:id => "fiscal_year_div"}
     .row
@@ -43,7 +55,7 @@
       .col-sm-8
         %span.default_funding_bucket_name{:id => "default_funding_bucket_name"}
         %span.custom_funding_bucket_name{:id => "custom_funding_bucket_name"}
-          =f.input :name, :as => :text, :label=> 'Bucket Name', :required => true
+          =f.input :name, :as => :text, :label=> 'Budget Name', :required => true
       .col-sm-8
         = f.input :total_amount, :as => :integer, :label => 'Budget ($)', :required => true, :input_html => { :min => 1  }
 
@@ -156,7 +168,7 @@
 
   $.validator.addMethod('UniqueBucketName', function(value, element){
     return is_name_unique;
-  }, "This bucket name is not unique. Please update the name and resubmit.");
+  }, "This budget name is not unique. Please update the name and resubmit.");
 
   var agencies = []
 

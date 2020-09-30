@@ -5,6 +5,8 @@ class CleanupFundingTables < ActiveRecord::Migration[4.2]
     end
     unless column_exists? :funding_templates, :all_organizations
       add_column :funding_templates, :all_organizations, :boolean
+    end
+    unless column_exists? :funding_templates, :external_id
       add_column :funding_templates, :external_id, :string, :limit => 32
     end
   end

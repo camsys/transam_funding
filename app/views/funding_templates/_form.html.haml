@@ -9,30 +9,30 @@
   = f.input :description
 
   .row
-    .col-sm-6
+    .col-sm-3
       = f.association :contributor, :collection => FundingOrganizationType.active, :required => true, :disabled => !@funding_template.new_record?
-    .col-sm-6
-      = f.association :owner, :collection => FundingOrganizationType.active, :required => true, :disabled => !@funding_template.new_record?
-
-  .row
-    .col-sm-6
+    .col-sm-9
       = f.hidden_field :contributor_organization_ids, :multiple => true
       .form-group.required
         %label.required.control-label
           %abbr{title: 'required'} *
           = " Eligibility Contributor Organization(s)"
+          %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'Multiple contributors may be selected, but only one contributor organization may be selected when creating a budget.'}, tabindex: '0'}
+            %i.fa.fa-info-circle
+
         #contributor_org_select.input-large
-    .col-sm-6
+  .row
+    .col-sm-3
+      = f.association :owner, :collection => FundingOrganizationType.active, :required => true, :disabled => !@funding_template.new_record?
+    .col-sm-9
       = f.hidden_field :organization_ids, :multiple => true
       .form-group.required
         %label.required.control-label
           %abbr{title: 'required'} *
           = " Eligibility Owner Organization(s)"
+          %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'Multiple owners may be selected, but only one owner organization may be selected when creating a budget.'}, tabindex: '0'}
+            %i.fa.fa-info-circle
         #owner_org_select.input-large
-
-
-  .form-group
-    = select_tag(:query, options_for_select(QueryParam.active.where(class_name: f.object.class.name).map{|x| [x.to_s,x.id]}, :selected => QueryParam.find_by(class_name: f.object.class.name, query_string: f.object.query_string).try(:id)), :class => "form-control", :prompt => "Choose Organizations")
 
   .row
     .col-sm-3
