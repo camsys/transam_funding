@@ -17,6 +17,7 @@
       :export => "['csv', 'txt']",
       :columns => '{"name":{"name":"Budget Name","type":"drilldown-link","width":"16%"},
                     "year":{"name":"Apportionment Year","width":"8%"},
+                    "external_id": {"name":"External ID"},
                     "owner":{"name":"Owner","width":"8%"},
                     "3":{"name":"Source"},
                     "4":{"name":"Restricted To"},
@@ -28,7 +29,7 @@
                     "10":{"name":"Program (Template)"},
                     "11":{"name":"Object Key"},
                     "12":{"name":"Actions", "type":"action-column"}}',
-      :selected_columns => "name,year,owner,3,4,5,6,7,8,12",
+      :selected_columns => "name,year,external_id,owner,3,4,5,6,7,8,12",
       :cookies => "true",
       :sort => 'client',
       :sort_params => @params,
@@ -66,6 +67,7 @@
         "9":"#{h b.funding_template.contributor }",
         "10":"#{h b.funding_template.funding_source.name} (#{b.funding_template.name}) }",
         "11":"#{h b.object_key }",
+        "external_id":"#{h b.external_id }"
       }, #{index});
       // TEMP UNTIL WE DO THIS FOR REAL
       // TODO: PLEASE DON'T LET THIS GO TO PRODUCTION
