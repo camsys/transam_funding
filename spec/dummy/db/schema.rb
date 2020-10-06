@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_29_003904) do
+ActiveRecord::Schema.define(version: 2020_09_30_185600) do
 
   create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "object_key", limit: 12
@@ -1151,6 +1151,7 @@ ActiveRecord::Schema.define(version: 2020_09_29_003904) do
     t.string "item_num"
     t.integer "bond_request_id"
     t.integer "target_organization_id"
+    t.string "external_id"
   end
 
   create_table "funding_line_item_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
