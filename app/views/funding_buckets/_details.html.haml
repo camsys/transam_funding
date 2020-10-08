@@ -6,7 +6,7 @@
     %a{:href => "#desc", :data =>{:toggle => 'tab'}}
       = "Description"
 
-  - if @funding_template.owner == FundingSourceType.find_by(name: 'State')
+  - if @funding_template.owner == FundingOrganizationType.find_by(code: 'grantor')
     = nav_tab_count_tag("#elgby", "Eligiblity", @funding_bucket.target_organization.present? ? 1 : orgs.count)
   = nav_tab_count_tag("#tagged", "Funding Line Items", funding_requests.count)
 
@@ -19,7 +19,7 @@
       - else
         There is no description associated with this bucket.
 
-  - if @funding_template.owner == FundingSourceType.find_by(name: 'State')
+  - if @funding_template.owner == FundingOrganizationType.find_by(code: 'grantor')
     .tab-pane.fade#elgby
       .tab-content
         - if @funding_bucket.target_organization.present?

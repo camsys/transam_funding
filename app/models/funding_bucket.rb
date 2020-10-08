@@ -58,7 +58,7 @@ class FundingBucket< ActiveRecord::Base
   scope :local, -> { joins(funding_template: :funding_source).where('funding_sources.funding_source_type_id = ?', FundingSourceType.find_by(name: 'Local')) }
 
   #scope :state_owned -- class method
-  scope :agency_owned, -> (org_ids) { org_ids.present? ? joins(:funding_template).where('funding_templates.owner_id = ? AND funding_buckets.owner_id IN (?)', FundingSourceType.find_by(name: 'Agency'), org_ids) : joins(:funding_template).where('funding_templates.owner_id = ?', FundingSourceType.find_by(name: 'Agency')) }
+  scope :agency_owned, -> (org_ids) { org_ids.present? ? joins(:funding_template).where('funding_templates.owner_id = ? AND funding_buckets.owner_id IN (?)', FundingOrganizationType.find_by(code: 'agency'), org_ids) : joins(:funding_template).where('funding_templates.owner_id = ?', FundingOrganizationType.find_by(code: 'agency')) }
 
   scope :current, -> (year) { joins(funding_template: :funding_source).where('funding_buckets.fy_year <= ? AND (((funding_buckets.fy_year + funding_sources.life_in_years - 1) >= ?) OR (funding_sources.life_in_years IS NULL))', year, year) }
 
@@ -94,7 +94,7 @@ class FundingBucket< ActiveRecord::Base
   end
 
   def self.state_owned(org_ids)
-    buckets = FundingBucket.joins(:funding_template).where('funding_templates.owner_id = ? AND (funding_templates.restricted IS NULL OR funding_templates.restricted = 0)', FundingSourceType.find_by(name: 'State'))
+    buckets = FundingBucket.joins(:funding_template).where('funding_templates.owner_id = ? AND (funding_templates.restricted IS NULL OR funding_templates.restricted = 0)', FundingOrganizationType.find_by(code: 'grantor'))
 
     restricted_buckets = FundingBucket.joins(:funding_template).where(funding_templates: {restricted: true}, funding_buckets: {target_organization_id: org_ids})
 
@@ -133,7 +133,7 @@ class FundingBucket< ActiveRecord::Base
       conditions << 'owner_id IN (?)'
       orgs = []
       org_ids = []
-      if funding_template.owner == FundingSourceType.find_by(name: 'State')
+      if funding_template.owner == FundingOrganizationType.find_by(code: 'grantor')
         orgs =  Grantor.active
       else
 
@@ -186,7 +186,7 @@ class FundingBucket< ActiveRecord::Base
   end
 
   def is_bucket_app?
-    self.funding_template.contributor == FundingSourceType.find_by(name: 'Agency')
+    self.funding_template.contributor == FundingOrganizationType.find_by(code: 'agency')
   end
 
   def set_values_from_proxy bucket_proxy, agency_id=nil

@@ -15,4 +15,13 @@ RSpec.describe FundingTemplate, type: :model do
       expect(funding_template.creator_org).to eq(user.organization.short_name)
     end
 
+    it 'defaults to not recurring' do
+      expect(funding_template.recurring).to eq(false)
+    end
+
+    it 'can set recurring' do
+      test_template = create(:funding_template, recurring: true)
+      expect(test_template.recurring).to eq(true)
+    end
+
 end

@@ -35,6 +35,9 @@ class FundingBucketsController < OrganizationAwareController
     @templates =  FundingTemplate.all.pluck(:name, :id)
     @organizations = Organization.where(id: @organization_list).map{|o| [o.coded_name, o.id]}
 
+    @bucket_proxy = FundingBucketProxy.new
+    @bucket_proxy.set_defaults
+
     # Start to set up the query
     conditions  = []
     values      = []
@@ -77,100 +80,14 @@ class FundingBucketsController < OrganizationAwareController
 
 
     @buckets = FundingBucket.active.where(conditions.join(' AND '), *values)
+
+    unless can? :manage, FundingTemplate
+      @buckets = @buckets.where(contributor_id: (current_user.organizations.ids & @organization_list))
+    end
+
     unless @searched_agency_id.blank?
       @buckets = @buckets.state_owned(@searched_agency_id) + @buckets.agency_owned(@searched_agency_id)
     end
-
-    # cache the set of object keys in case we need them later
-    cache_list(@buckets, INDEX_KEY_LIST_VAR)
-
-    respond_to do |format|
-      format.html # index.html.erb
-      format.json { render :json => @buckets }
-    end
-  end
-
-  def my_funds
-
-    @my_funds = true # so partial can use main index table with some tweaks
-
-    authorize! :my_funds, FundingBucket
-
-    add_breadcrumb 'Funding Programs', funding_sources_path
-    add_breadcrumb 'My Funds', my_funds_funding_buckets_path
-
-    @organizations = Organization.where(id: @organization_list).map{|o| [o.coded_name, o.id]}
-
-    # Start to set up the query
-    conditions  = []
-    values      = []
-
-    if params[:agency_id].present?
-      @searched_agency_id =  params[:agency_id]
-    end
-    if params[:fy_year].present?
-      @searched_fiscal_year =  params[:fy_year]
-    end
-    if params[:funds_filter].present?
-      @funds_filter =  params[:funds_filter]
-    end
-
-    if @funds_filter == 'funds_available'
-      conditions << 'budget_amount > budget_committed'
-    elsif @funds_filter == 'zero_balance'
-      conditions << 'budget_amount = budget_committed'
-    elsif @funds_filter == 'funds_overcommitted'
-      conditions << 'budget_amount < budget_committed'
-    end
-    if params[:searched_template].present?
-      @searched_template = params[:searched_template]
-    end
-
-    # this is a search of the owner not a search on the eligibility
-    # a search on the eligiblity follows the overall system filter -- not set for a super manager
-    if @searched_agency_id.blank?
-      conditions << 'funding_buckets.owner_id IN (?)'
-      # should use organization list but organizations that the user actually belongs to
-      # so bpt can see all orgs but only belong to BPT
-      # transit agencies obviously belongs to all their transit agencies
-      values << (current_user.organizations.ids & @organization_list)
-    else
-      agency_filter_id = @searched_agency_id.to_i
-      conditions << 'funding_buckets.owner_id = ?'
-      values << agency_filter_id
-    end
-
-    unless @searched_fiscal_year.blank?
-      fiscal_year_filter = @searched_fiscal_year.to_i
-      conditions << 'funding_buckets.fy_year <= ?'
-      values << fiscal_year_filter
-      conditions << '(((funding_buckets.fy_year + funding_sources.life_in_years) >= ?) OR (funding_sources.life_in_years IS NULL))'
-      values << fiscal_year_filter
-    end
-
-    unless @searched_template.nil?
-      funding_template_id = @searched_template.to_i
-      conditions << 'funding_template_id = ?'
-      values << funding_template_id
-    end
-
-    if @show_funds_available_only
-      conditions << 'budget_amount > budget_committed'
-    end
-
-    # on My Funds - templates must be ones you are eligible for
-    # on buckets index page you can search by template
-    #if params[:my_funds]
-    #@templates = FundingTemplate.joins(:organizations).where('funding_templates.owner_id = ? AND funding_templates_organizations.organization_id IN (?)', FundingSourceType.find_by(name: 'State').id, @organization_list)
-    #buckets = FundingBucket.where('(funding_template_id IN (?) OR owner_id IN (?))',templates.ids, @organization_list)
-    #@buckets = buckets.where(conditions.join(' AND '), *values)
-    #end
-
-    conditions << 'funding_buckets.active = true'
-
-    @my_funds = true
-    @buckets = FundingBucket.active.joins(:funding_source).where(conditions.join(' AND '), *values)
-
 
     # cache the set of object keys in case we need them later
     cache_list(@buckets, INDEX_KEY_LIST_VAR)
@@ -414,7 +331,13 @@ class FundingBucketsController < OrganizationAwareController
       result = find_organizations(template_id)
     end
 
-    @template_organizations = result
+    respond_to do |format|
+      format.json { render json: result.to_json }
+    end
+  end
+
+  def find_contributor_organizations_from_template_id
+    result = find_organizations(template_id)
     respond_to do |format|
       format.json { render json: result.to_json }
     end
@@ -476,22 +399,6 @@ class FundingBucketsController < OrganizationAwareController
     end
   end
 
-  def is_bucket_name_unique
-    bucket_name = params[:bucket_name]
-    bucket = FundingBucket.find_by(name: bucket_name)
-
-    if bucket.nil?
-      result = true
-    else
-      result = false
-    end
-
-
-    respond_to do |format|
-      format.json { render json: result.to_json }
-    end
-  end
-
   def find_expected_match_percent
     bucket_name = params[:bucket_name]
     if bucket_name.present?
@@ -516,10 +423,9 @@ class FundingBucketsController < OrganizationAwareController
     # if target org false return possible owners
     # if target org true, return eligibilty orgs for buckets not yet created
     result = []
-    @bucket_agency_allocations = []
 
     template = FundingTemplate.find_by(id: template_id)
-    if template.owner == FundingSourceType.find_by(name: 'State') && !target_org
+    if template.owner == FundingOrganizationType.find_by(code: 'grantor') && !target_org
       grantors = Grantor.where(id: @organization_list)
       grantors.each { |g|
         result << [g.id, g.coded_name]
@@ -532,12 +438,37 @@ class FundingBucketsController < OrganizationAwareController
           item = [o.id, o.coded_name]
           organizations << item
         }
-      else
-        organizations =  Organization.find_by_sql(template.query_string).reduce([]) { |a, n| a.push([n.id, n.coded_name]) if @organization_list.include? n.id; a }
       end
 
       if target_org
         organizations.select{|o| !(template.funding_buckets.where('target_organization_id IS NOT NULL').pluck(:target_organization_id).include? o[0])}
+      end
+
+      result = organizations
+    end
+
+    result
+  end
+
+  def find_contributor_organizations(template_id)
+    # if target org false return possible owners
+    # if target org true, return eligibilty orgs for buckets not yet created
+    result = []
+
+    template = FundingTemplate.find_by(id: template_id)
+    if template.owner == FundingOrganizationType.find_by(code: 'grantor')
+      grantors = Grantor.where(id: @organization_list)
+      grantors.each { |g|
+        result << [g.id, g.coded_name]
+      }
+    else
+      orgs = template.contributor_organizations.where(id: @organization_list)
+      organizations = []
+      if orgs.length > 0
+        orgs.each { |o|
+          item = [o.id, o.coded_name]
+          organizations << item
+        }
       end
 
       result = organizations
