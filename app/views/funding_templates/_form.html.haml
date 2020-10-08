@@ -37,13 +37,8 @@
 
   .row
     .col-sm-3
-      = f.input :recurring, :label => 'multiple years'
-    .col-sm-3
-      = f.input :create_multiple_agencies, :label => 'multiple agencies'
-    .col-sm-3
-      = f.input :create_multiple_buckets_for_agency_year, :label => 'multiple times for the same agency/year'
-    .col-sm-3
-      = f.input :restricted, :label => 'buckets restricted to one agency'
+      = f.input :recurring, collection: [['Annual', false], ['Recurring', true]], required: true, :label => 'Budget Horizon'
+      = f.input :restricted, as: :hidden
 
 
   .row
@@ -52,13 +47,13 @@
         = f.input_field :match_required, :class => 'form-control', :max => 100, :step => 0.001, :value => @funding_template.funding_source.match_required
         %span.input-group-addon
           %i.fa.fa-percent
-  .row 
+  .row
     .col-sm-6
       = f.input :transfer_only, :label => "Transferable Funds"
 
-  = f.association :funding_template_types, :as => :check_boxes, :label => "For"
+  = f.association :funding_template_types, :as => :check_boxes, :label => "Eligible Uses"
 
-  = f.button :submit, 'Save', :class => "btn btn-primary", :id => 'funding_template_submit', :disabled => f.object.query_string.blank? && f.object.organizations.count == 0
+  = f.button :submit, 'Save', :class => "btn btn-primary", :id => 'funding_template_submit', :disabled => f.object.organizations.count == 0
 
 = render 'funding_templates/form_scripts'
 
@@ -67,45 +62,13 @@
   function control_template_booleans(){
     if ($('#funding_template_create_multiple_buckets_for_agency_year').is(':checked')) {
       $('#funding_template_recurring').attr('checked', false);
-      $('#funding_template_create_multiple_agencies').attr('checked', false);
       $('#funding_template_recurring').attr("disabled", true);
-      $('#funding_template_create_multiple_agencies').attr("disabled", true);
-    } else if (parseInt($('#funding_template_owner_id').val()) == parseInt('#{FundingSourceType.find_by(name: "State").id}')) {
-      $('#funding_template_create_multiple_agencies').attr('checked', false);
-      $('#funding_template_create_multiple_agencies').attr("disabled", true);
     } else{
       $('#funding_template_recurring').removeAttr("disabled");
-      $('#funding_template_create_multiple_agencies').removeAttr("disabled");
     };
-
-    if (parseInt($('#funding_template_owner_id').val()) == parseInt('#{FundingSourceType.find_by(name: "Agency").id}')) {
-      $('#funding_template_restricted').attr('checked', false);
-      $('#funding_template_restricted').attr("disabled", true);
-    } else {
-      $('#funding_template_restricted').removeAttr("disabled");
-    }
   }
 
   control_template_booleans();
-
-  // check if using query or selecting orgs
-  if (parseInt($('#query').val()) > 0) { // if query
-    $('#org_select').hide();
-  }  else {
-    $('#org_select').show();
-  }
-
-  $('#query').on('change', function(e) {
-    var val = $(this).val();
-    if (parseInt(val) > 0) { // if query
-      $('#org_select').data().bootstrapTransfer.move_all(true, false); // clear out all selected values
-      $('#org_select').hide();
-      $('#funding_template_submit').attr('disabled', false);
-    }  else {
-      $('#org_select').show();
-      $('#funding_template_submit').attr('disabled', true);
-    }
-  });
   
   $('body').on('click', '.selector, .selector-chooseall, .selector-clearall', function() {
     if ($('#selected_owner_orgs option').length > 0 && ($('#selected_contributor_orgs option').length > 0)) {
