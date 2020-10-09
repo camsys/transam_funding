@@ -354,8 +354,11 @@ class FundingBucketsController < OrganizationAwareController
 
   def find_templates_from_program_id
     program_id = params[:program_id]
-    result = FundingTemplate.where(funding_source_id: program_id).pluck(:id, :name)
-    @templates = result
+    if can? :manage, FundingTemplate
+      result = FundingTemplate.where(funding_source_id: program_id).pluck(:id, :name)
+    else
+      result = FundingTemplate.joins(:funding_templates_contributor_organizations).where(funding_source_id: program_id, funding_templates_contributor_organizations: {organization_id: (current_user.organizations.ids & @organization_list)}).pluck(:id, :name)
+    end
 
     respond_to do |format|
       format.json { render json: result.to_json }
