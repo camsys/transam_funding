@@ -38,7 +38,14 @@
       .col-sm-4
         = f.input :fiscal_year_range_start, :required => true, :collection => @fiscal_years, :include_blank => true, :label => "From Year", :selected => params[:fiscal_year_range_start]
       .col-sm-4
-        = f.input :fiscal_year_range_end, :required => true, :collection => @fiscal_years, :include_blank => true, :label => "To Year", :selected => params[:fiscal_year_range_end]
+        .form-group.required
+          %label.required.control-label
+            %abbr{title: 'required'} *
+            = "To Year"
+            %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'If the "To Year" is greater than the "From Year", you will be generating budgets for the range of selected years.'}, tabindex: '0'}
+              %i.fa.fa-info-circle
+
+          = f.input :fiscal_year_range_end, :required => true, :collection => @fiscal_years, :include_blank => true, :label => false, :selected => params[:fiscal_year_range_end]
 
   .escalate_by_div{:id => "escalate_by_div_id"}
     .row
