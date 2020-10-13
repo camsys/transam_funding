@@ -21,9 +21,9 @@ class FundingBucketProxy < Proxy
   # attr_accessor   :bucket_type_id
   attr_accessor   :inflation_percentage
   attr_accessor   :description
-  attr_accessor   :bucket_agency_allocations
   attr_accessor   :return_to_bucket_index
   attr_accessor   :target_organization_id
+  attr_accessor   :external_id
 
 
 
@@ -51,9 +51,9 @@ class FundingBucketProxy < Proxy
       # :bucket_type_id,
       :inflation_percentage,
       :description,
-      :bucket_agency_allocations,
       :return_to_bucket_index,
-      :target_organization_id
+      :target_organization_id,
+      :external_id
   ]
 
   #------------------------------------------------------------------------------
@@ -66,9 +66,7 @@ class FundingBucketProxy < Proxy
     FORM_PARAMS
   end
 
-  # Set resonable defaults for a depreciable asset
   def set_defaults
-    self.bucket_agency_allocations = []
   end
 
   #-----------------------------------------------------------------------------
@@ -86,7 +84,6 @@ class FundingBucketProxy < Proxy
 
   def initialize(attrs = {})
     super
-    self.bucket_agency_allocations = []
     attrs.each do |k, v|
       self.send "#{k}=", v
     end

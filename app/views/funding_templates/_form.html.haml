@@ -37,7 +37,13 @@
 
   .row
     .col-sm-3
-      = f.input :recurring, collection: [['Annual', false], ['Recurring', true]], required: true, :label => 'Budget Horizon'
+      .form-group.required
+        %label.required.control-label
+          %abbr{title: 'required'} *
+          = "Budget Horizon"
+          %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'Budgets may be created for more than one year at a time, up to the maximum Funding Horizon.'}, tabindex: '0'}
+            %i.fa.fa-info-circle
+        = f.input :recurring, collection: [['Annual', false], ['Recurring', true]], required: true, :label => false
       = f.input :restricted, as: :hidden
 
 
@@ -58,17 +64,6 @@
 = render 'funding_templates/form_scripts'
 
 :javascript
-
-  function control_template_booleans(){
-    if ($('#funding_template_create_multiple_buckets_for_agency_year').is(':checked')) {
-      $('#funding_template_recurring').attr('checked', false);
-      $('#funding_template_recurring').attr("disabled", true);
-    } else{
-      $('#funding_template_recurring').removeAttr("disabled");
-    };
-  }
-
-  control_template_booleans();
   
   $('body').on('click', '.selector, .selector-chooseall, .selector-clearall', function() {
     if ($('#selected_owner_orgs option').length > 0 && ($('#selected_contributor_orgs option').length > 0)) {
@@ -76,13 +71,6 @@
     } else {
       $('#funding_template_submit').attr('disabled', true);
     }
-  });
-
-  $('#funding_template_create_multiple_buckets_for_agency_year').on('change', function(e) {
-    control_template_booleans();
-  });
-  $('#funding_template_owner_id').on('change', function(e) {
-    control_template_booleans();
   });
 
   // jquery validations

@@ -8,36 +8,44 @@
   =f.hidden_field :return_to_bucket_index, :id => 'return_to_bucket_index'
   .row
     .col-sm-8
-      = f.input :program_id, :required => true, :collection => FundingSource.all, :include_blank => true, :label => "Program", :selected => params[:funding_source_id]
+      = f.input :program_id, :required => true, :collection => FundingSource.all, :include_blank => true, :label => "Program Name", :selected => params[:funding_source_id]
 
   .template_id_div{:id => "template_id_div_id"}
     .row
       .col-sm-8
-        = f.input :template_id, :required => true, :collection => @templates, :include_blank => true, :label => "Template", :selected => params[:template_id]
+        = f.input :template_id, :required => true, :collection => @templates, :include_blank => true, :label => "Template Name", :selected => params[:template_id]
   .owner_id_div{:id => "owner_id_div_id"}
     .row
       .col-sm-8
         .form-group.required
           %label.required.control-label
             %abbr{title: 'required'} *
-            = "Owner"
-            %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'Owner organizations are organizations that have permissions to commit or allocate funds from a specific budget.'}, tabindex: '0'}
-              %i.fa.fa-info-circle
-          = f.input :owner_id, :required => true, :collection => Organization.all, :include_blank => true, :label => false, :selected => params[:owner_id]
-        .form-group.required
-          %label.required.control-label
-            %abbr{title: 'required'} *
             = "Contributor"
             %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'Contributor organizations are organizations that have permissions to create, update, and delete specific budgets.'}, tabindex: '0'}
               %i.fa.fa-info-circle
-          = f.input :contributor_id, required: true, :collection => Organization.all, :include_blank => true, :label => false, :selected => params[:contributor_id]
+          = f.input :contributor_id, required: true, :collection => [], :include_blank => true, :label => false, :selected => params[:contributor_id]
+        .form-group.required
+          %label.required.control-label
+            %abbr{title: 'required'} *
+            = "Owner"
+            %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'Owner organizations are organizations that have permissions to commit or allocate funds from a specific budget.'}, tabindex: '0'}
+              %i.fa.fa-info-circle
+          = f.input :owner_id, :required => true, :collection => [], :include_blank => true, :label => false, :selected => params[:owner_id]
+
 
   .fiscal_year_div{:id => "fiscal_year_div"}
     .row
       .col-sm-4
-        = f.input :fiscal_year_range_start, :required => true, :collection => @fiscal_years, :include_blank => true, :label => "From #{get_fy_label}", :selected => params[:fiscal_year_range_start]
+        = f.input :fiscal_year_range_start, :required => true, :collection => @fiscal_years, :include_blank => true, :label => "From Year", :selected => params[:fiscal_year_range_start]
       .col-sm-4
-        = f.input :fiscal_year_range_end, :required => true, :collection => @fiscal_years, :include_blank => true, :label => "To #{get_fy_label}", :selected => params[:fiscal_year_range_end]
+        .form-group.required
+          %label.required.control-label
+            %abbr{title: 'required'} *
+            = "To Year"
+            %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'If the "To Year" is greater than the "From Year", you will be generating budgets for the range of selected years.'}, tabindex: '0'}
+              %i.fa.fa-info-circle
+
+          = f.input :fiscal_year_range_end, :required => true, :collection => @fiscal_years, :include_blank => true, :label => false, :selected => params[:fiscal_year_range_end]
 
   .escalate_by_div{:id => "escalate_by_div_id"}
     .row
@@ -53,11 +61,10 @@
           = f.input :target_organization_id, :collection => @template_organizations, :label=> 'Restricted To', :required => true
     .row
       .col-sm-8
-        %span.default_funding_bucket_name{:id => "default_funding_bucket_name"}
-        %span.custom_funding_bucket_name{:id => "custom_funding_bucket_name"}
-          =f.input :name, :as => :text, :label=> 'Budget Name', :required => true
-      .col-sm-8
-        = f.input :total_amount, :as => :integer, :label => 'Budget ($)', :required => true, :input_html => { :min => 1  }
+        = f.input :name, :label=> 'Budget Name', :required => true
+        = f.input :external_id, label: 'External ID'
+        = f.input :description
+        = f.input :total_amount, :as => :integer, :label => 'Apportionment Amount', :required => true, :input_html => { :min => 1  }
 
   .modal.fade#form-modal{:tabindex => -1, :role => 'dialog', :aria => {:hidden => true}}
 
@@ -75,13 +82,8 @@
   var display_budget = false;
   var display_all_orgs_budget = false;
   var display_escalate_by = false;
-  var display_fiscal_years = false;
   var multiple_years = false;
-  var multiple_agencies = false;
-  var multiple_buckets_for_agency_year = false;
   var restricted = false;
-
-  var is_name_unique = true;
 
   // if defaults set
   $(document).ready(function() {
@@ -109,11 +111,9 @@
   {
     $("#state_or_single_agency_budget_id").hide();
   }
-  $("#all_agencies_covered_by_template_group_id").hide();
 
   if($("#funding_bucket_proxy_name").val() == '')
   {
-    $("#custom_funding_bucket_name").hide();
     $("#do_not_return_to_buckets_index_after_create").hide();
   }
 
@@ -139,10 +139,6 @@
     PercentThreeDigits: true
   });
 
-  $( "#funding_bucket_proxy_name" ).rules( "add", {
-    UniqueBucketName: true,
-  });
-
   $.validator.addClassRules("agency_budget", {
     require_from_group: [1, ".agency_budget"],
     integer: true,
@@ -166,10 +162,6 @@
      return this.optional(element) || /^\d*(\.\d{0,3})?$/.test(value);
   }, "Please enter a correct percent up to three decimal places.");
 
-  $.validator.addMethod('UniqueBucketName', function(value, element){
-    return is_name_unique;
-  }, "This budget name is not unique. Please update the name and resubmit.");
-
   var agencies = []
 
   function remove_all_agencies_fields(){
@@ -186,7 +178,6 @@
     if ($('#funding_bucket_proxy_owner_id').val() == -1){
       $("#state_or_single_agency_budget_id").hide();
       funding_bucket_proxy_total_amount.value = null;
-      $("#all_agencies_covered_by_template_group_id").show();
       display_budget = false;
       display_all_orgs_budget = true;
       populate_all_agencies_fields();
@@ -203,8 +194,6 @@
       }
       display_budget = true;
       display_all_orgs_budget = false;
-      $("#all_agencies_covered_by_template_group_id").hide();
-      $('#all_agencies_covered_by_template_id').empty();
     }
   });
 
@@ -214,24 +203,16 @@
       $("#escalate_by_div_id").hide();
       $('#funding_bucket_proxy_inflation_percentage').val(null);
       display_escalate_by = false;
-      if(multiple_buckets_for_agency_year || restricted)
-      {
-        $('#custom_funding_bucket_name').show();
+      if(restricted){
         $('#do_not_return_to_buckets_index_after_create').show();
-        $('#default_funding_bucket_name').hide();
-      }else
-      {
-        $('#custom_funding_bucket_name').hide();
-        $('#default_funding_bucket_name').show();
+      }else{
         $('#do_not_return_to_buckets_index_after_create').hide();
       }
 
     }
     else {
       $("#escalate_by_div_id").show();
-      $('#custom_funding_bucket_name').hide();
       $('#do_not_return_to_buckets_index_after_create').hide();
-      $('#default_funding_bucket_name').show();
       update_expected_escalation_percent();
       display_escalate_by = false;
     }
@@ -291,32 +272,12 @@
   function update_bucket_name(){
     bucket_name = build_bucket_name();
 
-    if(multiple_buckets_for_agency_year || restricted){
-      $('#funding_bucket_proxy_name').text(bucket_name+'-');
+    if(restricted){
+      $('#funding_bucket_name').text(bucket_name+'-');
     }
-    $('#default_funding_bucket_name').text(bucket_name);
+    $('#funding_bucket_name').text(bucket_name);
 
   }
-
-  function set_bucket_name_unique(result){
-    is_name_unique = result;
-  }
-
-  function is_bucket_name_unique(callback){
-    var name_to_check = $('#funding_bucket_proxy_name').val();
-    var url = '#{is_bucket_name_unique_funding_buckets_path}';
-    $.ajax({
-      url: url,
-      data: {bucket_name: name_to_check},
-      success: function(result){
-        callback(result);
-        return result;
-      },
-      error: function (xhr, ajaxOptions, thrownError) {
-        alert("We are sorry but something went wrong. " + xhr.status + " " + thrownError);
-        }
-      });
-  };
 
   function set_bucket_configuration_from_template(template_id, callback){
     var url = '#{find_configuration_options_from_template_id_funding_buckets_path}';
@@ -325,8 +286,6 @@
       data: {template_id: template_id},
       success: function(result){
         multiple_years = result.recurring;
-        multiple_agencies = result.create_multiple_agencies;
-        multiple_buckets_for_agency_year = result.create_multiple_buckets_for_agency_year;
         restricted = result.restricted;
         callback();
       },
@@ -343,63 +302,54 @@
       $('#return_to_bucket_index').val(return_to_bucket_index);
     }
 
-    var bucket_name_unique = is_bucket_name_unique(
-      function(result){
-        console.log('Result in set bucket name unique is '+result);
-        is_name_unique = result;
+    if ($('.bucket_form').valid())
+    {
+      var url = '#{find_existing_buckets_for_create_funding_buckets_path}';
+      var template_id = $('#funding_bucket_proxy_template_id').val();
+      var start_year = $('#funding_bucket_proxy_fiscal_year_range_start').val();
+      var end_year = $('#funding_bucket_proxy_fiscal_year_range_end').val();
+      var owner_id = $('#funding_bucket_proxy_owner_id').val();
+      var name = $('#funding_bucket_proxy_name').val();
+      var specific_organizations_with_budgets = [];
 
-        console.log('is_name_unique in set bucket name unique is '+is_name_unique);
+      var i = 0;
+      while(i < $('#funding_bucket_proxy_owner_id option').length){
+        var val = val = $('#funding_bucket_proxy_owner_id option').eq(i).val();
+        var input_name = 'agency_budget_id_'+val
+        var input_value = $('input:text[name='+input_name+']').val();
 
-        if ($('.bucket_form').valid())
+        if (input_value>0)
         {
-          var url = '#{find_existing_buckets_for_create_funding_buckets_path}';
-          var template_id = $('#funding_bucket_proxy_template_id').val();
-          var start_year = $('#funding_bucket_proxy_fiscal_year_range_start').val();
-          var end_year = $('#funding_bucket_proxy_fiscal_year_range_end').val();
-          var owner_id = $('#funding_bucket_proxy_owner_id').val();
-          var name = $('#funding_bucket_proxy_name').val();
-          var specific_organizations_with_budgets = [];
-
-          var i = 0;
-          while(i < $('#funding_bucket_proxy_owner_id option').length){
-            var val = val = $('#funding_bucket_proxy_owner_id option').eq(i).val();
-            var input_name = 'agency_budget_id_'+val
-            var input_value = $('input:text[name='+input_name+']').val();
-
-            if (input_value>0)
-            {
-              specific_organizations_with_budgets.push(val);
-            }
-
-            i++;
-          }
-
-          $.ajax({
-            url: url,
-            data: {
-              template_id: template_id,
-              start_year: start_year,
-              end_year: end_year,
-              owner_id: owner_id,
-              name: name,
-              specific_organizations_with_budgets: specific_organizations_with_budgets},
-            success: function(result){
-              if (result.result_count == 0 || $('#funding_bucket_proxy_create_conflict_option_replace').is(':checked')|| $('#funding_bucket_proxy_create_conflict_option_ignore').is(':checked') || $('#funding_bucket_proxy_create_conflict_option_cancel').is(':checked')) {
-                document.getElementById('new_funding_bucket_proxy').submit();
-              }else{
-                $('.bucket_form').valid();
-
-                $('#form-modal').html(result.new_html);
-                $('#form-modal').modal('show');
-              };
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-              alert("We are sorry but something went wrong. " + xhr.status + " " + thrownError);
-              }
-          });
+          specific_organizations_with_budgets.push(val);
         }
+
+        i++;
       }
-    );
+
+      $.ajax({
+        url: url,
+        data: {
+          template_id: template_id,
+          start_year: start_year,
+          end_year: end_year,
+          owner_id: owner_id,
+          name: name,
+          specific_organizations_with_budgets: specific_organizations_with_budgets},
+        success: function(result){
+          if (result.result_count == 0 || $('#funding_bucket_proxy_create_conflict_option_replace').is(':checked')|| $('#funding_bucket_proxy_create_conflict_option_ignore').is(':checked') || $('#funding_bucket_proxy_create_conflict_option_cancel').is(':checked')) {
+            document.getElementById('new_funding_bucket_proxy').submit();
+          }else{
+            $('.bucket_form').valid();
+
+            $('#form-modal').html(result.new_html);
+            $('#form-modal').modal('show');
+          };
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          alert("We are sorry but something went wrong. " + xhr.status + " " + thrownError);
+          }
+      });
+    }
   }
 
   function update_fiscal_year_range()
@@ -477,14 +427,32 @@
             $('#owner_id_div_id').show();
             //Add a blank entry to the list.
             $("#funding_bucket_proxy_owner_id").append( $("<option></option>").attr("value", "").text(''));
-            // Add an All Agencies
-            if (multiple_agencies)
-            {
-              $("#funding_bucket_proxy_owner_id").append( $("<option></option>").attr("value", "-1").text('All Agencies For This Template'));
-            }
             for(i = 0;i<result.length;i++){
               //add an option for each organizations available to the tempalte
               $("#funding_bucket_proxy_owner_id").append(
+                  $("<option></option>").attr("value", result[i][0]).text(result[i][1])
+              );
+            }
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            alert("We are sorry but something went wrong. " + xhr.status + " " + thrownError);
+            }
+          });
+
+        // set contributor options
+        var contributor_url = '#{find_contributor_organizations_from_template_id_funding_buckets_path}';
+        $.ajax({
+          url: contributor_url,
+          data: {template_id: $('#funding_bucket_proxy_template_id').val()},
+          success: function(result){
+            agencies = result
+            $('#funding_bucket_proxy_contributor_id').empty();
+            $('#owner_id_div_id').show();
+            //Add a blank entry to the list.
+            $("#funding_bucket_proxy_contributor_id").append( $("<option></option>").attr("value", "").text(''));
+            for(i = 0;i<result.length;i++){
+              //add an option for each organizations available to the tempalte
+              $("#funding_bucket_proxy_contributor_id").append(
                   $("<option></option>").attr("value", result[i][0]).text(result[i][1])
               );
             }

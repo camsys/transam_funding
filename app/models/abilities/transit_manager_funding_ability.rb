@@ -7,9 +7,8 @@ module Abilities
         organization_ids = user.organization_ids
       end
 
-      can :new_bucket_app, FundingBucket
-      can [:edit_bucket_app, :destroy], FundingBucket do |b|
-        (organization_ids.include? b.owner_id) && b.is_bucket_app?
+      can :manage, FundingBucket do |b|
+        (organization_ids.include? b.owner_id)
       end
       if Rails.application.config.try(:uses_bonds)
         can :manage, BondRequest do |b|

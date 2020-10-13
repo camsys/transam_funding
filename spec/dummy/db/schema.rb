@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_30_185600) do
+ActiveRecord::Schema.define(version: 2020_10_08_155802) do
 
   create_table "activities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "object_key", limit: 12
@@ -1151,7 +1151,9 @@ ActiveRecord::Schema.define(version: 2020_09_30_185600) do
     t.string "item_num"
     t.integer "bond_request_id"
     t.integer "target_organization_id"
+    t.bigint "contributor_id"
     t.string "external_id"
+    t.index ["contributor_id"], name: "index_funding_buckets_on_contributor_id"
   end
 
   create_table "funding_line_item_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -1180,6 +1182,12 @@ ActiveRecord::Schema.define(version: 2020_09_30_185600) do
     t.index ["object_key"], name: "funding_line_items_idx1"
     t.index ["organization_id", "object_key"], name: "funding_line_items_idx2"
     t.index ["project_number"], name: "funding_line_items_idx3"
+  end
+
+  create_table "funding_organization_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.boolean "active"
   end
 
   create_table "funding_requests", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -1245,20 +1253,24 @@ ActiveRecord::Schema.define(version: 2020_09_30_185600) do
     t.integer "owner_id", null: false
     t.boolean "recurring"
     t.boolean "transfer_only"
-    t.boolean "create_multiple_agencies", null: false
-    t.boolean "create_multiple_buckets_for_agency_year", null: false
     t.boolean "restricted"
     t.float "match_required"
-    t.text "query_string"
     t.boolean "active", null: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string "external_id", limit: 32
-    t.bigint "created_by_user_id"
+    t.integer "created_by_user_id"
     t.index ["contributor_id"], name: "index_funding_templates_on_contributor_id"
-    t.index ["created_by_user_id"], name: "fk_rails_10c82eb1d0"
+    t.index ["created_by_user_id"], name: "index_funding_templates_on_created_by_user_id"
     t.index ["funding_source_id"], name: "index_funding_templates_on_funding_source_id"
     t.index ["owner_id"], name: "index_funding_templates_on_owner_id"
+  end
+
+  create_table "funding_templates_contributor_organizations", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "funding_template_id"
+    t.bigint "organization_id"
+    t.index ["funding_template_id"], name: "template_contributor_template_idx"
+    t.index ["organization_id"], name: "template_contributor_organization_idx"
   end
 
   create_table "funding_templates_funding_template_types", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -2984,7 +2996,6 @@ ActiveRecord::Schema.define(version: 2020_09_30_185600) do
     t.index ["object_key"], name: "workflow_events_idx1"
   end
 
-  add_foreign_key "funding_templates", "users", column: "created_by_user_id"
   add_foreign_key "query_field_asset_classes", "query_asset_classes"
   add_foreign_key "query_field_asset_classes", "query_fields"
   add_foreign_key "query_filters", "query_fields"
