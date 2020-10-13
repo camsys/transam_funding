@@ -63,17 +63,6 @@
 = render 'funding_templates/form_scripts'
 
 :javascript
-
-  function control_template_booleans(){
-    if ($('#funding_template_create_multiple_buckets_for_agency_year').is(':checked')) {
-      $('#funding_template_recurring').attr('checked', false);
-      $('#funding_template_recurring').attr("disabled", true);
-    } else{
-      $('#funding_template_recurring').removeAttr("disabled");
-    };
-  }
-
-  control_template_booleans();
   
   $('body').on('click', '.selector, .selector-chooseall, .selector-clearall', function() {
     if ($('#selected_owner_orgs option').length > 0 && ($('#selected_contributor_orgs option').length > 0)) {
@@ -81,13 +70,6 @@
     } else {
       $('#funding_template_submit').attr('disabled', true);
     }
-  });
-
-  $('#funding_template_create_multiple_buckets_for_agency_year').on('change', function(e) {
-    control_template_booleans();
-  });
-  $('#funding_template_owner_id').on('change', function(e) {
-    control_template_booleans();
   });
 
   // jquery validations

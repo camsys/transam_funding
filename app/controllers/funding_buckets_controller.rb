@@ -429,12 +429,12 @@ class FundingBucketsController < OrganizationAwareController
 
     template = FundingTemplate.find_by(id: template_id)
     if template.owner == FundingOrganizationType.find_by(code: 'grantor') && !target_org
-      grantors = Grantor.where(id: @organization_list)
+      grantors = template.organizations.where(id: @organization_list, organization_type: OrganizationType.find_by(class_name: 'Grantor'))
       grantors.each { |g|
         result << [g.id, g.coded_name]
       }
     else
-      orgs = template.organizations.where(id: @organization_list)
+      orgs = template.organizations.where(id: @organization_list, organization_type: OrganizationType.find_by(class_name: 'TransitOperator'))
       organizations = []
       if orgs.length > 0
         orgs.each { |o|
@@ -460,12 +460,12 @@ class FundingBucketsController < OrganizationAwareController
 
     template = FundingTemplate.find_by(id: template_id)
     if template.owner == FundingOrganizationType.find_by(code: 'grantor')
-      grantors = Grantor.where(id: @organization_list)
+      grantors = template.contributor_organizations.where(id: @organization_list, organization_type: OrganizationType.find_by(class_name: 'Grantor'))
       grantors.each { |g|
         result << [g.id, g.coded_name]
       }
     else
-      orgs = template.contributor_organizations.where(id: @organization_list)
+      orgs = template.contributor_organizations.where(id: @organization_list, organization_type: OrganizationType.find_by(class_name: 'TransitOperator'))
       organizations = []
       if orgs.length > 0
         orgs.each { |o|
