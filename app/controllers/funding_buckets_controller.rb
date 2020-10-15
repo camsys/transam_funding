@@ -337,7 +337,8 @@ class FundingBucketsController < OrganizationAwareController
   end
 
   def find_contributor_organizations_from_template_id
-    result = find_organizations(template_id)
+    template_id = params[:template_id]
+    result = find_contributor_organizations(template_id)
     respond_to do |format|
       format.json { render json: result.to_json }
     end
@@ -459,7 +460,7 @@ class FundingBucketsController < OrganizationAwareController
     result = []
 
     template = FundingTemplate.find_by(id: template_id)
-    if template.owner == FundingOrganizationType.find_by(code: 'grantor')
+    if template.contributor == FundingOrganizationType.find_by(code: 'grantor')
       grantors = template.contributor_organizations.where(id: @organization_list, organization_type: OrganizationType.find_by(class_name: 'Grantor'))
       grantors.each { |g|
         result << [g.id, g.coded_name]
@@ -476,6 +477,8 @@ class FundingBucketsController < OrganizationAwareController
 
       result = organizations
     end
+
+    puts result.inspect
 
     result
   end

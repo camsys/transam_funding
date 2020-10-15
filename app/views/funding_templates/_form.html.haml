@@ -3,8 +3,8 @@
 :wrapper => :vertical_form,
 :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
 
-  //= f.association :funding_source, :required => true, :collection => FundingSource.all, :include_blank => true, :label => "Funding Program", :disabled => !@funding_template.new_record?
-  = f.input :funding_source, as: :hidden
+  = f.association :funding_source, :required => true, :collection => FundingSource.all, :include_blank => true, :label => "Funding Program", :disabled => !@funding_template.new_record?
+  //= f.input :funding_source, as: :hidden
   = f.input :name, :required => true, input_html: {:maxlength => 64}
   = f.input :external_id, :label => 'dotGrants ID', input_html: {maxlength: 32}
   = f.input :description
@@ -12,28 +12,31 @@
     = f.association :contributor, :collection => FundingOrganizationType.active, :required => true, :disabled => !@funding_template.new_record?
   .row
     .col-sm-12
-      = f.hidden_field :contributor_organization_ids, :multiple => true
       .form-group.required
         %label.required.control-label
           %abbr{title: 'required'} *
           = " Eligibility Contributor Organization(s)"
           %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'Multiple contributors may be selected, but only one contributor organization may be selected when creating a budget.'}, tabindex: '0'}
             %i.fa.fa-info-circle
-
-        #contributor_org_select.input-large
+        = f.select(:contributor_organization_ids,
+                @funding_template.funding_source.organizations.collect {|a| [a.coded_name, a.id]},
+                {:include_blank => true},
+                {multiple: true})
   
   .col-sm-3
     = f.association :owner, :collection => FundingOrganizationType.active, :required => true, :disabled => !@funding_template.new_record?
   .row
     .col-sm-12
-      = f.hidden_field :organization_ids, :multiple => true
       .form-group.required
         %label.required.control-label
           %abbr{title: 'required'} *
           = " Eligibility Owner Organization(s)"
           %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'Multiple owners may be selected, but only one owner organization may be selected when creating a budget.'}, tabindex: '0'}
             %i.fa.fa-info-circle
-        #owner_org_select.input-large
+        = f.select(:organization_ids,
+                @funding_template.funding_source.organizations.collect {|a| [a.coded_name, a.id]},
+                {:include_blank => true},
+                {multiple: true})
 
   .row
     .col-sm-3
@@ -64,14 +67,6 @@
 = render 'funding_templates/form_scripts'
 
 :javascript
-  
-  $('body').on('click', '.selector, .selector-chooseall, .selector-clearall', function() {
-    if ($('#selected_owner_orgs option').length > 0 && ($('#selected_contributor_orgs option').length > 0)) {
-      $('#funding_template_submit').attr('disabled', false);
-    } else {
-      $('#funding_template_submit').attr('disabled', true);
-    }
-  });
 
   // jquery validations
   $('.funding_template_form').validate({

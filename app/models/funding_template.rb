@@ -127,6 +127,7 @@ class FundingTemplate < ActiveRecord::Base
   protected
 
   def set_defaults
+    self.active = self.active.nil? ? true : self.active
     self.recurring = self.recurring.nil? ? false : self.recurring
   end
 end

@@ -50,4 +50,18 @@ RSpec.describe FundingTemplate, type: :model do
       end
     end
 
+    describe 'active field' do
+      it 'responds to active' do
+        expect(funding_template.respond_to? :active).to eq(true)
+      end
+      it 'defaults to true' do
+        expect(funding_template.active).to eq(true)
+      end
+      it 'can set active' do
+        test_template = create(:funding_template, active: false)
+        expect(test_template.active).to eq(false)
+      end
+    end
+
+
 end
