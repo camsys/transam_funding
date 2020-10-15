@@ -62,7 +62,7 @@
 
   = f.association :funding_template_types, :as => :check_boxes, :label => "Eligible Uses"
 
-  = f.button :submit, 'Save', :class => "btn btn-primary", :id => 'funding_template_submit', :disabled => f.object.organizations.count == 0
+  = f.button :submit, 'Save', :class => "btn btn-primary", :id => 'funding_template_submit'
 
 = render 'funding_templates/form_scripts'
 
