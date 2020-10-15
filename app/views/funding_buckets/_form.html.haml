@@ -33,7 +33,7 @@
           = f.input :owner_id, :required => true, :collection => [], :include_blank => true, :label => false, :selected => params[:owner_id]
 
 
-  .fiscal_year_div{:id => "fiscal_year_div"}
+  #fiscal_year_div.fiscal_year_div
     .row
       .col-sm-4
         = f.input :fiscal_year_range_start, :required => true, :collection => @fiscal_years, :include_blank => true, :label => "From Year", :selected => params[:fiscal_year_range_start]
@@ -412,7 +412,6 @@
     if ($('#funding_bucket_proxy_template_id').val() > 0)
     {
       set_bucket_configuration_from_template($('#funding_bucket_proxy_template_id').val(), function() {
-        console.log("getting:" + restricted);
 
         update_fiscal_year_range();
 

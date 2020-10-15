@@ -6,7 +6,7 @@
   = f.association :funding_source, :required => true, :collection => FundingSource.all, :include_blank => true, :label => "Funding Program", :disabled => !@funding_template.new_record?
   //= f.input :funding_source, as: :hidden
   = f.input :name, :required => true, input_html: {:maxlength => 64}
-  = f.input :external_id, :label => 'dotGrants ID', input_html: {maxlength: 32}
+  = f.input :external_id, :label => 'External ID', input_html: {maxlength: 32}
   = f.input :description
   .col-sm-3
     = f.association :contributor, :collection => FundingOrganizationType.active, :required => true, :disabled => !@funding_template.new_record?
