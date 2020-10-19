@@ -1,4 +1,4 @@
-class CreateFundingOrganizationTypes < ActiveRecord::DataMigration
+class AddFundingOrganizationTypes < ActiveRecord::DataMigration
   def up
     funding_organization_types = [
         {name: 'Grantor', code: 'grantor', active: true},
