@@ -2,9 +2,7 @@
 :html => {:class => 'form-vertical funding_template_form' },
 :wrapper => :vertical_form,
 :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
-
-  = f.association :funding_source, :required => true, :collection => FundingSource.all, :include_blank => true, :label => "Funding Program", :disabled => !@funding_template.new_record?
-  //= f.input :funding_source, as: :hidden
+  = f.input :funding_source_id, as: :hidden, input_html: {value: @funding_template.funding_source.try(:id) || @funding_source.id}
   = f.input :name, :required => true, input_html: {:maxlength => 64}
   = f.input :external_id, :label => 'External ID', input_html: {maxlength: 32}
   = f.input :description

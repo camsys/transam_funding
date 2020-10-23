@@ -106,11 +106,12 @@ class FundingTemplatesController < OrganizationAwareController
       @funding_template.query_string = nil
     end
 
-    if @funding_template.save
+    @funding_source = @funding_template.funding_source
 
-      redirect_to @funding_template, notice: 'Funding template was successfully created.'
+    if @funding_template.save!
+      redirect_to @funding_template.funding_source, notice: 'Funding template was successfully created.'
     else
-      render :new
+      render :new #TODO Fix this to work with fyout
     end
   end
 
