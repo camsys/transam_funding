@@ -1,3 +1,9 @@
+:css
+  .popover {
+    z-index: 1051 !important; /*1 more than z-index of modal*/
+    position: fixed;
+  }
+
 - bond_request_collection = BondRequest.where(organization_id: @funding_bucket.target_organization_id || @funding_bucket.funding_template.get_organizations.map{|x| x.id}, state: 'authorized').where.not(id: FundingBucket.pluck(:bond_request_id)).map{ |l| [l.to_s, l.id, {'data-bond-fields': "#{l.line_num}-#{l.act_num}-#{l.pt_num}-#{l.page_num}-#{l.item_num}-#{l.grantee_code}"} ] }
 - if @funding_bucket.bond_request_id
   - selected_bond_request = @funding_bucket.bond_request
