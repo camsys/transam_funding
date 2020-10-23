@@ -446,7 +446,6 @@
           success: function(result){
             agencies = result
             $('#funding_bucket_proxy_contributor_id').empty();
-            $('#owner_id_div_id').show();
             //Add a blank entry to the list.
             $("#funding_bucket_proxy_contributor_id").append( $("<option></option>").attr("value", "").text(''));
             for(i = 0;i<result.length;i++){
@@ -459,6 +458,13 @@
           error: function (xhr, ajaxOptions, thrownError) {
             alert("We are sorry but something went wrong. " + xhr.status + " " + thrownError);
             }
+          });
+
+          // force popover function again because was hidden elements
+          $('.transam-popover').popover({
+            trigger: 'hover',
+            container: 'body',
+            placement: 'left'
           });
 
           // set restricted org options
