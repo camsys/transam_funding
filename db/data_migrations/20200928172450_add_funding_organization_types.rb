@@ -25,6 +25,8 @@ class AddFundingOrganizationTypes < ActiveRecord::DataMigration
           template.owner = FundingOrganizationType.find_by(code: 'agency')
         end
       end
+
+      template.save!
     end
   end
 end
