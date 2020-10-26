@@ -1,4 +1,4 @@
-- orgs = @funding_template.get_organizations
+- orgs = @funding_template.organizations
 
 %ul.nav.nav-tabs
   %li
@@ -17,8 +17,6 @@
 
   .tab-pane.fade#elgby
     .tab-content
-      - if @funding_template.query_string.present?
-        = format_field("Agencies", QueryParam.find_by(class_name: 'FundingTemplate', query_string: @funding_template.query_string).to_s)
       = render :partial => 'organizations/index_table', :locals => {:organizations => orgs, :show_actions => 0}
 
 
