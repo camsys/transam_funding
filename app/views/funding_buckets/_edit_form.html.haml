@@ -62,9 +62,10 @@
 
 
   - if @funding_bucket.funding_template.funding_source.name == '1514 Bond'
-    .row
-      .col-sm-8
-        = f.input :target_organization_id, :collection => @template_organizations, :label=> 'Restricted To', :required => true, :disabled => true
+    - if @funding_bucket.funding_template.restricted
+      .row
+        .col-sm-8
+          = f.input :target_organization_id, :collection => @template_organizations, :label=> 'Restricted To', :required => true, :disabled => true
     .row
       .col-sm-12
         = f.input :bond_request_id, label: 'Bond Request' do
