@@ -9,12 +9,12 @@
 #templates_table_actions.btn-toolbar
   - if can? :create, FundingTemplate
     .btn-group.navbar-right
-      .btn.btn-default#flyout
+      .btn.btn-default.flyout_button#flyout
         %i.fa.fa-plus.fa-fw
         = "Add Template"
     :javascript
       $(document).ready(()=>{
-        add_flyout("#flyout", "Add Template", '#{raw escape_javascript(render "funding_templates/form")}', "flyout-right");
+        add_flyout("#flyout", "Add Template", '#{raw escape_javascript(render "funding_templates/form")}', "flyout-right open");
       });    
     -# = link_to new_funding_template_path(:funding_source_id => @funding_source.try(:id)), :class => 'btn btn-default' do
     -#   %i.fa.fa-plus.fa-fw
@@ -61,11 +61,11 @@
 
 
   - funding_templates.each_with_index do |f, index|
-    %div.actions
+    %div.actions{:id => index}
       %a.transam-popover{data: {placement: 'left', toggle: 'popover', html: 'true', content: f.description}, title: 'Description', tabindex: '0'}
         %i.fa.fa-info-circle
       - if can? :update, f
-        = link_to edit_funding_template_path(f), :class => "button btn-xs", :title => "Edit template" do
+        = link_to edit_funding_template_path(f, :format => :js), :id => "#{f.object_key}", :class => "button btn-xs edit_flyout", :title => "Edit template", :remote => true do
           %i.fa.fa-edit.fa-1-5x.text-success
         - if can? :destroy, f
           -# link_to funding_template_path(f), :method => :delete, :data => {:confirm => "This template is associated with #{f.funding_buckets.active.count} buckets, which are tagged to YYY projects. Are you sure? The action cannot be undone."}  do
@@ -95,7 +95,10 @@
       // TEMP UNTIL WE DO THIS FOR REAL
       // TODO: PLEASE DON'T LET THIS GO TO PRODUCTION
       // HACKY HACK IS HACKY
-      add_aux_queue('#{table_dom_id}',()=>$(".actions").eq(#{index}).detach().appendTo($("##{table_dom_id} .action-column").eq(#{index}).find(".cell-text")));
+      //add_aux_queue('#{table_dom_id}',()=>$(".actions").eq(#{index}).detach().appendTo($("##{table_dom_id} .action-column").eq(#{index}).find(".cell-text")));
+      add_aux_queue('#{table_dom_id}',()=>{
+        $("##{table_dom_id} ~ .actions##{index}").detach().appendTo($("##{table_dom_id} .action-column").eq(#{index}).find(".cell-text"));
+      });
 
 -# :javascript
 -#   window["#{table_dom_id}"].apply_styles = function(){

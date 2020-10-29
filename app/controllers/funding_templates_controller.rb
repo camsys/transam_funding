@@ -1,6 +1,7 @@
 class FundingTemplatesController < OrganizationAwareController
 
   authorize_resource :except => :find_match_required_from_funding_source_id
+  protect_from_forgery except: :edit
 
   add_breadcrumb "Home", :root_path
 
@@ -91,6 +92,14 @@ class FundingTemplatesController < OrganizationAwareController
     add_breadcrumb @funding_template.funding_source.to_s, funding_source_path(@funding_template.funding_source)
     add_breadcrumb @funding_template.to_s, funding_template_path(@funding_template)
     add_breadcrumb 'Update', funding_template_path(@funding_template)
+
+
+    respond_to do |format|
+      format.html
+      format.json { render :json => @funding_template }
+      format.js
+    end
+
   end
 
   # POST /funding_templates

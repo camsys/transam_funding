@@ -36,7 +36,7 @@
       :data_source => 'client',
       :url => ''}}
   - buckets.each_with_index do |b, index|
-    %div.actions
+    %div.actions{:id => index}
       %a.transam-popover{data: {placement: 'left', toggle: 'popover', html: 'true', content: b.description}, title: 'Description', tabindex: '0'}
         %i.fa.fa-info-circle
       - if (can? :update, b)
@@ -67,7 +67,10 @@
       // TEMP UNTIL WE DO THIS FOR REAL
       // TODO: PLEASE DON'T LET THIS GO TO PRODUCTION
       // HACKY HACK IS HACKY
-      add_aux_queue('#{table_dom_id}',()=>$(".actions").eq(#{index}).detach().appendTo($("##{table_dom_id} .action-column").eq(#{index}).find(".cell-text")));
+      //add_aux_queue('#{table_dom_id}',()=>$(".actions").eq(#{index}).detach().appendTo($("##{table_dom_id} .action-column").eq(#{index}).find(".cell-text")));
+      add_aux_queue('#{table_dom_id}',()=>{
+        $("##{table_dom_id} ~ .actions##{index}").detach().appendTo($("##{table_dom_id} .action-column").eq(#{index}).find(".cell-text"));
+      });
 
 
 
