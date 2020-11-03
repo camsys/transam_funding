@@ -7,64 +7,73 @@
 
   =f.hidden_field :return_to_bucket_index, :id => 'return_to_bucket_index'
   .row
-    .col-sm-8
-      = f.input :program_id, :required => true, :collection => FundingSource.all, :include_blank => true, :label => "Program Name", :selected => params[:funding_source_id]
-
-  .template_id_div{:id => "template_id_div_id"}
-    .row
-      .col-sm-8
-        = f.input :template_id, :required => true, :collection => @templates, :include_blank => true, :label => "Template Name", :selected => params[:template_id]
-  .owner_id_div{:id => "owner_id_div_id"}
-    .row
-      .col-sm-8
-        .form-group.required
-          %label.required.control-label
-            %abbr{title: 'required'} *
-            = "Contributor"
-            %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'Contributor organizations are organizations that have permissions to create, update, and delete specific budgets.'}, tabindex: '0'}
-              %i.fa.fa-info-circle
-          = f.input :contributor_id, required: true, :collection => [], :include_blank => true, :label => false, :selected => params[:contributor_id]
-        .form-group.required
-          %label.required.control-label
-            %abbr{title: 'required'} *
-            = "Owner"
-            %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'Owner organizations are organizations that have permissions to commit or allocate funds from a specific budget.'}, tabindex: '0'}
-              %i.fa.fa-info-circle
-          = f.input :owner_id, :required => true, :collection => [], :include_blank => true, :label => false, :selected => params[:owner_id]
-
-
-  #fiscal_year_div.fiscal_year_div
-    .row
-      .col-sm-4
-        = f.input :fiscal_year_range_start, :required => true, :collection => @fiscal_years, :include_blank => true, :label => "From Year", :selected => params[:fiscal_year_range_start]
-      .col-sm-4
-        .form-group.required
-          %label.required.control-label
-            %abbr{title: 'required'} *
-            = "To Year"
-            %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'If the "To Year" is greater than the "From Year", you will be generating budgets for the range of selected years.'}, tabindex: '0'}
-              %i.fa.fa-info-circle
-
-          = f.input :fiscal_year_range_end, :required => true, :collection => @fiscal_years, :include_blank => true, :label => false, :selected => params[:fiscal_year_range_end]
-
-  .escalate_by_div{:id => "escalate_by_div_id"}
-    .row
-      .col-sm-8
-        = f.input :inflation_percentage, :wrapper => :vertical_append,:label => 'Escalate By' do
-          = f.input_field :inflation_percentage, :class => 'form-control', :max => 100, :step => 0.001
-          %span.input-group-addon
-            %i.fa.fa-percent
-  .state_or_single_agency_budget{:id => "state_or_single_agency_budget_id"}
-    .target_org
+    .col-sm-6
       .row
-        .col-sm-8
-          = f.input :target_organization_id, :collection => @template_organizations, :label=> 'Restricted To', :required => true
-    .row
-      .col-sm-8
-        = f.input :name, :label=> 'Budget Name', :required => true
-        = f.input :external_id, label: 'External ID'
-        = f.input :description
-        = f.input :total_amount, :as => :integer, :label => 'Apportionment Amount', :required => true, :input_html => { :min => 1  }
+        .col-sm-6
+          = f.input :program_id, :required => true, :collection => FundingSource.all, :include_blank => true, :label => "Program Name", :selected => params[:funding_source_id]
+
+      .template_id_div{:id => "template_id_div_id"}
+        .row
+          .col-sm-8
+            = f.input :template_id, :required => true, :collection => @templates, :include_blank => true, :label => "Template Name", :selected => params[:template_id]
+      .state_or_single_agency_budget{:id => "state_or_single_agency_budget_id"}
+        .target_org
+          .row
+            .col-sm-12
+              = f.input :target_organization_id, :collection => @template_organizations, :label=> 'Restricted To', :required => true
+        .row
+          .col-sm-12
+            = f.input :name, :label=> 'Budget Name', :required => true
+        .row
+          .col-sm-6
+            = f.input :external_id, label: 'External ID'
+        .row
+          .col-sm-12
+            = f.input :description
+    .col-sm-6
+      .owner_id_div{:id => "owner_id_div_id"}
+        .row
+          .col-sm-12
+            .form-group.required
+              %label.required.control-label
+                %abbr{title: 'required'} *
+                = "Contributor"
+                %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'Contributor organizations are organizations that have permissions to create, update, and delete specific budgets.'}, tabindex: '0'}
+                  %i.fa.fa-info-circle
+              = f.input :contributor_id, required: true, :collection => [], :include_blank => true, :label => false, :selected => params[:contributor_id]
+        .row
+          .col-sm-12
+            .form-group.required
+              %label.required.control-label
+                %abbr{title: 'required'} *
+                = "Owner"
+                %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'Owner organizations are organizations that have permissions to commit or allocate funds from a specific budget.'}, tabindex: '0'}
+                  %i.fa.fa-info-circle
+              = f.input :owner_id, :required => true, :collection => [], :include_blank => true, :label => false, :selected => params[:owner_id]
+
+
+      #fiscal_year_div.fiscal_year_div
+        .row
+          .col-sm-6
+            = f.input :fiscal_year_range_start, :required => true, :collection => @fiscal_years, :include_blank => true, :label => "From Year", :selected => params[:fiscal_year_range_start]
+          .col-sm-6
+            .form-group.required
+              %label.required.control-label
+                %abbr{title: 'required'} *
+                = "To Year"
+                %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'If the "To Year" is greater than the "From Year", you will be generating budgets for the range of selected years.'}, tabindex: '0'}
+                  %i.fa.fa-info-circle
+              = f.input :fiscal_year_range_end, :required => true, :collection => @fiscal_years, :include_blank => true, :label => false, :selected => params[:fiscal_year_range_end]
+
+      .row
+        #total_amount_div_id.col-sm-6
+          = f.input :total_amount, :as => :integer, :label => 'Apportionment Amount', :required => true, :input_html => { :min => 1  }
+        #escalate_by_div_id.col-sm-6
+          = f.input :inflation_percentage, :wrapper => :vertical_append,:label => 'Escalate By' do
+            = f.input_field :inflation_percentage, :class => 'form-control', :max => 100, :step => 0.001
+            %span.input-group-addon
+              %i.fa.fa-percent
+
 
   .modal.fade#form-modal{:tabindex => -1, :role => 'dialog', :aria => {:hidden => true}}
 
@@ -110,6 +119,7 @@
   if($("#funding_bucket_proxy_total_amount").val() == '')
   {
     $("#state_or_single_agency_budget_id").hide();
+    $('#total_amount_div_id').hide();
   }
 
   if($("#funding_bucket_proxy_name").val() == '')
@@ -177,15 +187,16 @@
   $('#funding_bucket_proxy_owner_id').change(function(){
     if ($('#funding_bucket_proxy_owner_id').val() == -1){
       $("#state_or_single_agency_budget_id").hide();
+      $('#total_amount_div_id').hide();
       funding_bucket_proxy_total_amount.value = null;
       display_budget = false;
       display_all_orgs_budget = true;
-      populate_all_agencies_fields();
     }
     else{
       //We don't need all the agencies fields so remove them
       remove_all_agencies_fields();
       $("#state_or_single_agency_budget_id").show();
+      $('#total_amount_div_id').show();
       if (restricted) {
         $('.target_org').show();
       } else {
@@ -195,6 +206,9 @@
       display_budget = true;
       display_all_orgs_budget = false;
     }
+
+    update_bucket_name();
+    $('#fiscal_year_div').show();
   });
 
   function show_escalate_by(start_fy, end_fy){
@@ -234,10 +248,6 @@
       $('#funding_bucket_proxy_fiscal_year_range_start').val($('#funding_bucket_proxy_fiscal_year_range_end').val());
     }
     show_escalate_by($('#funding_bucket_proxy_fiscal_year_range_start').val(), $('#funding_bucket_proxy_fiscal_year_range_end').val());
-  });
-  $('#funding_bucket_proxy_owner_id').change(function(){
-    update_bucket_name();
-    $('#fiscal_year_div').show();
   });
 
   function build_bucket_name(){
@@ -534,6 +544,7 @@
 
           }
           $("#state_or_single_agency_budget_id").hide();
+          $('#total_amount_div_id').hide();
           $("#escalate_by_div_id").hide();
           $('#owner_id_div_id').hide();
           $('#fiscal_year_div').hide();

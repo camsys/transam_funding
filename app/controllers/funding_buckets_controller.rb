@@ -35,9 +35,6 @@ class FundingBucketsController < OrganizationAwareController
     @templates =  FundingTemplate.all.pluck(:name, :id)
     @organizations = Organization.where(id: @organization_list).map{|o| [o.coded_name, o.id]}
 
-    @bucket_proxy = FundingBucketProxy.new
-    @bucket_proxy.set_defaults
-
     # Start to set up the query
     conditions  = []
     values      = []

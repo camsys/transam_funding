@@ -6,13 +6,9 @@
 
 - if can? :create, FundingBucket
   .btn-group.navbar-right
-    .btn.btn-default.flyout_button#flyout
+    = link_to new_funding_bucket_path, :class => 'btn btn-default flyout_button', :id => 'flyout', remote: true do
       %i.fa.fa-plus.fa-fw
       = "Add Budget";
-  :javascript
-    $(document).ready(()=>{
-      add_flyout("#flyout", "Add New Budget", '#{raw escape_javascript(render "funding_buckets/form")}', "flyout-right");
-    });
 
 = form_tag (@my_funds ? my_funds_funding_buckets_path : funding_buckets_path), :id => 'filter_form', :method => "get", :class => 'navbar-form navbar-right panel-action' do
   #filter-div
