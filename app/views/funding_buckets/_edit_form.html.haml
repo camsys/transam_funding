@@ -15,78 +15,87 @@
   :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
 
   .row
-    .col-sm-8
-      .form-group
-        %label.control-label.string.required
-          * Program Name
-        = select_tag :funding_source_id, options_for_select(FundingSource.all.map{|x| [x.to_s, x.id]}, @funding_bucket.funding_template.funding_source_id), :class => 'form-control', :required => true, :include_blank => true, :disabled => true
-
-  .row
-    .col-sm-8
-      = f.association :funding_template, :required => true, :collection => @funding_bucket.funding_template.funding_source.funding_templates, :include_blank => true, :label => "Template Name", :disabled => true
-  .row
-    .col-sm-8
-      .form-group.required
-        %label.required.control-label
-          %abbr{title: 'required'} *
-          = "Contributor"
-          %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'Contributor organizations are organizations that have permissions to create, update, and delete specific budgets.'}, tabindex: '0'}
-            %i.fa.fa-info-circle
-        = f.association :contributor, required: true, :collection => Organization.all, :include_blank => true, :label => false, :disabled => true
-      .form-group.required
-        %label.required.control-label
-          %abbr{title: 'required'} *
-          = "Owner"
-          %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'Owner organizations are organizations that have permissions to commit or allocate funds from a specific budget.'}, tabindex: '0'}
-            %i.fa.fa-info-circle
-        = f.association :owner, :required => true, :collection => Organization.all, :include_blank => true, :label => false, :disabled => true
-
-  .row
-    .col-sm-4
-      = f.input :fy_year, collection: get_fiscal_years(start_of_fiscal_year(@funding_bucket.fy_year)), label: 'Apportionment Year', disabled: true
-  .row
-    .col-sm-8
-      = f.input :name, :label=> 'Budget Name', :required => true
-      = f.input :external_id, label: 'External ID'
-
-  .row
-    .col-sm-12
-      = f.input :description, :as => :text, :input_html => {:rows => 4, :maxlength => 254}
-
-  .row
     .col-sm-6
-      = f.input :budget_amount, :wrapper=> :vertical_prepend, :label => "Budget ($)" do
-        %span.input-group-addon
-          %i.fa.fa-usd
-        = f.input_field :budget_amount, :required => true, :min => 1, :integer => true, :value => @funding_bucket.budget_amount.to_i, :class => "form-control"
+      .row
+        .col-sm-6
+          .form-group
+            %label.control-label.string.required
+              * Program Name
+            = select_tag :funding_source_id, options_for_select(FundingSource.all.map{|x| [x.to_s, x.id]}, @funding_bucket.funding_template.funding_source_id), :class => 'form-control', :required => true, :include_blank => true, :disabled => true
 
-
-  - if @funding_bucket.funding_template.funding_source.name == '1514 Bond'
-    - if @funding_bucket.funding_template.restricted
       .row
         .col-sm-8
-          = f.input :target_organization_id, :collection => @template_organizations, :label=> 'Restricted To', :required => true, :disabled => true
-    .row
-      .col-sm-12
-        = f.input :bond_request_id, label: 'Bond Request' do
-          = f.select :bond_request_id, bond_request_collection, {include_blank: 'None'}, {class: 'form-control'}
+          = f.association :funding_template, :required => true, :collection => @funding_bucket.funding_template.funding_source.funding_templates, :include_blank => true, :label => "Template Name", :disabled => true
 
-    #bond_fields
-      .row
-        .col-sm-4
-          = f.input :act_num, :disabled => @funding_bucket.bond_request.present?
-        .col-sm-4
-          = f.input :pt_num, :disabled => @funding_bucket.bond_request.present?, :label => 'PT Num'
-        .col-sm-4
-          = f.input :page_num, :disabled => @funding_bucket.bond_request.present?
+      - if @funding_bucket.funding_template.funding_source.name == '1514 Bond'
+        - if @funding_bucket.funding_template.restricted
+          .row
+            .col-sm-8
+              = f.input :target_organization_id, :collection => @template_organizations, :label=> 'Restricted To', :required => true, :disabled => true
 
       .row
-        .col-sm-4
-          = f.input :grantee_code
-        .col-sm-4
-          = f.input :item_num, :disabled => @funding_bucket.bond_request.present?
-        .col-sm-4
-          = f.input :line_num, :disabled => @funding_bucket.bond_request.present?
+        .col-sm-12
+          = f.input :name, :label=> 'Budget Name', :required => true
+      .row
+        .col-sm-6
+          = f.input :external_id, label: 'External ID'
+      .row
+        .col-sm-12
+          = f.input :description, :as => :text, :input_html => {:rows => 4, :maxlength => 254}
+    .col-sm-6
+      .row
+        .col-sm-12
+          .form-group.required
+            %label.required.control-label
+              %abbr{title: 'required'} *
+              = "Contributor"
+              %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'Contributor organizations are organizations that have permissions to create, update, and delete specific budgets.'}, tabindex: '0'}
+                %i.fa.fa-info-circle
+            = f.association :contributor, required: true, :collection => Organization.all, :include_blank => true, :label => false, :disabled => true
+      .row
+        .col-sm-12
+          .form-group.required
+            %label.required.control-label
+              %abbr{title: 'required'} *
+              = "Owner"
+              %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'Owner organizations are organizations that have permissions to commit or allocate funds from a specific budget.'}, tabindex: '0'}
+                %i.fa.fa-info-circle
+            = f.association :owner, :required => true, :collection => Organization.all, :include_blank => true, :label => false, :disabled => true
+
+      .row
+        .col-sm-6
+          = f.input :fy_year, collection: get_fiscal_years(start_of_fiscal_year(@funding_bucket.fy_year)), label: 'Apportionment Year', disabled: true
+
+      .row
+        .col-sm-6
+          = f.input :budget_amount, :wrapper=> :vertical_prepend, :label => "Budget ($)" do
+            %span.input-group-addon
+              %i.fa.fa-usd
+            = f.input_field :budget_amount, :required => true, :min => 1, :integer => true, :value => @funding_bucket.budget_amount.to_i, :class => "form-control"
+
+
+      - if @funding_bucket.funding_template.funding_source.name == '1514 Bond'
+        .row
+          .col-sm-12
+            = f.input :bond_request_id, label: 'Bond Request' do
+              = f.select :bond_request_id, bond_request_collection, {include_blank: 'None'}, {class: 'form-control'}
+
+        #bond_fields
+          .row
+            .col-sm-4
+              = f.input :act_num, :disabled => @funding_bucket.bond_request.present?
+            .col-sm-4
+              = f.input :pt_num, :disabled => @funding_bucket.bond_request.present?, :label => 'PT Num'
+            .col-sm-4
+              = f.input :page_num, :disabled => @funding_bucket.bond_request.present?
+
+          .row
+            .col-sm-4
+              = f.input :grantee_code
+            .col-sm-4
+              = f.input :item_num, :disabled => @funding_bucket.bond_request.present?
+            .col-sm-4
+              = f.input :line_num, :disabled => @funding_bucket.bond_request.present?
 
   = f.button :submit, 'Save', :class => "btn btn-primary"
 
