@@ -30,7 +30,7 @@ class FundingBucketsController < OrganizationAwareController
 
     add_breadcrumb 'Funding Programs', funding_sources_path
     add_breadcrumb 'Templates', funding_templates_path
-    add_breadcrumb 'Buckets', funding_buckets_path
+    add_breadcrumb 'Budgets', funding_buckets_path
 
     @templates =  FundingTemplate.all.pluck(:name, :id)
     @organizations = Organization.where(id: @organization_list).map{|o| [o.coded_name, o.id]}
@@ -126,7 +126,7 @@ class FundingBucketsController < OrganizationAwareController
 
     add_breadcrumb 'Funding Programs', funding_sources_path
     add_breadcrumb 'Templates', funding_templates_path
-    add_breadcrumb 'Buckets', funding_buckets_path
+    add_breadcrumb 'Budgets', funding_buckets_path
     add_breadcrumb 'New', new_funding_bucket_path
 
     if @bucket_proxy.present?
