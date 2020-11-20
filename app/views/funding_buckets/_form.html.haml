@@ -351,8 +351,10 @@
           }else{
             $('.bucket_form').valid();
 
-            $('#form-modal').html(result.new_html);
-            $('#form-modal').modal('show');
+            $('.flyout-body').html($('<header><div class="panel-title">Budget Conflict</div><button class="close-flyout button-clear button-icononly"><i class="fas fa-arrow-alt-to-right"/></button></header>')).append(result.new_html);
+
+            // $('#form-modal').html(result.new_html);
+            // $('#form-modal').modal('show');
           };
         },
         error: function (xhr, ajaxOptions, thrownError) {

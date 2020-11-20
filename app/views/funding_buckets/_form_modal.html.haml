@@ -1,31 +1,32 @@
-.modal-dialog.modal-lg
-  .modal-content
-    .modal-header
-      %button.close{:data => {:dismiss => "modal"}}
-        x
-      %h3.modal-title
-        = "Conflict"
-    .modal-body
-      %div{:class => "alert alert-danger fade in #{bootstrap_class_for('danger')}"}
-        = content_tag :div, msg, :id => "flash_danger"
+:css
+  #flash_danger {
+    margin-top:15px;
+  }
 
-      .create_conflict_option_div{:id => "create_conflict_option_div_id", :style => (action == 'create' ? "" : "display:none;")}
-        .row
-          .col-sm-8
-            .form-group.radio_buttons
+.row
+  .col-sm-10.col-sm-offset-1
 
-              = collection_radio_buttons(:funding_bucket_proxy, :create_conflict_option, [ ['Replace'], ['Ignore'], ['Cancel'] ], :first, :first) do |b|
-                .radio.inline
-                  = b.label { b.radio_button + b.text }
+    #flash_danger{:class => "alert alert-danger fade in #{bootstrap_class_for('danger')}"}
+      = content_tag :div, msg
 
-      .update_conflict_option_div{:id => "update_conflict_option_div_id", :style => (action == 'update' ? "" : "display:none;")}
-        .row
-          .col-sm-8
-            .form-group.radio_buttons
-              = collection_radio_buttons(:funding_bucket_proxy, :update_conflict_option, [ ['Create'], ['Ignore'], ['Cancel'] ], :first, :first) do |b|
-                .radio.inline
-                  = b.label { b.radio_button + b.text }
+    .create_conflict_option_div{:id => "create_conflict_option_div_id", :style => (action == 'create' ? "" : "display:none;")}
+      .row
+        .col-sm-8
+          .form-group.radio_buttons
 
-      = render :partial => 'buckets_table', :locals => {:buckets => result, :compact_columns => 1}
+            = collection_radio_buttons(:funding_bucket_proxy, :create_conflict_option, [ ['Replace'], ['Ignore'], ['Cancel'] ], :first, :first) do |b|
+              .radio.inline
+                = b.label { b.radio_button + b.text }
 
-      = button_tag 'Submit', :type => 'button', :name => 'submit_conflict', :class=>"btn btn-primary", :onclick => "before_submit_bucket_check(); return false;"
+    .update_conflict_option_div{:id => "update_conflict_option_div_id", :style => (action == 'update' ? "" : "display:none;")}
+      .row
+        .col-sm-8
+          .form-group.radio_buttons
+            = collection_radio_buttons(:funding_bucket_proxy, :update_conflict_option, [ ['Create'], ['Ignore'], ['Cancel'] ], :first, :first) do |b|
+              .radio.inline
+                = b.label { b.radio_button + b.text }
+
+    %label Conflicting Buckets
+    = format_as_list(result)
+
+    = button_tag 'Submit', :type => 'button', :name => 'submit_conflict', :class=>"btn btn-primary", :onclick => "before_submit_bucket_check(); return false;"

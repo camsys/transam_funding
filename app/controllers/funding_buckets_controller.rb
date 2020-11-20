@@ -366,7 +366,7 @@ class FundingBucketsController < OrganizationAwareController
   def find_existing_buckets_for_create
     result = FundingBucket.find_existing_buckets_from_proxy(params[:template_id], params[:start_year].to_i, params[:end_year].to_i, params[:owner_id].to_i, params[:specific_organizations_with_budgets])
 
-    msg = "#{result.length} of the Buckets you are creating already exist. Do you want to update these Buckets' budget, ignore these Buckets, or cancel this action?"
+    msg = "#{result.length} of the budget(s) you are creating already exist. Do you want to update these budget(s), ignore these budget(s), or cancel this action?"
 
     respond_to do |format|
       format.json { render json: {:result_count => result.length, :new_html => (render_to_string :partial => 'form_modal', :formats => [:html], :locals => {:result => result, :msg => msg, :action => 'create'}) }}
@@ -384,7 +384,7 @@ class FundingBucketsController < OrganizationAwareController
         result << FundingBucket.new(funding_template: template, fy_year: b[0], owner_id: b[1])
       end
 
-      msg = "#{result.length} Buckets you are updating do not yet exist. Do you want to create these Buckets, ignore these Buckets, or cancel this action?"
+      msg = "#{result.length} Budgets you are updating do not yet exist. Do you want to create these budgets, ignore these budgets, or cancel this action?"
 
       respond_to do |format|
         format.json { render json: {:result_count => result.length, :new_html => (render_to_string :partial => 'form_modal', :formats => [:html], :locals => {:result => result, :msg => msg, :action => 'update'}) }}
