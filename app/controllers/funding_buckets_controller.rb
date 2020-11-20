@@ -215,7 +215,7 @@ class FundingBucketsController < OrganizationAwareController
       end
     }
 
-    @existing_buckets = FundingBucket.find_existing_buckets_from_proxy(bucket_proxy.template_id, bucket_proxy.fiscal_year_range_start, bucket_proxy.fiscal_year_range_end, bucket_proxy.owner_id, organizations_with_budgets, bucket_proxy.name)
+    @existing_buckets = FundingBucket.find_existing_buckets_from_proxy(bucket_proxy.template_id, bucket_proxy.fiscal_year_range_start, bucket_proxy.fiscal_year_range_end, bucket_proxy.owner_id, organizations_with_budgets)
 
     if @existing_buckets.length > 0 && (bucket_proxy.create_conflict_option.blank?)
       @create_conflict = true
@@ -364,7 +364,7 @@ class FundingBucketsController < OrganizationAwareController
   end
 
   def find_existing_buckets_for_create
-    result = FundingBucket.find_existing_buckets_from_proxy(params[:template_id], params[:start_year].to_i, params[:end_year].to_i, params[:owner_id].to_i, params[:specific_organizations_with_budgets], params[:name])
+    result = FundingBucket.find_existing_buckets_from_proxy(params[:template_id], params[:start_year].to_i, params[:end_year].to_i, params[:owner_id].to_i, params[:specific_organizations_with_budgets])
 
     msg = "#{result.length} of the Buckets you are creating already exist. Do you want to update these Buckets' budget, ignore these Buckets, or cancel this action?"
 
@@ -375,7 +375,7 @@ class FundingBucketsController < OrganizationAwareController
 
   def find_number_of_missing_buckets_for_update
 
-      existing_buckets = FundingBucket.find_existing_buckets_from_proxy(params[:template_id], params[:start_year], params[:end_year], params[:owner_id], nil, params[:name]).pluck(:fy_year, :owner_id)
+      existing_buckets = FundingBucket.find_existing_buckets_from_proxy(params[:template_id], params[:start_year], params[:end_year], params[:owner_id], nil).pluck(:fy_year, :owner_id)
       expected_buckets = find_expected_buckets(params[:template_id], params[:start_year].to_i, params[:end_year].to_i, params[:owner_id].to_i, params[:specific_organizations_with_budgets])
       not_created_buckets = expected_buckets - existing_buckets
       template = FundingTemplate.find_by(id: params[:template_id])
@@ -570,6 +570,7 @@ class FundingBucketsController < OrganizationAwareController
       elsif !existing_bucket.nil? && create_conflict_option == 'Replace'
         existing_bucket.budget_amount = bucket.budget_amount
         existing_bucket.updator = current_user
+        existing_bucket.name = bucket_proxy.name
         existing_bucket.save
       elsif update_conflict_option == 'Create'
         bucket.save
@@ -578,10 +579,11 @@ class FundingBucketsController < OrganizationAwareController
       while i <= bucket_proxy.fiscal_year_range_end.to_i
         next_year_bucket = new_bucket_from_proxy(bucket_proxy, agency_id)
         next_year_bucket.fy_year = i
-        next_year_bucket.name = "#{next_year_bucket.funding_template.name}-#{next_year_bucket.owner.short_name}-#{next_year_bucket.fiscal_year_for_name(i)}"
-        if next_year_bucket.target_organization_id.to_i > 0
-         next_year_bucket.name = "#{next_year_bucket.name}-#{next_year_bucket.target_organization.short_name}"
-        end
+        #next_year_bucket.name = "#{next_year_bucket.funding_template.name}-#{next_year_bucket.owner.short_name}-#{next_year_bucket.fiscal_year_for_name(i)}"
+        next_year_bucket.name = bucket_proxy.name
+        # if next_year_bucket.target_organization_id.to_i > 0
+        #   next_year_bucket.name = "#{next_year_bucket.name}-#{next_year_bucket.target_organization.short_name}"
+        # end
 
         unless bucket_proxy.inflation_percentage.blank?
           next_year_budget = next_year_budget + (inflation_percentage * next_year_budget)
@@ -595,6 +597,7 @@ class FundingBucketsController < OrganizationAwareController
         elsif !existing_bucket.nil? && create_conflict_option == 'Replace'
           existing_bucket.budget_amount = next_year_bucket.budget_amount
           existing_bucket.updator = current_user
+          existing_bucket.name = bucket_proxy.name
           existing_bucket.save
         elsif update_conflict_option == 'Create'
           next_year_bucket.save
@@ -617,7 +620,6 @@ class FundingBucketsController < OrganizationAwareController
         end
         existing_bucket.save
       else
-        puts bucket.inspect
         bucket.save!
       end
     end
@@ -626,7 +628,7 @@ class FundingBucketsController < OrganizationAwareController
   def bucket_exists existing_buckets, bucket
     unless existing_buckets.nil?
       buckets = existing_buckets.find {|eb|
-        eb.funding_template == bucket.funding_template && eb.fy_year == bucket.fy_year && eb.owner == bucket.owner && eb.name == bucket.name
+        eb.funding_template == bucket.funding_template && eb.fy_year == bucket.fy_year && eb.owner == bucket.owner #&& eb.name == bucket.name
       }
       return buckets
     end

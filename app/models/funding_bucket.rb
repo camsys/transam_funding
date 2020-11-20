@@ -67,6 +67,7 @@ class FundingBucket< ActiveRecord::Base
       :object_key,
       :funding_template_id,
       :owner_id,
+      :contributor_id,
       :fy_year,
       :budget_amount,
       :name,
@@ -107,7 +108,7 @@ class FundingBucket< ActiveRecord::Base
 
   end
 
-  def self.find_existing_buckets_from_proxy funding_template_id, start_fiscal_year, end_fiscal_year, owner_id, organizations_with_budgets, name
+  def self.find_existing_buckets_from_proxy funding_template_id, start_fiscal_year, end_fiscal_year, owner_id, organizations_with_budgets
     # Start to set up the query
     conditions  = []
     values      = []
@@ -121,11 +122,6 @@ class FundingBucket< ActiveRecord::Base
 
     conditions << 'fy_year <= ?'
     values << end_fiscal_year
-
-    unless name.blank?
-      conditions << 'name = ?'
-      values << name
-    end
 
     if owner_id.to_i < 0
       funding_template = FundingTemplate.find_by(id: funding_template_id)
@@ -195,6 +191,7 @@ class FundingBucket< ActiveRecord::Base
     self.budget_amount = bucket_proxy.total_amount
     self.budget_committed = 0
     self.owner_id = agency_id.nil? ? bucket_proxy.owner_id : agency_id
+    self.contributor_id = bucket_proxy.contributor_id
     self.target_organization_id = bucket_proxy.target_organization_id.to_i if bucket_proxy.target_organization_id.to_i > 0
     self.active=true
 

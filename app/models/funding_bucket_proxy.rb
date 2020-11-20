@@ -14,6 +14,7 @@ class FundingBucketProxy < Proxy
   attr_accessor   :program_id
   attr_accessor   :template_id
   attr_accessor   :owner_id
+  attr_accessor   :contributor_id
   attr_accessor   :fiscal_year_range_start
   attr_accessor   :fiscal_year_range_end
   attr_accessor   :name
@@ -44,6 +45,7 @@ class FundingBucketProxy < Proxy
       :program_id,
       :template_id,
       :owner_id,
+      :contributor_id,
       :fiscal_year_range_start,
       :fiscal_year_range_end,
       :name,
