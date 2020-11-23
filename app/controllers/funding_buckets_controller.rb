@@ -270,7 +270,7 @@ class FundingBucketsController < OrganizationAwareController
 
     respond_to do |format|
       if @funding_bucket.update(bucket_params)
-        notify_user(:notice, "The bucket was successfully updated.")
+        notify_user(:notice, "The budget was successfully updated.")
         format.html { redirect_to funding_bucket_path(@funding_bucket) }
         format.json { head :no_content }
       else
