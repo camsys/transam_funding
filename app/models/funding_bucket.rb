@@ -81,7 +81,8 @@ class FundingBucket< ActiveRecord::Base
       :bond_request_id,
       :target_organization_id,
       :contributor_organization_id,
-      :owner_organization_id
+      :owner_organization_id,
+      :external_id
   ]
 
   #------------------------------------------------------------------------------
