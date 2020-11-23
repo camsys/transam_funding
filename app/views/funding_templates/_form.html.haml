@@ -50,7 +50,7 @@
 
   .row
     .col-sm-6
-      = f.input :match_required, :label => 'Pcnt Match', :wrapper => :vertical_append do
+      = f.input :match_required, :label => '% Match', :wrapper => :vertical_append do
         = f.input_field :match_required, :class => 'form-control', :max => 100, :step => 0.001, :value => @funding_template.funding_source.match_required
         %span.input-group-addon
           %i.fa.fa-percent

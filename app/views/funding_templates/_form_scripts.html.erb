@@ -4,30 +4,34 @@
   $(document).ready(function(){
 
     $(function() {
-        $("#funding_template_organization_ids").selectize({
-            plugins: ['remove_button'],
-            delimiter: ',',
-            persist: false,
-            create: function(input) {
-                return {
-                    value: input,
-                    text: input
+        $("[id='funding_template_organization_ids']").each(function(){
+            $(this).selectize({
+                plugins: ['remove_button'],
+                delimiter: ',',
+                persist: false,
+                create: function(input) {
+                    return {
+                        value: input,
+                        text: input
+                    }
                 }
-            }
+            });
         });
     });
 
     $(function() {
-        $("#funding_template_contributor_organization_ids").selectize({
-            plugins: ['remove_button'],
-            delimiter: ',',
-            persist: false,
-            create: function(input) {
-                return {
-                    value: input,
-                    text: input
+        $("[id='funding_template_contributor_organization_ids']").each(function(){
+            $(this).selectize({
+                plugins: ['remove_button'],
+                delimiter: ',',
+                persist: false,
+                create: function(input) {
+                    return {
+                        value: input,
+                        text: input
+                    }
                 }
-            }
+            });
         });
     });
 
