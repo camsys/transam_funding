@@ -220,20 +220,20 @@ class FundingBucketsController < OrganizationAwareController
     if @existing_buckets.length > 0 && (bucket_proxy.create_conflict_option.blank?)
       @create_conflict = true
     elsif @existing_buckets.length > 0 && (bucket_proxy.create_conflict_option == 'Cancel')
-      redirect_to funding_buckets_path, notice: 'Bucket creation cancelled because of conflict.'
+      redirect_to funding_buckets_path, notice: 'Budget creation cancelled because of conflict.'
     elsif @existing_buckets.length > 0
       create_new_buckets(bucket_proxy, @existing_buckets, bucket_proxy.create_conflict_option)
       unless @bucket_proxy.return_to_bucket_index == 'false'
-        redirect_to funding_buckets_path, notice: 'Buckets successfully created.'
+        redirect_to funding_buckets_path, notice: 'Budgets successfully created.'
       else
-        redirect_to new_funding_bucket_path(program_id: @bucket_proxy.program_id, funding_template_id: @bucket_proxy.template_id, owner_id: @bucket_proxy.owner_id, fiscal_year_range_start: @bucket_proxy.fiscal_year_range_start, fiscal_year_range_end: @bucket_proxy.fiscal_year_range_end, name: @bucket_proxy.name, total_amount: @bucket_proxy.total_amount  ), notice: 'Buckets successfully created.'
+        redirect_to new_funding_bucket_path(program_id: @bucket_proxy.program_id, funding_template_id: @bucket_proxy.template_id, owner_id: @bucket_proxy.owner_id, fiscal_year_range_start: @bucket_proxy.fiscal_year_range_start, fiscal_year_range_end: @bucket_proxy.fiscal_year_range_end, name: @bucket_proxy.name, total_amount: @bucket_proxy.total_amount  ), notice: 'Budgets successfully created.'
       end
     else
       create_new_buckets(bucket_proxy)
       unless @bucket_proxy.return_to_bucket_index == 'false'
-        redirect_to funding_buckets_path, notice: 'Buckets successfully created.'
+        redirect_to funding_buckets_path, notice: 'Budgets successfully created.'
       else
-        redirect_to new_funding_bucket_path(funding_source_id: @bucket_proxy.program_id, funding_template_id: @bucket_proxy.template_id, owner_id: @bucket_proxy.owner_id, fiscal_year_range_start: @bucket_proxy.fiscal_year_range_start, fiscal_year_range_end: @bucket_proxy.fiscal_year_range_end, name: @bucket_proxy.name, total_amount: @bucket_proxy.total_amount  ), notice: 'Buckets successfully created.'
+        redirect_to new_funding_bucket_path(funding_source_id: @bucket_proxy.program_id, funding_template_id: @bucket_proxy.template_id, owner_id: @bucket_proxy.owner_id, fiscal_year_range_start: @bucket_proxy.fiscal_year_range_start, fiscal_year_range_end: @bucket_proxy.fiscal_year_range_end, name: @bucket_proxy.name, total_amount: @bucket_proxy.total_amount  ), notice: 'Budgets successfully created.'
       end
     end
 
