@@ -28,8 +28,8 @@ class FundingBucketsController < OrganizationAwareController
   def index
     authorize! :read, FundingBucket
 
-    add_breadcrumb 'Funding Programs', funding_sources_path
-    add_breadcrumb 'Templates', funding_templates_path
+    #add_breadcrumb 'Funding Programs', funding_sources_path
+    #add_breadcrumb 'Templates', funding_templates_path
     add_breadcrumb 'Budgets', funding_buckets_path
 
     @templates =  FundingTemplate.all.pluck(:name, :id)
@@ -109,7 +109,7 @@ class FundingBucketsController < OrganizationAwareController
       get_organization_selections
 
       add_breadcrumb 'Funding Programs', funding_sources_path
-      add_breadcrumb 'My Funds', my_funds_funding_buckets_path
+      #add_breadcrumb 'My Funds', my_funds_funding_buckets_path
     end
 
     authorize! :read, @funding_bucket
