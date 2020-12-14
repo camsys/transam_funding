@@ -5,7 +5,7 @@
     %a{:href => "#desc", :data =>{:toggle => 'tab'}}
       = "Description"
   = nav_tab_count_tag("#elgby", "Eligiblity", orgs.count)
-  = nav_tab_count_tag("#bckts", "Buckets", @funding_template.funding_buckets.active.count)
+  = nav_tab_count_tag("#bckts", "Budgets", @funding_template.funding_buckets.active.count)
 
 .tab-content{:style => 'max-height:400px;overflow-y: auto;'}
   .tab-pane.fade#desc

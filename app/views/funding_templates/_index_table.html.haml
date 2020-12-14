@@ -76,7 +76,7 @@
     :javascript
       add_row('#{table_dom_id}',
       {
-        "name":'#{h f.name }', //#{ link_to f.name, funding_template_path(f.object_key) }
+        "name":'#{ link_to f.name, funding_template_path(f.object_key) }',
         "1":"#{h f.funding_source.to_s }",
         "2":"#{h f.owner.to_s }",
         "3":"#{h f.contributor.to_s }",
