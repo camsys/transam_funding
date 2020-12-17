@@ -1,6 +1,7 @@
 class FundingTemplatesController < OrganizationAwareController
 
   authorize_resource :except => :find_match_required_from_funding_source_id
+  protect_from_forgery except: :edit
 
   add_breadcrumb "Home", :root_path
 
@@ -91,11 +92,20 @@ class FundingTemplatesController < OrganizationAwareController
     add_breadcrumb @funding_template.funding_source.to_s, funding_source_path(@funding_template.funding_source)
     add_breadcrumb @funding_template.to_s, funding_template_path(@funding_template)
     add_breadcrumb 'Update', funding_template_path(@funding_template)
+
+
+    respond_to do |format|
+      format.html
+      format.json { render :json => @funding_template }
+      format.js
+    end
+
   end
 
   # POST /funding_templates
   def create
     @funding_template = FundingTemplate.new(funding_template_params)
+    @funding_template.creator = current_user
 
     if params[:query].to_i > 0
       @funding_template.query_string = QueryParam.find(params[:query].to_i).try(:query_string)
@@ -105,11 +115,12 @@ class FundingTemplatesController < OrganizationAwareController
       @funding_template.query_string = nil
     end
 
-    if @funding_template.save
+    @funding_source = @funding_template.funding_source
 
-      redirect_to @funding_template, notice: 'Funding template was successfully created.'
+    if @funding_template.save!
+      redirect_to @funding_template.funding_source, notice: 'Funding template was successfully created.'
     else
-      render :new
+      render :new #TODO Fix this to work with fyout
     end
   end
 

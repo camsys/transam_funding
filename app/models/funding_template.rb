@@ -10,7 +10,6 @@ class FundingTemplate < ActiveRecord::Base
   # Callbacks
   #------------------------------------------------------------------------------
   after_initialize  :set_defaults
-  before_save        :check_orgs_list
 
 
   #------------------------------------------------------------------------------
@@ -18,10 +17,17 @@ class FundingTemplate < ActiveRecord::Base
   #------------------------------------------------------------------------------
 
   belongs_to :funding_source
-  belongs_to :contributor, :class_name => "FundingSourceType"
-  belongs_to :owner, :class_name => "FundingSourceType"
+  belongs_to :contributor, :class_name => "FundingOrganizationType"
+  belongs_to :owner, :class_name => "FundingOrganizationType"
+  belongs_to :creator, class_name: "User", foreign_key: :created_by_user_id
+
   has_and_belongs_to_many :funding_template_types,  :join_table => :funding_templates_funding_template_types
+
+  # owner organizations
   has_and_belongs_to_many :organizations
+
+  # contributor organizations
+  has_and_belongs_to_many    :contributor_organizations, :join_table => :funding_templates_contributor_organizations, :class_name => 'Organization'
 
   has_many :funding_buckets, :dependent => :destroy
 
@@ -48,11 +54,9 @@ class FundingTemplate < ActiveRecord::Base
       :recurring,
       :match_required,
       :active,
-      :query_string,
-      :create_multiple_agencies,
-      :create_multiple_buckets_for_agency_year,
       :restricted,
       {:organization_ids => []},
+      {:contributor_organization_ids => []},
       {:funding_template_type_ids=>[]}
   ]
 
@@ -82,7 +86,7 @@ class FundingTemplate < ActiveRecord::Base
   def self.get_templates_for_agencies org_ids
     templates = []
 
-    self.active.where(contributor: FundingSourceType.find_by(name: 'Agency')).each do |t|
+    self.active.where(contributor: FundingOrganizationType.find_by(code: 'agency')).each do |t|
       templates << t if (t.get_organizations.map{|x| x.id} & org_ids).count > 0 # add template to list if one of orgs is in eligibility
     end
 
@@ -111,6 +115,10 @@ class FundingTemplate < ActiveRecord::Base
     recurring ? "Recurring" : "Annual"
   end
 
+  def creator_org
+    creator.try(:organization).try(:short_name)
+  end
+
   #------------------------------------------------------------------------------
   #
   # Protected Methods
@@ -119,14 +127,7 @@ class FundingTemplate < ActiveRecord::Base
   protected
 
   def set_defaults
-    # self.all_organizations = self.all_organizations.nil? ? true : self.all_organizations
-    #self.active = self.active.nil? ? true : self.active
-    self.create_multiple_buckets_for_agency_year = self.create_multiple_buckets_for_agency_year.nil? ? false : self.create_multiple_buckets_for_agency_year
-    self.create_multiple_agencies = self.create_multiple_agencies.nil? ? false : self.create_multiple_agencies
-  end
-
-  def check_orgs_list
-    # clear out orgs list if template is applicable to all orgs
-    self.organizations = [] if self.query_string.present?
+    self.active = self.active.nil? ? true : self.active
+    self.recurring = self.recurring.nil? ? false : self.recurring
   end
 end

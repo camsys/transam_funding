@@ -26,12 +26,14 @@ class FundingBucket< ActiveRecord::Base
   has_one :funding_source_type, :through => :funding_source
 
   belongs_to :owner, :class_name => "Organization"
+  belongs_to :contributor, class_name: 'Organization'
 
   has_many :grant_purchases, :as => :sourceable, :dependent => :destroy
 
   belongs_to :bond_request
 
   belongs_to :target_organization, :class_name => "Organization", :foreign_key => :target_organization_id
+
   #------------------------------------------------------------------------------
   # Validations
   #------------------------------------------------------------------------------
@@ -56,7 +58,7 @@ class FundingBucket< ActiveRecord::Base
   scope :local, -> { joins(funding_template: :funding_source).where('funding_sources.funding_source_type_id = ?', FundingSourceType.find_by(name: 'Local')) }
 
   #scope :state_owned -- class method
-  scope :agency_owned, -> (org_ids) { org_ids.present? ? joins(:funding_template).where('funding_templates.owner_id = ? AND funding_buckets.owner_id IN (?)', FundingSourceType.find_by(name: 'Agency'), org_ids) : joins(:funding_template).where('funding_templates.owner_id = ?', FundingSourceType.find_by(name: 'Agency')) }
+  scope :agency_owned, -> (org_ids) { org_ids.present? ? joins(:funding_template).where('funding_templates.owner_id = ? AND funding_buckets.owner_id IN (?)', FundingOrganizationType.find_by(code: 'agency'), org_ids) : joins(:funding_template).where('funding_templates.owner_id = ?', FundingOrganizationType.find_by(code: 'agency')) }
 
   scope :current, -> (year) { joins(funding_template: :funding_source).where('funding_buckets.fy_year <= ? AND (((funding_buckets.fy_year + funding_sources.life_in_years - 1) >= ?) OR (funding_sources.life_in_years IS NULL))', year, year) }
 
@@ -65,6 +67,7 @@ class FundingBucket< ActiveRecord::Base
       :object_key,
       :funding_template_id,
       :owner_id,
+      :contributor_id,
       :fy_year,
       :budget_amount,
       :name,
@@ -76,7 +79,10 @@ class FundingBucket< ActiveRecord::Base
       :page_num,
       :item_num,
       :bond_request_id,
-      :target_organization_id
+      :target_organization_id,
+      :contributor_organization_id,
+      :owner_organization_id,
+      :external_id
   ]
 
   #------------------------------------------------------------------------------
@@ -90,7 +96,7 @@ class FundingBucket< ActiveRecord::Base
   end
 
   def self.state_owned(org_ids)
-    buckets = FundingBucket.joins(:funding_template).where('funding_templates.owner_id = ? AND (funding_templates.restricted IS NULL OR funding_templates.restricted = 0)', FundingSourceType.find_by(name: 'State'))
+    buckets = FundingBucket.joins(:funding_template).where('funding_templates.owner_id = ? AND (funding_templates.restricted IS NULL OR funding_templates.restricted = 0)', FundingOrganizationType.find_by(code: 'grantor'))
 
     restricted_buckets = FundingBucket.joins(:funding_template).where(funding_templates: {restricted: true}, funding_buckets: {target_organization_id: org_ids})
 
@@ -103,7 +109,7 @@ class FundingBucket< ActiveRecord::Base
 
   end
 
-  def self.find_existing_buckets_from_proxy funding_template_id, start_fiscal_year, end_fiscal_year, owner_id, organizations_with_budgets, name
+  def self.find_existing_buckets_from_proxy funding_template_id, start_fiscal_year, end_fiscal_year, owner_id, organizations_with_budgets
     # Start to set up the query
     conditions  = []
     values      = []
@@ -118,18 +124,13 @@ class FundingBucket< ActiveRecord::Base
     conditions << 'fy_year <= ?'
     values << end_fiscal_year
 
-    unless name.blank?
-      conditions << 'name = ?'
-      values << name
-    end
-
     if owner_id.to_i < 0
       funding_template = FundingTemplate.find_by(id: funding_template_id)
 
       conditions << 'owner_id IN (?)'
       orgs = []
       org_ids = []
-      if funding_template.owner == FundingSourceType.find_by(name: 'State')
+      if funding_template.owner == FundingOrganizationType.find_by(code: 'grantor')
         orgs =  Grantor.active
       else
 
@@ -182,7 +183,7 @@ class FundingBucket< ActiveRecord::Base
   end
 
   def is_bucket_app?
-    self.funding_template.contributor == FundingSourceType.find_by(name: 'Agency')
+    self.funding_template.contributor == FundingOrganizationType.find_by(code: 'agency')
   end
 
   def set_values_from_proxy bucket_proxy, agency_id=nil
@@ -191,6 +192,7 @@ class FundingBucket< ActiveRecord::Base
     self.budget_amount = bucket_proxy.total_amount
     self.budget_committed = 0
     self.owner_id = agency_id.nil? ? bucket_proxy.owner_id : agency_id
+    self.contributor_id = bucket_proxy.contributor_id
     self.target_organization_id = bucket_proxy.target_organization_id.to_i if bucket_proxy.target_organization_id.to_i > 0
     self.active=true
 

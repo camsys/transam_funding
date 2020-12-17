@@ -4,7 +4,7 @@
       = "Details"
   - if can? :read, FundingTemplate
     = nav_tab_count_tag("#templates", "Templates",  @funding_source.funding_templates.count)
-    = nav_tab_count_tag("#bckts", "Buckets", @funding_source.funding_buckets.active.count)
+    = nav_tab_count_tag("#bckts", "Budgets", @funding_source.funding_buckets.active.count)
 
   = nav_tab_count_tag("#grant", "Grants", @funding_source.grants.count)
   = nav_tab_count_tag("#asst", "Assets", @funding_source.assets.count)

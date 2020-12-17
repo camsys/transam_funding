@@ -12,8 +12,10 @@ module Abilities
       can :read, FundingTemplate
       can [:read, :my_funds], FundingBucket
 
-      can :manage, BondRequest
-      cannot :update_status, BondRequest
+      if Rails.application.config.try(:uses_bonds)
+        can :manage, BondRequest
+        cannot :update_status, BondRequest
+      end
 
     end
   end

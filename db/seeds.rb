@@ -14,11 +14,17 @@ is_sqlite =  (ActiveRecord::Base.configurations[Rails.env]['adapter'] == 'sqlite
 
 puts "======= Processing TransAM Funding Lookup Tables  ======="
 
+
 funding_template_types = [
     {:active => 1, :name => 'Capital', :description => 'Capital Funding Template'},
     {:active => 1, :name => 'Operating', :description => 'Operating Funding Template'},
     {:active => 1, :name => 'Debt Service', :description => 'Debt Service Funding Template'},
     {:active => 1, :name => 'Other', :description => 'Other Funding Template'},
+]
+
+funding_organization_types = [
+    {name: 'Grantor', code: 'grantor', active: true},
+    {name: 'Transit Agency', code: 'agency', active: true}
 ]
 
 funding_bucket_types = [
@@ -58,11 +64,12 @@ capital_plan_action_types = [
 system_config_extensions = [
     {engine_name: 'funding', class_name: 'FundingSource', extension_name: 'FundingFundingSource', active: true},
     {engine_name: 'funding', class_name: 'CapitalProject', extension_name: 'TransamFundableCapitalProject', active: true},
-    {engine_name: 'funding', class_name: 'ActivityLineItem', extension_name: 'TransamFundable', active: true}
+    {engine_name: 'funding', class_name: 'ActivityLineItem', extension_name: 'TransamFundable', active: true},
+    {engine_name: 'funding', class_name: 'FundingSourcesController', extension_name: 'FundableFundingSourcesController', active: true}
 ]
 
 
-lookup_tables = %w{ funding_template_types funding_bucket_types capital_plan_types capital_plan_module_types capital_plan_action_types}
+lookup_tables = %w{ funding_template_types funding_organization_types funding_bucket_types capital_plan_types capital_plan_module_types capital_plan_action_types}
 merge_tables = %w{ system_config_extensions }
 
 

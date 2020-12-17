@@ -5,20 +5,15 @@
       = " Actions"
       %span.caret
     %ul.dropdown-menu{:role => 'menu'}
-      - if (can? :edit_bucket_app, @funding_bucket) && @funding_bucket.is_bucket_app?
+      - if (can? :update, @funding_bucket)
         %li
-          = link_to edit_bucket_app_funding_bucket_path(@funding_bucket) do
+          = link_to edit_funding_bucket_path(@funding_bucket) do
             %i.fa.fa-edit.fa-fw
-            = " Update this fund"
-      - elsif (can? :update, @funding_bucket)
-        %li
-          = link_to edit_funding_bucket_path(@funding_bucket), :remote => true do
-            %i.fa.fa-edit.fa-fw
-            = " Update this bucket"
+            = " Update this budget"
 
       - if (can? :destroy, @funding_bucket) && @funding_bucket.deleteable?
         %li
           = link_to funding_bucket_path(@funding_bucket), :method => :delete, :data => {:confirm => "Are you sure you want to remove this #{@funding_bucket.is_bucket_app? ? 'fund' : 'bucket'}? The action can't be undone."} do
             %i.fa.fa-trash-o.fa-fw
-            = " Remove this #{@funding_bucket.is_bucket_app? ? 'fund' : 'bucket'}"
+            = " Remove this budget"
 

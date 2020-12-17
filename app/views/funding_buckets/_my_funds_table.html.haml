@@ -36,10 +36,7 @@
       %td.center.nowrap{:data => {:field => 'action-cell'}}
         %a.transam-popover{data: {placement: 'left', toggle: 'popover', html: 'true', content: b.description}, title: 'Description', tabindex: '0'}
           %i.fa.fa-info-circle
-        - if (can? :edit_bucket_app, b) && b.is_bucket_app?
-          = link_to edit_bucket_app_funding_bucket_path(b) do
-            %i.fa.fa-edit.fa-1-5x.text-success
-        - elsif (can? :update, b)
+        - if (can? :update, b)
           = link_to edit_funding_bucket_path(b), :remote => true do
             %i.fa.fa-edit.fa-1-5x.text-success
 
