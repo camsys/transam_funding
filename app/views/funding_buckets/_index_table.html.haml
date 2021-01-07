@@ -13,6 +13,12 @@
 #buckets_table_actions.btn-toolbar
   #subheader-label
     %h2 Budgets
+  - if can?(:create, FundingBucket)
+    .btn-group
+      = link_to url, :class => 'btn btn-default' do
+        %i.fa.fa-plus.fa-fw
+        = "Create Budgets"
+
   - if show_actions == 1
     = render :partial => "funding_buckets/index_actions"
 

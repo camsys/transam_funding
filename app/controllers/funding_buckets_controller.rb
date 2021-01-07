@@ -124,8 +124,6 @@ class FundingBucketsController < OrganizationAwareController
   def new
     authorize! :create, FundingBucket
 
-    add_breadcrumb 'Funding Programs', funding_sources_path
-    add_breadcrumb 'Templates', funding_templates_path
     add_breadcrumb 'Budgets', funding_buckets_path
     add_breadcrumb 'New', new_funding_bucket_path
 
