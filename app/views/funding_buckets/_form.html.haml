@@ -346,15 +346,16 @@
           name: name,
           specific_organizations_with_budgets: specific_organizations_with_budgets},
         success: function(result){
+         console.log('derek');
           if (result.result_count == 0 || $('#funding_bucket_proxy_create_conflict_option_replace').is(':checked')|| $('#funding_bucket_proxy_create_conflict_option_ignore').is(':checked') || $('#funding_bucket_proxy_create_conflict_option_cancel').is(':checked')) {
             document.getElementById('new_funding_bucket_proxy').submit();
           }else{
             $('.bucket_form').valid();
 
-            $('.flyout-body').html($('<header><div class="panel-title">Budget Conflict</div><button class="close-flyout button-clear button-icononly"><i class="fas fa-arrow-alt-to-right"/></button></header>')).append(result.new_html);
+            //$('.flyout-body').html($('<header><div class="panel-title">Budget Conflict</div><button class="close-flyout button-clear button-icononly"><i class="fas fa-arrow-alt-to-right"/></button></header>')).append(result.new_html);
 
-            // $('#form-modal').html(result.new_html);
-            // $('#form-modal').modal('show');
+            $('#form-modal').html(result.new_html);
+            $('#form-modal').modal('show');
           };
         },
         error: function (xhr, ajaxOptions, thrownError) {
