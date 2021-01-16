@@ -1,14 +1,14 @@
 %li.divider
 - if can? :read, FundingTemplate
-  %li.text-left
-    = link_to funding_templates_path do
-      %i.fa.fa-fw.fa-tag
-      = ' Templates'
+  //%li.text-left
+  //  = link_to funding_templates_path do
+  //    %i.fa.fa-fw.fa-tag
+  //  = ' Templates'
 
   %li.text-left
     = link_to funding_buckets_path do
       %i.fa.fa-fw.fa-legal
-      = ' Buckets'
+      = ' Budgets'
 
   - if can? :read, Grant
     %li.text-left
@@ -18,21 +18,16 @@
 
 %li.divider
 %li.text-left
-  = link_to my_funds_funding_buckets_path do
-    %i.fa.fa-fw.fa-usd
-    = 'My Funds'
-
-%li.divider
-%li.text-left
   = link_to scheduler_index_path do
     %i.fa.fa-fw.fa-calendar
     Fund Projects
 
-%li.divider
-  %li.text-left
-    = link_to bond_requests_path do
-      %i.fa.fa-fw.fa-link
-      Bond Requests
+- if Rails.application.config.try(:uses_bonds) && (can? :manage, BondRequest)
+  %li.divider
+    %li.text-left
+      = link_to bond_requests_path do
+        %i.fa.fa-fw.fa-link
+        Bond Requests
 - if CapitalPlan.count > 0
   - if count > 0
     %li.divider

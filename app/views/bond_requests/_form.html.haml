@@ -53,7 +53,7 @@
 :javascript
 
   var grantor_id = parseInt('#{Grantor.first.id}');
-  var bond_state_match = parseFloat('#{FundingSource.find_by(name: "1514 Bond").funding_templates.find_by(owner_id: FundingSourceType.find_by(name: "State").id).match_required}');
+  var bond_state_match = parseFloat('#{FundingSource.find_by(name: "1514 Bond").funding_templates.find_by(owner_id: FundingOrganizationType.find_by(code: "grantor").id).match_required}');
 
   $(document).ready(function() {
     update_amount_pcnts();

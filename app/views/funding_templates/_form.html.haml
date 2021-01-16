@@ -2,109 +2,69 @@
 :html => {:class => 'form-vertical funding_template_form' },
 :wrapper => :vertical_form,
 :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
-
-  = f.association :funding_source, :required => true, :collection => FundingSource.all, :include_blank => true, :label => "Funding Program", :disabled => !@funding_template.new_record?
-  = f.input :name, :required => true, :input_html => {:maxlength => 64}
-  = f.input :external_id, :label => 'dotGrants ID', :input_html => {:maxlength => 32}
+  = f.input :funding_source_id, as: :hidden, input_html: {value: @funding_template.funding_source.try(:id) || @funding_source.id}
+  = f.input :name, :required => true, input_html: {:maxlength => 64}
+  = f.input :external_id, :label => 'External ID', input_html: {maxlength: 32}
   = f.input :description
+  .col-sm-3
+    = f.association :contributor, :collection => FundingOrganizationType.active, :required => true, :disabled => !@funding_template.new_record?
+  .row
+    .col-sm-12
+      .form-group.required
+        %label.required.control-label
+          %abbr{title: 'required'} *
+          = " Eligibility Contributor Organization(s)"
+          %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'Multiple contributors may be selected, but only one contributor organization may be selected when creating a budget.'}, tabindex: '0'}
+            %i.fa.fa-info-circle
+        = f.select(:contributor_organization_ids,
+                @funding_template.funding_source.organizations.collect {|a| [a.coded_name, a.id]},
+                {:include_blank => true},
+                {multiple: true})
+  
+  .col-sm-3
+    = f.association :owner, :collection => FundingOrganizationType.active, :required => true, :disabled => !@funding_template.new_record?
+  .row
+    .col-sm-12
+      .form-group.required
+        %label.required.control-label
+          %abbr{title: 'required'} *
+          = " Eligibility Owner Organization(s)"
+          %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'Multiple owners may be selected, but only one owner organization may be selected when creating a budget.'}, tabindex: '0'}
+            %i.fa.fa-info-circle
+        = f.select(:organization_ids,
+                @funding_template.funding_source.organizations.collect {|a| [a.coded_name, a.id]},
+                {:include_blank => true},
+                {multiple: true})
+
+  .row
+    .col-sm-3
+      .form-group.required
+        %label.required.control-label
+          %abbr{title: 'required'} *
+          = "Budget Horizon"
+          %a.transam-popover{data: {placement: 'top', toggle: 'popover', html: 'true', content: 'Budgets may be created for more than one year at a time, up to the maximum Funding Horizon.'}, tabindex: '0'}
+            %i.fa.fa-info-circle
+        = f.input :recurring, collection: [['Annual', false], ['Recurring', true]], required: true, :label => false
+      = f.input :restricted, as: :hidden
+
 
   .row
     .col-sm-6
-      = f.association :contributor, :collection => FundingSourceType.contributor.active, :required => true, :disabled => !@funding_template.new_record?
-    .col-sm-6
-      = f.association :owner, :collection => FundingSourceType.owner.active, :required => true, :disabled => !@funding_template.new_record?
-
-  = f.hidden_field :organization_ids, :multiple => true
-
-  .form-group
-    = select_tag(:query, options_for_select(QueryParam.active.where(class_name: f.object.class.name).map{|x| [x.to_s,x.id]}, :selected => QueryParam.find_by(class_name: f.object.class.name, query_string: f.object.query_string).try(:id)), :class => "form-control", :prompt => "Choose Organizations")
-
-  #org_select.input-large
-  .row
-    May create buckets ...
-  .row
-    .col-sm-3
-      = f.input :recurring, :label => 'multiple years'
-    .col-sm-3
-      = f.input :create_multiple_agencies, :label => 'multiple agencies'
-    .col-sm-3
-      = f.input :create_multiple_buckets_for_agency_year, :label => 'multiple times for the same agency/year'
-    .col-sm-3
-      = f.input :restricted, :label => 'buckets restricted to one agency'
-
-
-  .row
-    .col-sm-6
-      = f.input :match_required, :label => 'Pcnt Match', :wrapper => :vertical_append do
-        = f.input_field :match_required, :class => 'form-control', :max => 100, :step => 0.001
+      = f.input :match_required, :label => '% Match', :wrapper => :vertical_append do
+        = f.input_field :match_required, :class => 'form-control', :max => 100, :step => 0.001, :value => @funding_template.funding_source.match_required
         %span.input-group-addon
           %i.fa.fa-percent
+  .row
+    .col-sm-6
+      = f.input :transfer_only, :label => "Transferable Funds"
 
-  = f.association :funding_template_types, :as => :check_boxes, :label => "For"
+  = f.association :funding_template_types, :as => :check_boxes, :label => "Eligible Uses"
 
-  = f.button :submit, 'Save', :class => "btn btn-primary", :id => 'funding_template_submit', :disabled => f.object.query_string.blank? && f.object.organizations.count == 0
+  = f.button :submit, 'Save', :class => "btn btn-primary", :id => 'funding_template_submit'
 
-= render 'form_scripts'
+= render 'funding_templates/form_scripts'
 
 :javascript
-
-  function control_template_booleans(){
-    if ($('#funding_template_create_multiple_buckets_for_agency_year').is(':checked')) {
-      $('#funding_template_recurring').attr('checked', false);
-      $('#funding_template_create_multiple_agencies').attr('checked', false);
-      $('#funding_template_recurring').attr("disabled", true);
-      $('#funding_template_create_multiple_agencies').attr("disabled", true);
-    } else if (parseInt($('#funding_template_owner_id').val()) == parseInt('#{FundingSourceType.find_by(name: "State").id}')) {
-      $('#funding_template_create_multiple_agencies').attr('checked', false);
-      $('#funding_template_create_multiple_agencies').attr("disabled", true);
-    } else{
-      $('#funding_template_recurring').removeAttr("disabled");
-      $('#funding_template_create_multiple_agencies').removeAttr("disabled");
-    };
-
-    if (parseInt($('#funding_template_owner_id').val()) == parseInt('#{FundingSourceType.find_by(name: "Agency").id}')) {
-      $('#funding_template_restricted').attr('checked', false);
-      $('#funding_template_restricted').attr("disabled", true);
-    } else {
-      $('#funding_template_restricted').removeAttr("disabled");
-    }
-  }
-
-  control_template_booleans();
-
-  // check if using query or selecting orgs
-  if (parseInt($('#query').val()) > 0) { // if query
-    $('#org_select').hide();
-  }  else {
-    $('#org_select').show();
-  }
-
-  $('#query').on('change', function(e) {
-    var val = $(this).val();
-    if (parseInt(val) > 0) { // if query
-      $('#org_select').data().bootstrapTransfer.move_all(true, false); // clear out all selected values
-      $('#org_select').hide();
-      $('#funding_template_submit').attr('disabled', false);
-    }  else {
-      $('#org_select').show();
-      $('#funding_template_submit').attr('disabled', true);
-    }
-  });
-  
-  $('body').on('click', '.selector, .selector-chooseall, .selector-clearall', function() {
-    if ($('#selected_grantees option').length > 0) {
-      $('#funding_template_submit').attr('disabled', false);
-    } else {
-      $('#funding_template_submit').attr('disabled', true);
-    }
-  });
-
-  $('#funding_template_create_multiple_buckets_for_agency_year').on('change', function(e) {
-    control_template_booleans();
-  });
-  $('#funding_template_owner_id').on('change', function(e) {
-    control_template_booleans();
-  });
 
   // jquery validations
   $('.funding_template_form').validate({
@@ -140,4 +100,10 @@
           }
         });
     };
+  });
+  // force popover function again because was hidden elements
+  $('.transam-popover').popover({
+    trigger: 'hover',
+    container: 'body',
+    placement: 'left'
   });

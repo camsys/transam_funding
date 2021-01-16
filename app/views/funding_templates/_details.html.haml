@@ -1,11 +1,11 @@
-- orgs = @funding_template.get_organizations
+- orgs = @funding_template.organizations
 
 %ul.nav.nav-tabs
   %li
     %a{:href => "#desc", :data =>{:toggle => 'tab'}}
       = "Description"
   = nav_tab_count_tag("#elgby", "Eligiblity", orgs.count)
-  = nav_tab_count_tag("#bckts", "Buckets", @funding_template.funding_buckets.active.count)
+  = nav_tab_count_tag("#bckts", "Budgets", @funding_template.funding_buckets.active.count)
 
 .tab-content{:style => 'max-height:400px;overflow-y: auto;'}
   .tab-pane.fade#desc
@@ -17,8 +17,6 @@
 
   .tab-pane.fade#elgby
     .tab-content
-      - if @funding_template.query_string.present?
-        = format_field("Agencies", QueryParam.find_by(class_name: 'FundingTemplate', query_string: @funding_template.query_string).to_s)
       = render :partial => 'organizations/index_table', :locals => {:organizations => orgs, :show_actions => 0}
 
 

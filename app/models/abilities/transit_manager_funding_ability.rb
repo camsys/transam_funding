@@ -7,15 +7,15 @@ module Abilities
         organization_ids = user.organization_ids
       end
 
-      can :new_bucket_app, FundingBucket
-      can [:edit_bucket_app, :destroy], FundingBucket do |b|
-        (organization_ids.include? b.owner_id) && b.is_bucket_app?
+      can :manage, FundingBucket do |b|
+        (organization_ids.include? b.owner_id)
       end
-
-      can :manage, BondRequest do |b|
-        organization_ids.include? b.organization_id
+      if Rails.application.config.try(:uses_bonds)
+        can :manage, BondRequest do |b|
+          organization_ids.include? b.organization_id
+        end
+        cannot :update_status, BondRequest
       end
-      cannot :update_status, BondRequest
 
       can [:add_funding_request], ActivityLineItem do |ali|
         !ali.notional? && ali.milestones.find_by(milestone_type: MilestoneType.find_by(name: "Contract Complete")).try(:milestone_date).present?
