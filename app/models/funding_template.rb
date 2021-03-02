@@ -30,6 +30,7 @@ class FundingTemplate < ActiveRecord::Base
   has_and_belongs_to_many    :contributor_organizations, :join_table => :funding_templates_contributor_organizations, :class_name => 'Organization'
 
   has_many :funding_buckets, :dependent => :destroy
+  has_many :draft_budgets, :dependent => :destroy
 
   has_many :grant_purchases, :as => :sourceable, :dependent => :destroy
 
@@ -117,6 +118,11 @@ class FundingTemplate < ActiveRecord::Base
 
   def creator_org
     creator.try(:organization).try(:short_name)
+  end
+
+  #Federal/State/Local/Agency
+  def funding_source_type
+    funding_source.funding_source_type
   end
 
   #------------------------------------------------------------------------------
