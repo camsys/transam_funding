@@ -1,5 +1,6 @@
 :ruby
   table_dom_id = SecureRandom.hex
+  user_is_grantor = current_user.organization.organization_type_id == OrganizationType.where(name: 'Grantor').pluck(:id).first
 
 
 
@@ -42,7 +43,7 @@
       %a.transam-popover{data: {placement: 'left', toggle: 'popover', html: 'true', content: b.description}, title: 'Description', tabindex: '0'}
         %i.fa.fa-info-circle
       - if (can? :update, b)
-        = link_to edit_funding_bucket_path(b), id: "#{b.object_key}", target: "_blank" do
+        = link_to (user_is_grantor ? edit_funding_bucket_path(b) : edit_bucket_app_funding_bucket_path(b)), id: "#{b.object_key}", target: "_blank" do
           %i.fa.fa-edit.fa-1-5x.text-success
       -#We want to display different text based on what the user is deleting. If it is a regular bucket then we want to make it clear that it isn't a grant application.
       - if (can? :destroy, b) && b.deleteable?

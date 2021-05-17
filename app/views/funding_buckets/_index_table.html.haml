@@ -7,7 +7,11 @@
   if funding_source_id.present? || funding_template_id.present?
     url = new_funding_bucket_path(funding_source_id: funding_source_id, funding_template_id: funding_template_id)
   else
-    url = new_funding_bucket_path
+    if current_user.organization.organization_type_id == OrganizationType.where(name: 'Grantor').pluck(:id).first
+      url = new_funding_bucket_path
+    else
+      url = new_bucket_app_funding_buckets_path
+    end
   end
 
 #buckets_table_actions.btn-toolbar
