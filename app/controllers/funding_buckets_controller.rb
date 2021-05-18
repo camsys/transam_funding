@@ -79,7 +79,7 @@ class FundingBucketsController < OrganizationAwareController
     @buckets = FundingBucket.active.where(conditions.join(' AND '), *values)
 
     unless can? :manage, FundingTemplate
-      @buckets = @buckets.where(contributor_id: (current_user.organizations.ids & @organization_list))
+      @buckets = @buckets.where(owner_id: (current_user.organizations.ids & @organization_list))
     end
 
     unless @searched_agency_id.blank?
