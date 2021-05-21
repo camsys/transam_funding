@@ -7,7 +7,7 @@
     %ul.dropdown-menu{:role => 'menu'}
       - if (can? :update, @funding_bucket)
         %li
-          = link_to edit_funding_bucket_path(@funding_bucket) do
+          = link_to ((current_user.organization.organization_type_id == OrganizationType.where(name: 'Grantor').pluck(:id).first) ? edit_funding_bucket_path(@funding_bucket) : edit_bucket_app_funding_bucket_path(@funding_bucket)) do
             %i.fa.fa-edit.fa-fw
             = " Update this budget"
 

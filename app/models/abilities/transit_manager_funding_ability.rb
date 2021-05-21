@@ -8,7 +8,7 @@ module Abilities
       end
 
       can :manage, FundingBucket do |b|
-        (organization_ids.include? b.owner_id)
+        (organization_ids.include? b.contributor_id)
       end
       if Rails.application.config.try(:uses_bonds)
         can :manage, BondRequest do |b|

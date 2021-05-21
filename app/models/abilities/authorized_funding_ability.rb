@@ -12,12 +12,9 @@ module Abilities
       # Funding
       #-------------------------------------------------------------------------
 
-      cannot :read, FundingTemplate
       cannot :read, FundingBucket do |b|
         !(organization_ids.include? b.owner_id)
       end
-      can :my_funds, FundingBucket
-
 
     end
   end

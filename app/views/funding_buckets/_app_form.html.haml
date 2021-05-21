@@ -4,7 +4,7 @@
       :wrapper => :vertical_form,
       :wrapper_mappings => {:check_boxes => :vertical_radio_and_checkboxes, :radio_buttons => :vertical_radio_and_checkboxes, :file => :vertical_file_input, :boolean => :vertical_boolean}) do |f|
 
-  = f.association :funding_template, :required => true, :collection => FundingTemplate.get_templates_for_agencies(@organization_list), :include_blank => true, :label => "Program", :disabled => !@funding_bucket.new_record?
+  = f.association :funding_template, :required => true, :collection => @funding_bucket.new_record? ? FundingTemplate.get_templates_for_agencies(@organization_list) : FundingTemplate.all, :include_blank => true, :label => "Program", :disabled => !@funding_bucket.new_record?
 
   - if @organization_list.count > 1
     = f.association :owner, :required => true, :collection => @funding_bucket.new_record? ? [] : [[Organization.find_by(id: @funding_bucket.owner_id).coded_name, @funding_bucket.owner_id]], :selected => @funding_bucket.new_record? ? '' : @funding_bucket.owner_id, :label_method => "first", :include_blank => true, :label => "Owner", :disabled => !@funding_bucket.new_record?
@@ -13,7 +13,7 @@
 
   .row
     .col-sm-6
-      = f.input :fy_year, :required => true, :collection => get_fiscal_years, :label => get_fiscal_year_label
+      = f.input :fy_year, :required => true, :collection => @funding_bucket.new_record? ? get_fiscal_years : get_fiscal_years(start_of_fiscal_year(@funding_bucket.fy_year)), :label => get_fiscal_year_label
     .col-sm-6
       = f.input :budget_amount, :wrapper => :vertical_append, :label => "Budget" do
         %span.input-group-addon

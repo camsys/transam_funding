@@ -79,7 +79,7 @@ class FundingBucketsController < OrganizationAwareController
     @buckets = FundingBucket.active.where(conditions.join(' AND '), *values)
 
     unless can? :manage, FundingTemplate
-      @buckets = @buckets.where(contributor_id: (current_user.organizations.ids & @organization_list))
+      @buckets = @buckets.where(owner_id: (current_user.organizations.ids & @organization_list))
     end
 
     unless @searched_agency_id.blank?
@@ -171,8 +171,7 @@ class FundingBucketsController < OrganizationAwareController
 
     authorize! :new_bucket_app, FundingBucket
 
-    add_breadcrumb 'Funding Programs', funding_sources_path
-    add_breadcrumb 'My Funds', my_funds_funding_buckets_path
+    add_breadcrumb 'Budgets', funding_buckets_path
     add_breadcrumb 'New Fund', new_bucket_app_funding_buckets_path
 
     @funding_bucket = FundingBucket.new
@@ -188,8 +187,7 @@ class FundingBucketsController < OrganizationAwareController
 
     authorize! :edit_bucket_app, @funding_bucket
 
-    add_breadcrumb 'Funding Programs', funding_sources_path
-    add_breadcrumb 'My Funds', my_funds_funding_buckets_path
+    add_breadcrumb 'Budgets', funding_buckets_path
     add_breadcrumb @funding_bucket.to_s, funding_bucket_path(@funding_bucket)
     add_breadcrumb 'Edit Fund', edit_bucket_app_funding_bucket_path(@funding_bucket)
 
@@ -248,12 +246,13 @@ class FundingBucketsController < OrganizationAwareController
       @funding_bucket.owner_id = @organization_list.first
     end
 
+    @funding_bucket.contributor_id = @funding_bucket.owner_id
     @funding_bucket.generate_unique_name() if @funding_bucket.name.blank?
 
     respond_to do |format|
       if @funding_bucket.save
         notify_user(:notice, "The fund was successfully saved.")
-        format.html { redirect_to my_funds_funding_buckets_path }
+        format.html { redirect_to funding_buckets_path }
         format.json { render action: 'show', status: :created, location: @funding_bucket }
       else
         format.html { render action: 'new_grant' }
@@ -285,7 +284,7 @@ class FundingBucketsController < OrganizationAwareController
     respond_to do |format|
       if @funding_bucket.update(bucket_params)
         notify_user(:notice, "The fund was successfully updated.")
-        format.html { redirect_to my_funds_funding_buckets_path }
+        format.html { redirect_to funding_buckets_path }
         format.json { head :no_content }
       else
         format.html { render action: 'edit_bucket_app' }
