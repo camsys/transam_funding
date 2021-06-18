@@ -104,6 +104,11 @@ class FundingTemplate < ActiveRecord::Base
     name
   end
 
+  def type_and_name
+    "#{funding_source_type.try(:name)}: #{name}"
+  end 
+
+
   def get_organizations
     self.query_string.present? ? Organization.find_by_sql(self.query_string) : self.organizations
   end
