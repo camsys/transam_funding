@@ -5,7 +5,7 @@
     %a{:href => "#desc", :data =>{:toggle => 'tab'}}
       = "Description"
   = nav_tab_count_tag("#elgby", "Eligiblity", orgs.count)
-  = nav_tab_count_tag("#bckts", "Budgets", @funding_template.funding_buckets.active.count)
+  //= nav_tab_count_tag("#bckts", "Budgets", @funding_template.funding_buckets.active.count)
 
 .tab-content{:style => 'max-height:400px;overflow-y: auto;'}
   .tab-pane.fade#desc
@@ -20,6 +20,6 @@
       = render :partial => 'organizations/index_table', :locals => {:organizations => orgs, :show_actions => 0}
 
 
-  .tab-pane.fade#bckts
-    .tab-content
-      = render :partial => 'funding_buckets/index_table', :locals => {:buckets => @funding_template.funding_buckets.active, :show_actions => 0, :funding_source_id => @funding_template.funding_source.id, :funding_template_id => @funding_template.id}
+  //.tab-pane.fade#bckts
+  //  .tab-content
+  //    = render :partial => 'funding_buckets/index_table', :locals => {:buckets => @funding_template.funding_buckets.active, :show_actions => 0, :funding_source_id => @funding_template.funding_source.id, :funding_template_id => @funding_template.id}
