@@ -4,7 +4,8 @@
       = "Details"
   - if can? :read, FundingTemplate
     = nav_tab_count_tag("#templates", "Templates",  @funding_source.funding_templates.count)
-    //= nav_tab_count_tag("#bckts", "Budgets", @funding_source.funding_buckets.active.count)
+    - unless Rails.application.config.try(:use_new_scenarios_tool)
+      = nav_tab_count_tag("#bckts", "Budgets", @funding_source.funding_buckets.active.count)
 
   = nav_tab_count_tag("#grant", "Grants", @funding_source.grants.count)
   = nav_tab_count_tag("#asst", "Assets", @funding_source.assets.count)
@@ -22,9 +23,10 @@
       .tab-content
         = render :partial => 'funding_templates/index_table', :locals => {:funding_templates => @funding_source.funding_templates, :show_actions => 0}
 
-    //.tab-pane.fade#bckts
-    //  .tab-content
-    //    = render :partial => 'funding_buckets/index_table', :locals => {:buckets => @funding_source.funding_buckets.active, :show_actions => 0, :funding_source_id => @funding_source.id}
+    - unless Rails.application.config.try(:use_new_scenarios_tool)
+      .tab-pane.fade#bckts
+        .tab-content
+          = render :partial => 'funding_buckets/index_table', :locals => {:buckets => @funding_source.funding_buckets.active, :show_actions => 0, :funding_source_id => @funding_source.id}
 
   .tab-pane.fade#grant
     .tab-content

@@ -6,7 +6,7 @@
   //  = ' Templates'
 
   %li.text-left
-    = link_to draft_budgets_path do
+    = link_to (Rails.application.config.try(:use_new_scenarios_tool) ? draft_budgets_path : funding_buckets_path) do
       %i.fa.fa-fw.fa-legal
       = ' Budgets'
 
@@ -16,11 +16,12 @@
         %i.fa.fa-balance-scale.fa-fw
         Grants
 
-//%li.divider
-//%li.text-left
-//  = link_to scheduler_index_path do
-//    %i.fa.fa-fw.fa-calendar
-//    Fund Projects
+- unless Rails.application.config.try(:use_new_scenarios_tool)
+  %li.divider
+  %li.text-left
+    = link_to scheduler_index_path do
+      %i.fa.fa-fw.fa-calendar
+      Fund Projects
 
 - if Rails.application.config.try(:uses_bonds) && (can? :manage, BondRequest)
   %li.divider
