@@ -12,11 +12,11 @@ gemspec
 
 # To use debugger
 # gem 'debugger'
-gem 'transam_core', git: 'https://github.com/camsys/transam_core', branch: :master
-gem 'transam_reporting', git: 'https://github.com/camsys/transam_reporting', branch: :master
-gem 'transam_transit', git: 'https://github.com/camsys/transam_transit', branch: :master
-gem 'transam_accounting', git: 'https://github.com/camsys/transam_accounting', branch: :master
-gem 'transam_cpt', git: 'https://github.com/camsys/transam_cpt', branch: :master
+gem 'transam_core', git: 'https://github.com/camsys/transam_core', branch: :qa
+gem 'transam_reporting', git: 'https://github.com/camsys/transam_reporting', branch: :qa
+gem 'transam_transit', git: 'https://github.com/camsys/transam_transit', branch: :qa
+gem 'transam_accounting', git: 'https://github.com/camsys/transam_accounting', branch: :qa
+gem 'transam_cpt', git: 'https://github.com/camsys/transam_cpt', branch: :qa
 
 gem "capybara", '2.6.2' # lock gem for old capybara behavior on hidden element xpath
 
