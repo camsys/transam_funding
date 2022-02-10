@@ -142,11 +142,17 @@ class CapitalPlanReport < AbstractReport
         org_data << row
       end
     end
-    org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, nil,
-                 total_ali_count, nil,
-                 total_cost, total_federal_funds, total_state_funds, total_local_funds]
-    data << [current_org.name, org_data]
-    
+    if current_org
+      org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, nil,
+                   total_ali_count, nil,
+                   total_cost, total_federal_funds, total_state_funds, total_local_funds]
+      data << [current_org.name, org_data]
+    else
+      # Handle the case when no Capital Project are found with the given parameters.
+      labels = []
+      # Pass a warning message where the organization name would normally go.
+      data << ["No projects found for selected organizations in selected years.", []]
+    end    
     return {labels: labels, data: data, formats: formats}
   end
 
