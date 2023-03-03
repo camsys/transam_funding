@@ -1,8 +1,7 @@
 class DraftCapitalPlanReport < AbstractReport
-  #TODO: make a version of this for draft projects
   include FiscalYear
 
-  KEY_INDEX = 3
+  KEY_INDEX = 4
   DETAIL_LABELS = ['NAME', FiscalYearHelper.get_fy_label, 'Sub Category', '# Assets', '', 'Cost', 'Federal', 'State', 'Local']
   DETAIL_FORMATS = [:string, :fiscal_year, :string, :integer, :string, :currency, :currency, :currency, :currency]
 
@@ -56,11 +55,11 @@ class DraftCapitalPlanReport < AbstractReport
   end
 
   def get_data(organization_id_list, params)
-    labels = ["Project #{FiscalYearHelper.get_fy_label}", 'Scenario', 'Project', 'object_key', 'Title', 'Scope', '#&nbsp;ALIs', 'Multi Year Project', 'Cost', 'Fed&nbsp;$', 'State&nbsp;$', 'Local&nbsp;$']
-    formats = [:fiscal_year, :scenario_url, :object_url, :hidden, :string, :string, :integer, :boolean, :currency, :currency, :currency, :currency]
+    labels = ["Project #{FiscalYearHelper.get_fy_label}", 'Organization', 'Scenario', 'Project', 'object_key', 'Title', 'Scope', '#&nbsp;ALIs', 'Multi Year Project', 'Cost', 'Fed&nbsp;$', 'State&nbsp;$', 'Local&nbsp;$']
+    formats = [:fiscal_year, :string, :scenario_url, :object_url, :hidden, :string, :string, :integer, :boolean, :currency, :currency, :currency, :currency]
 
     # Order by org name, then by FY
-    query = DraftProject.joins(:scenario).where(scenarios: {organization_id: organization_id_list}).joins(:organization).joins(:draft_project_phases).order('organizations.name', 'draft_project_phases.fy_year')
+    query = DraftProject.joins(:scenario).where(scenarios: {organization_id: organization_id_list}).joins(:organization).eager_load(:draft_project_phases).order('organizations.name', 'draft_project_phases.fy_year')
 
     # Add clauses based on params
     conditions = []
@@ -92,6 +91,7 @@ class DraftCapitalPlanReport < AbstractReport
     query.each do |dp|
       row = [
         dp.fy_year,
+        dp.organization,
         dp.scenario.name,
         dp.project_number,
         dp.object_key,
@@ -106,7 +106,7 @@ class DraftCapitalPlanReport < AbstractReport
       ]
       if current_org != dp.organization
         if current_org
-          org_data << [nil, nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, nil,
+          org_data << [nil, nil, nil, nil, nil, "Totals for #{fiscal_year(current_fy)}", nil,
                        total_ali_count, nil,
                        total_cost, total_federal_funds, total_state_funds, total_local_funds]
           data << [current_org.name, org_data]
@@ -129,7 +129,7 @@ class DraftCapitalPlanReport < AbstractReport
           total_local_funds += dp.local_allocated
         else
           if current_fy
-            org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, nil,
+            org_data << [nil, nil, nil, nil, nil, "Totals for #{fiscal_year(current_fy)}", nil,
                          total_ali_count, nil,
                          total_cost, total_federal_funds, total_state_funds, total_local_funds]
           end
@@ -144,7 +144,7 @@ class DraftCapitalPlanReport < AbstractReport
       end
     end
     if current_org
-      org_data << [nil, "Totals for #{fiscal_year(current_fy)}", nil, nil, nil,
+      org_data << [nil, nil, nil, nil, nil, "Totals for #{fiscal_year(current_fy)}", nil,
                    total_ali_count, nil,
                    total_cost, total_federal_funds, total_state_funds, total_local_funds]
       data << [current_org.name, org_data]
@@ -171,10 +171,10 @@ class DraftCapitalPlanReport < AbstractReport
   end
 
   def get_object_url(row)
-    "/draft_projects/#{get_key(row)}".html_safe
+    get_key(row) ? "/draft_projects/#{get_key(row)}".html_safe : nil
   end
 
   def get_scenario_url(row)
-    "/scenarios/#{DraftProject.find_by(object_key: get_key(row))&.scenario&.object_key}".html_safe
+    get_key(row) ? "/scenarios/#{DraftProject.find_by(object_key: get_key(row))&.scenario&.object_key}".html_safe : nil
   end
 end
