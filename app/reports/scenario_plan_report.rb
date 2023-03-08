@@ -1,4 +1,4 @@
-class DraftCapitalPlanReport < AbstractReport
+class ScenarioPlanReport < AbstractReport
   include FiscalYear
 
   KEY_INDEX = 4
@@ -93,7 +93,7 @@ class DraftCapitalPlanReport < AbstractReport
         dp.fy_year,
         dp.organization,
         dp.scenario.name,
-        dp.project_number,
+        dp.project_number.blank? ? "[No project number]" : dp.project_number,
         dp.object_key,
         dp.title,
         dp.team_ali_code.scope,
