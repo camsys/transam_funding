@@ -50,13 +50,19 @@ class ScenarioPlanReport < AbstractReport
         where: :end_fy_year,
         values: get_fiscal_years,
         label: 'To'
+      },
+      {
+        type: :select,
+        where: :primary_scenario,
+        values: ["", "Yes", "No"],
+        label: "Is Primary"
       }
     ]
   end
 
   def get_data(organization_id_list, params)
-    labels = ["Project #{FiscalYearHelper.get_fy_label}", 'Organization', 'Scenario', 'Project', 'object_key', 'Title', 'Scope', '#&nbsp;ALIs', 'Multi Year Project', 'Cost', 'Fed&nbsp;$', 'State&nbsp;$', 'Local&nbsp;$']
-    formats = [:fiscal_year, :string, :scenario_url, :object_url, :hidden, :string, :string, :integer, :boolean, :currency, :currency, :currency, :currency]
+    labels = ["Project #{FiscalYearHelper.get_fy_label}", 'Organization', 'Scenario', 'Primary Scenario', 'Project', 'object_key', 'Title', 'Scope', '#&nbsp;ALIs', 'Multi Year Project', 'Cost', 'Fed&nbsp;$', 'State&nbsp;$', 'Local&nbsp;$']
+    formats = [:fiscal_year, :string, :scenario_url, :boolean, :object_url, :hidden, :string, :string, :integer, :boolean, :currency, :currency, :currency, :currency]
 
     # Order by org name, then by FY
     query = DraftProject.joins(:scenario).where(scenarios: {organization_id: organization_id_list}).joins(:organization).eager_load(:draft_project_phases).order('organizations.name', 'draft_project_phases.fy_year')
@@ -74,6 +80,17 @@ class ScenarioPlanReport < AbstractReport
     conditions << 'draft_project_phases.fy_year <= ?'
     end_year = value.to_i
     values << end_year
+
+    if params[:primary_scenario] && params[:primary_scenario] != ""
+      value = params[:primary_scenario]
+      if value == "Yes"
+        conditions << 'scenarios.primary_scenario = ?'
+        values << true
+      else
+        conditions << '(scenarios.primary_scenario = ? OR scenarios.primary_scenario IS ?)'
+        values.push(false, nil)
+      end
+    end
 
     # Validation
     if end_year < start_year
@@ -93,6 +110,7 @@ class ScenarioPlanReport < AbstractReport
         dp.fy_year,
         dp.organization,
         dp.scenario.name,
+        dp.scenario.primary_scenario,
         dp.project_number.blank? ? "[No project number]" : dp.project_number,
         dp.object_key,
         dp.title,
@@ -106,7 +124,7 @@ class ScenarioPlanReport < AbstractReport
       ]
       if current_org != dp.organization
         if current_org
-          org_data << [nil, nil, nil, nil, nil, "Totals for #{fiscal_year(current_fy)}", nil,
+          org_data << [nil, nil, nil, nil, nil, nil, "Totals for #{fiscal_year(current_fy)}", nil,
                        total_ali_count, nil,
                        total_cost, total_federal_funds, total_state_funds, total_local_funds]
           data << [current_org.name, org_data]
@@ -129,7 +147,7 @@ class ScenarioPlanReport < AbstractReport
           total_local_funds += dp.local_allocated
         else
           if current_fy
-            org_data << [nil, nil, nil, nil, nil, "Totals for #{fiscal_year(current_fy)}", nil,
+            org_data << [nil, nil, nil, nil, nil, nil, "Totals for #{fiscal_year(current_fy)}", nil,
                          total_ali_count, nil,
                          total_cost, total_federal_funds, total_state_funds, total_local_funds]
           end
@@ -144,7 +162,7 @@ class ScenarioPlanReport < AbstractReport
       end
     end
     if current_org
-      org_data << [nil, nil, nil, nil, nil, "Totals for #{fiscal_year(current_fy)}", nil,
+      org_data << [nil, nil, nil, nil, nil, nil, "Totals for #{fiscal_year(current_fy)}", nil,
                    total_ali_count, nil,
                    total_cost, total_federal_funds, total_state_funds, total_local_funds]
       data << [current_org.name, org_data]
