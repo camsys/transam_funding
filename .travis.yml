@@ -12,10 +12,11 @@ branches:
     - /2.\d*.\d*/
 before_install:
 - mysql -e "create database IF NOT EXISTS transam_funding_testing;" -uroot
+- bundle config set without 'not_travis'
+- gem install -v 2.3.4 bundler --document=-
 before_script:
 - bundle update transam_core transam_transit transam_accounting transam_cpt
 - cp spec/dummy/config/database.travis.yml spec/dummy/config/database.yml
 script:
 - bundle exec rake app:transam_funding:prepare_rspec
 - bundle exec rspec
-bundler_args: --without not_travis
