@@ -1,7 +1,7 @@
 class ScenarioPlanReport < AbstractReport
   include FiscalYear
 
-  KEY_INDEX = 4
+  KEY_INDEX = 5
   DETAIL_LABELS = ['NAME', FiscalYearHelper.get_fy_label, 'Sub Category', '# Assets', '', 'Cost', 'Federal', 'State', 'Local']
   DETAIL_FORMATS = [:string, :fiscal_year, :string, :integer, :string, :currency, :currency, :currency, :currency]
 
