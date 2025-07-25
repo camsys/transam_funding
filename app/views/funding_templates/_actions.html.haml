@@ -10,7 +10,7 @@
           = link_to edit_funding_template_path(@funding_template) do
             %i.fa.fa-edit.fa-fw
             = " Update this template"
-      - if (can? :destroy, @funding_template)
+      - if ((can? :destroy, @funding_template) && @funding_template.draft_budgets.count == 0)
         %li.divider
         %li
           -# link_to funding_template_path(@funding_template), :method => :delete, :data => {:confirm => "This template is associated with #{@funding_template.funding_buckets.active.count} buckets, which are tagged to YYY projects. Are you sure? The action cannot be undone."}  do

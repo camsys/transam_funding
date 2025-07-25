@@ -59,6 +59,9 @@
       = f.input :transfer_only, :label => "Transferable Funds"
 
   = f.association :funding_template_types, :as => :check_boxes, :label => "Eligible Uses"
+  .row
+    .col-sm-6
+      = f.input :active, :label => "Active"
 
   = f.button :submit, 'Save', :class => "btn btn-primary", :id => 'funding_template_submit'
 
