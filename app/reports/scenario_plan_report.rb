@@ -81,6 +81,9 @@ class ScenarioPlanReport < AbstractReport
     end_year = value.to_i
     values << end_year
 
+    conditions << 'scenarios.fy_year = ?'
+    values << start_year
+
     if params[:primary_scenario] && params[:primary_scenario] != ""
       value = params[:primary_scenario]
       if value == "Yes"
