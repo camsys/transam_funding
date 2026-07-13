@@ -125,7 +125,7 @@ class ScenarioBudgetReport < AbstractReport
     row[KEY_INDEX]
   end
 
-  def self.allowable_params
+  def self.required_params
     [:scenario_id]
   end
 end
