@@ -14,7 +14,7 @@ class ScenarioBudgetReport < AbstractReport
     formats = FORMATS
 
     scenario = Scenario.find(params[:scenario_id])
-    query = DraftBudgetAllocation.joins(:draft_budget).joins(:draft_funding_request).joins(:draft_project_phase).joins(:draft_project).where(draft_projects: {scenario_id: scenario.id}).order('draft_projects.project_number ASC', 'draft_projects.title ASC', 'draft_project_phases.fy_year DESC')
+    query = DraftBudgetAllocation.joins(:draft_budget).joins(:draft_funding_request).joins(:draft_project_phase).joins(:draft_project).where(draft_projects: {scenario_id: scenario.id}, draft_project_phases: {fy_year: current_fiscal_year_year}).order('draft_projects.project_number ASC', 'draft_projects.title ASC', 'draft_project_phases.fy_year DESC')
 
     data = []
     project_data = []
