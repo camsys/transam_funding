@@ -27,7 +27,7 @@ class ScenarioBudgetReport < AbstractReport
       row = [
         allocation.draft_project_phase.name,
         allocation.draft_budget.name,
-        format_as_percentage(allocation.draft_project_phase.cost == 0 ? 0 : 100*(allocation.amount.to_f/allocation.draft_project_phase.cost), 3),
+        format_as_percentage(allocation.amount > 0 && allocation.draft_funding_request.total > 0 ? 100*(allocation.amount.to_f/allocation.draft_funding_request.total.to_f) : 0, 3),
         allocation.amount
       ]
       # When current data is for a new project
