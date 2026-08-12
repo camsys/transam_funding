@@ -21,54 +21,52 @@ class ScenarioBudgetReport < AbstractReport
     current_project = nil
     project_name = nil
     current_activity = nil
-    total_activity_allocated = total_project_allocated = nil
+    total_project_amount = total_activity_amount = 0
 
     query.each do |allocation|
+      row = [
+        allocation.draft_project_phase.name,
+        allocation.draft_budget.name,
+        format_as_percentage(allocation.amount > 0 && allocation.draft_funding_request.total > 0 ? 100*(allocation.amount.to_f/allocation.draft_funding_request.total.to_f) : 0, 3),
+        allocation.amount
+      ]
       # When current data is for a new project
       if current_project != allocation.draft_project
         # If this is not the first row, finalize the data for this project and ALI
         if current_project
-          project_data << [nil, nil, "Total", total_activity_allocated]
-          project_data << [nil, "Project Total", nil, total_project_allocated]
+          project_data << [nil, nil, "Total", total_activity_amount]
+          project_data << [nil, "Project Total", nil, total_project_amount]
           data << [project_name, project_data]
         end
         # Reassign variables based on new project
         current_activity = allocation.draft_project_phase
-        current_project = allocation.draft_project
-        total_activity_allocated = current_activity.allocated
-        total_project_allocated = total_activity_allocated
-        row = [
-          current_activity.name,
-          allocation.draft_budget.name,
-          format_as_percentage(allocation.amount > 0 && total_activity_allocated > 0 ? 100*(allocation.amount.to_f/total_activity_allocated.to_f) : 0, 3),
-          allocation.amount
-        ]
+        total_project_amount = allocation.amount
+        total_activity_amount = allocation.amount
         project_data = [row]
+        current_project = allocation.draft_project
         project_name = current_project.project_number.blank? ? current_project.title : "#{current_project.project_number} #{current_project.title}"
       else
-        unless current_activity == allocation.draft_project_phase
+        # If this row is still part of the same ALI, add current row amount to totals
+        if current_activity == allocation.draft_project_phase
+          total_activity_amount += allocation.amount
+          total_project_amount += allocation.amount
+        else
           # If this row is for a new ALI and is not the first row of data, add the summary row for the previous ALI
           if current_activity
-            project_data << [nil, nil, "Total", total_activity_allocated]
+            project_data << [nil, nil, "Total", total_activity_amount]
           end
-          # Set new current ALI and its allocation amount, and add new activity allocation to project total
+          # Set new current ALI, reset the activity amount, and add row amount to project total
           current_activity = allocation.draft_project_phase
-          total_activity_allocated = current_activity.allocated
-          total_project_allocated += total_activity_allocated
+          total_activity_amount = allocation.amount
+          total_project_amount += allocation.amount
         end
-        row = [
-          current_activity.name,
-          allocation.draft_budget.name,
-          format_as_percentage(allocation.amount > 0 && total_activity_allocated > 0 ? 100*(allocation.amount.to_f/total_activity_allocated.to_f) : 0, 3),
-          allocation.amount
-        ]
         project_data << row
       end
     end
     # After adding all data rows, include one final ALI summary total row and one final project summary total row for the last project/ALI
     if current_project
-      project_data << [nil, nil, "Total", total_activity_allocated]
-      project_data << [nil, "Project Total", nil, total_project_allocated]
+      project_data << [nil, nil, "Total", total_activity_amount]
+      project_data << [nil, "Project Total", nil, total_project_amount]
       data << [project_name, project_data]
     else
       # Handle the case when no budget allocations are found with the given scenario
