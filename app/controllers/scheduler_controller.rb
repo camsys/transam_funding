@@ -2,7 +2,7 @@ class SchedulerController < AbstractCapitalProjectsController
 
   include TransamFormatHelper
 
-  before_action :set_view_vars,  :only =>    [:index, :loader, :scheduler_ali_action, :scheduler_swimlane_action]
+  before_action :set_view_vars,  :only =>    [:index, :scheduler_ali_action, :scheduler_swimlane_action]
 
   before_action :get_activity_line_item, :only => [:scheduler_ali_action, :scheduler_swimlane_action]
 
@@ -71,63 +71,6 @@ class SchedulerController < AbstractCapitalProjectsController
     @year_3_alis = get_alis(@year_3)
 
   end
-
-  # Process a request to load a scheduler update form. This is ajaxed
-  def loader
-
-    @asset = Asset.find_by_object_key(params[:id])
-    @current_year = params[:year].to_i
-    @active_year = params[:active_year]
-
-    @actions = ACTIONS
-
-    @fiscal_years = []
-    (@year_1..@year_1 + 3).each do |yr|
-      @fiscal_years << [fiscal_year(yr), yr]
-    end
-    @proxy = SchedulerActionProxy.new
-    @proxy.set_defaults(@asset)
-
-  end
-
-  # Render the partial for the asset edit modal.
-  def edit_asset_in_modal
-    # TODO refactor with code in #loader, above.
-    # #loader can possibly go away
-    @asset = Asset.find_by_object_key(params[:id])
-    @current_year = params[:year].to_i
-    @active_year = @current_year
-
-    @actions = ACTIONS
-
-    @fiscal_years = []
-    (current_planning_year_year..last_fiscal_year_year).each do |yr|
-      @fiscal_years << [fiscal_year(yr), yr]
-    end
-    @proxy = SchedulerActionProxy.new
-    @proxy.set_defaults(@asset)
-
-    render partial: 'edit_asset_in_modal'
-  end
-
-  #-----------------------------------------------------------------------------
-  # Render the partial for the asset edit modal.
-  # from planning control
-  #-----------------------------------------------------------------------------
-  # def edit_asset
-  #
-  #   @asset = Asset.find_by_object_key(params[:id])
-  #   @actions = ACTIONS
-  #
-  #   @fiscal_years = []
-  #   (current_planning_year_year..last_fiscal_year_year).each do |yr|
-  #     @fiscal_years << [fiscal_year(yr), yr]
-  #   end
-  #   @proxy = SchedulerActionProxy.new
-  #   @proxy.set_defaults(@asset)
-  #
-  #   render :partial => 'edit_asset_modal_form'
-  # end
 
   # Render the partial for the update cost modal.
   def update_cost_modal
